@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30711.63
+MinimumVisualStudioVersion = 15.0.26124.0
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B930E4ED-205D-47A0-A3F6-3A36F02EC914}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4EE14B9C-34BE-4A8F-A883-FA610EA484DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xfrogcn.BinaryFormatter", "src\BinaryFormatter\Xfrogcn.BinaryFormatter.csproj", "{A2D31A78-821C-4B85-9C71-2BED69F1978A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A2D31A78-821C-4B85-9C71-2BED69F1978A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2D31A78-821C-4B85-9C71-2BED69F1978A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2D31A78-821C-4B85-9C71-2BED69F1978A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2D31A78-821C-4B85-9C71-2BED69F1978A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A2D31A78-821C-4B85-9C71-2BED69F1978A} = {4EE14B9C-34BE-4A8F-A883-FA610EA484DD}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4415A6DA-B3E0-443F-9905-19FFC72F17F9}
+	EndGlobalSection
+EndGlobal
