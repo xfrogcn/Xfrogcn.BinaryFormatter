@@ -1,6 +1,6 @@
 ﻿namespace Xfrogcn.BinaryFormatter
 {
-    public struct BinaryMemberInfo
+    public class BinaryMemberInfo
     {
         public bool IsField { get; set; }
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Xfrogcn.BinaryFormatter
 {
-    public struct BinaryTypeInfo
+    public class BinaryTypeInfo
     {
         public ushort Seq { get; set; }
 
@@ -13,7 +13,7 @@ namespace Xfrogcn.BinaryFormatter
         public sbyte GenericArgumentCount { get; set; }
 
         public TypeEnum Type { get; set; }
-        public byte[] FullName { get; set; }
+        public string FullName { get; set; }
 
         public ushort[] GenericArguments { get; set; }
 
