@@ -1,0 +1,4 @@
+﻿[*.{cs,vb}]
+
+# IDE0049: 简化名称
+dotnet_diagnostic.IDE0049.severity = silent
