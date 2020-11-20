@@ -10,9 +10,9 @@ namespace Xfrogcn.BinaryFormatter.Writer
         private const int DefaultGrowthSize = 4096;
         private const int InitialGrowthSize = 256;
 
-        private IBufferWriter<byte>? _output;
-        private Stream? _stream;
-        private ArrayBufferWriter<byte>? _arrayBufferWriter;
+        private IBufferWriter<byte> _output;
+        private Stream _stream;
+        private ArrayBufferWriter<byte> _arrayBufferWriter;
 
         private Memory<byte> _memory;
 

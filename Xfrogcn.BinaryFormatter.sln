@@ -16,6 +16,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4EE14B9C-34B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xfrogcn.BinaryFormatter", "src\BinaryFormatter\Xfrogcn.BinaryFormatter.csproj", "{A2D31A78-821C-4B85-9C71-2BED69F1978A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{FA2A945F-3D97-4C78-92C0-A80228EBBC14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xfrogcn.BinaryFormatter.Tests", "test\BinaryFormatter.Tests\Xfrogcn.BinaryFormatter.Tests.csproj", "{BC3E3937-DCEC-4C30-9FA9-3C0437B397D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,12 +30,17 @@ Global
 		{A2D31A78-821C-4B85-9C71-2BED69F1978A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2D31A78-821C-4B85-9C71-2BED69F1978A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2D31A78-821C-4B85-9C71-2BED69F1978A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC3E3937-DCEC-4C30-9FA9-3C0437B397D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC3E3937-DCEC-4C30-9FA9-3C0437B397D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC3E3937-DCEC-4C30-9FA9-3C0437B397D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC3E3937-DCEC-4C30-9FA9-3C0437B397D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A2D31A78-821C-4B85-9C71-2BED69F1978A} = {4EE14B9C-34BE-4A8F-A883-FA610EA484DD}
+		{BC3E3937-DCEC-4C30-9FA9-3C0437B397D7} = {FA2A945F-3D97-4C78-92C0-A80228EBBC14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4415A6DA-B3E0-443F-9905-19FFC72F17F9}

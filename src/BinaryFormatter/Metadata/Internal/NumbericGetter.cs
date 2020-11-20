@@ -45,22 +45,17 @@ namespace Xfrogcn.BinaryFormatter.Metadata.Internal
 
         public bool GetTypeInfo(Type type, BinaryTypeInfo typeInfo, MetadataGetterContext context)
         {
-            //Type rt = type.GetSerializeType();
-            //TypeEnum te = _nmbericTypeMap[rt];
-            //BinaryTypeInfo ti = new BinaryTypeInfo()
-            //{
-            //    Type = te,
-            //    FullName = null,
-            //    IsGeneric = type.IsGenericType,
-            //    GenericArgumentCount = type.GetGenericArgumentCount()
-            //};
-            //Vector4 v2 = new Vector4();
-            //v2.X = 1;
-            //v2.Y = 2;
-            //v2.Z = 2;
-            //v2.W = 4;
-            //Vector<int> v = new Vector<int>();
+            Type rt = type.GetSerializeType();
+            TypeEnum te = _nmbericTypeMap[rt];
+            typeInfo.Type = te;
+            typeInfo.IsGeneric = false;
+            typeInfo.GenericArgumentCount = 0;
+            
+            
+            
             return true;
         }
+
+
     }
 }

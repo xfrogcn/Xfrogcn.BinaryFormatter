@@ -35,7 +35,15 @@ namespace Xfrogcn.BinaryFormatter
         } 
 
 
-      
+        public BinaryTypeInfo GetTypeInfo(ushort seq)
+        {
+            if (!_seqTypeMap.ContainsKey(seq))
+            {
+                return null;
+            }
+
+            return _typeInfoMap[_seqTypeMap[seq]];
+        }
 
     }
 }
