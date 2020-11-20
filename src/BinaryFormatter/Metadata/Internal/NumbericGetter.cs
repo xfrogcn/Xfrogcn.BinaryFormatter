@@ -52,6 +52,7 @@ namespace Xfrogcn.BinaryFormatter.Metadata.Internal
             typeInfo.IsGeneric = false;
             typeInfo.GenericArgumentCount = 0;
             typeInfo.SerializeType = SerializeTypeEnum.SingleValue;
+            typeInfo.Members = new BinaryMemberInfo[0];
 
             if (GetComplexTypeInfo(rt, typeInfo, context) ||
                  GetVectorTypeInfo(rt, typeInfo, context) ||
