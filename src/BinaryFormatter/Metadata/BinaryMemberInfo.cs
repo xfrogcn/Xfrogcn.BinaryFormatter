@@ -4,7 +4,7 @@
     {
         public bool IsField { get; set; }
 
-        internal ushort Seq { get; set; }
+        public ushort Seq { get; internal set; }
 
         public string Name { get; set; }
 

@@ -6,7 +6,9 @@ namespace Xfrogcn.BinaryFormatter
 {
     public class BinaryTypeInfo
     {
-        internal ushort Seq { get; set; }
+        public ushort Seq { get; internal set; }
+
+        public SerializeTypeEnum SerializeType { get; set; }
 
         public bool IsGeneric { get; set; }
 

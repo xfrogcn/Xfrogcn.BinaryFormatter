@@ -34,7 +34,9 @@ namespace BinaryFormatter.Tests
             Assert.Equal(isGeneric, ti.IsGeneric);
             Assert.Equal(genericArgumentsCount, ti.GenericArgumentCount);
             Assert.Equal(member, ti.Members);
-            
+
+            Vector<Vector2> v = new Vector<Vector2>();
+            int c = Vector<Vector2>.Count;
         }
     }
 }
