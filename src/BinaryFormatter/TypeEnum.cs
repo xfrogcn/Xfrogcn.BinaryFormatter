@@ -27,24 +27,32 @@
         Matrix4x4 = 19,
         Plane = 20,
         Quaternion = 21,
+        IntPtr = 22,
+
         DateTime = 30,
         DateTimeOffset = 31,
         TimeZoneInfo = 32,
         AdjustmentRule = 33,
         TransitionTime = 34,
         TimeSpan = 35,
-        Struct = 40,
-        DBNull = 41,
-        IntPtr = 42,
-        Boolean = 43,
-        Char = 44,
-        ValueTuple = 45,
-        ValueTupleT = 46,
-        Nullable = 47,
-        String = 50,
-        Uri = 51,
-        Tuple = 60,
-        Version = 61,
+        
+
+        Boolean = 60,
+        Char = 61,
+        String = 62,
+        Uri = 63,
+        Version = 64,
+        DBNull = 65,
+
+        Struct = 80,
+        Nullable = 81,
+
+        ValueTuple = 90,
+        ValueTupleT = 91,
+        
+        
+        Tuple = 92,
+        
         Array = 100,
         List = 101,
         Dictionary = 102,

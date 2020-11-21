@@ -31,6 +31,7 @@ namespace Xfrogcn.BinaryFormatter.Metadata.Internal
             { typeof(Matrix4x4), TypeEnum.Matrix4x4 },
             { typeof(Plane), TypeEnum.Plane },
             { typeof(Quaternion), TypeEnum.Quaternion },
+            { typeof(IntPtr), TypeEnum.IntPtr },
         };
 
         public bool CanProcess(Type type)
