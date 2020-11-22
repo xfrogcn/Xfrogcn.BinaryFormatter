@@ -56,6 +56,7 @@
         Array = 100,
         List = 101,
         Dictionary = 102,
+
         Object = 126,
         Class = 127
     }
