@@ -35,7 +35,7 @@ namespace System
             return 0;
         }
 
-        public static Type[] GetGenericArguments([NotNull] this Type type)
+        public static Type[] GetTypeGenericArguments([NotNull] this Type type)
         {
             if (type == null)
             {
