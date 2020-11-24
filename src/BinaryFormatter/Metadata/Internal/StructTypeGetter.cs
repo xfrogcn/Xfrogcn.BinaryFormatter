@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Xfrogcn.BinaryFormatter.Metadata.Internal
@@ -25,10 +26,7 @@ namespace Xfrogcn.BinaryFormatter.Metadata.Internal
             typeInfo.GenericArguments = type.GetTypeGenericArguments()
                 .Select(t => context.GetTypeSeq(t, context))
                 .ToArray();
-
-            // 属性
-
-            typeInfo.Members = new BinaryMemberInfo[0];
+            typeInfo.Members = type.GetMemberInfos(context);
             return true;
         }
     }

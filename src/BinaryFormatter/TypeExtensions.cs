@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Text;
+using Xfrogcn.BinaryFormatter;
 
 namespace System
 {
@@ -46,6 +48,39 @@ namespace System
                 return type.GetGenericArguments();
             }
             return new Type[0];
+        }
+
+        public static BinaryMemberInfo[] GetMemberInfos([NotNull]this Type type, [NotNull] MetadataGetterContext context)
+        {
+            // 公共可读属性 公共字段
+            ushort seq = 0;
+            List<BinaryMemberInfo> members = new List<BinaryMemberInfo>();
+
+            var pis = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            foreach (var p in pis)
+            {
+                members.Add(new BinaryMemberInfo()
+                {
+                    Seq = seq,
+                    IsField = false,
+                    TypeSeq = context.GetTypeSeq(p.PropertyType, context),
+                    Name = p.Name
+                });
+                seq++;
+            }
+            var fis = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var f in fis)
+            {
+                members.Add(new BinaryMemberInfo()
+                {
+                    Seq = seq,
+                    IsField = false,
+                    TypeSeq = context.GetTypeSeq(f.FieldType, context),
+                    Name = f.Name
+                });
+                seq++;
+            }
+            return members.ToArray();
         }
     }
 }
