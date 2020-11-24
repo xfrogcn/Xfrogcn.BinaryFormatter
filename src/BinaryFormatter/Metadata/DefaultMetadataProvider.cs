@@ -37,6 +37,7 @@ namespace Xfrogcn.BinaryFormatter.Metadata
             // 类及结构通用处理器
             _getters.Add(new Internal.StructTypeGetter());
             _getters.Add(new Internal.ObjectTypeGetter());
+            _getters.Add(new Internal.ClassTypeGetter());
         }
 
         public ushort GetTypeInfo([NotNull] Type type, [NotNull] MetadataGetterContext context)
