@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Xfrogcn.BinaryFormatter;
@@ -48,6 +49,18 @@ namespace System
                 return type.GetGenericArguments();
             }
             return new Type[0];
+        }
+
+        public static ushort[] GetGenericTypeSeqs([NotNull]this Type type, [NotNull] MetadataGetterContext context)
+        {
+            if (!type.IsGenericType)
+            {
+                return new ushort[0];
+            }
+
+            return type.GetGenericArguments()
+                .Select(t => context.GetTypeSeq(t, context))
+                .ToArray();
         }
 
         public static BinaryMemberInfo[] GetMemberInfos([NotNull]this Type type, [NotNull] MetadataGetterContext context)

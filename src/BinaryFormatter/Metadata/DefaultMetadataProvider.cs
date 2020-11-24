@@ -22,6 +22,7 @@ namespace Xfrogcn.BinaryFormatter.Metadata
             _getters.Add(new Internal.ValueTupleGetter());
             _getters.Add(new Internal.TupleGetter());
             _getters.Add(new Internal.StructTypeGetter());
+            _getters.Add(new Internal.NullableTypeGetter());
 
             // 自定义处理器
             if (getters != null)
