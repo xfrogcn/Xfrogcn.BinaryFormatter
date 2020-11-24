@@ -79,6 +79,7 @@ namespace System
                     TypeSeq = context.GetTypeSeq(p.PropertyType, context),
                     Name = p.Name
                 });
+                
                 seq++;
             }
             var fis = type.GetFields(BindingFlags.Public | BindingFlags.Instance);

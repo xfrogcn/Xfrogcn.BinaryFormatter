@@ -18,6 +18,7 @@ namespace Xfrogcn.BinaryFormatter.Metadata.Internal
             typeInfo.SerializeType = SerializeTypeEnum.KeyValuePair;
             typeInfo.GenericArguments = type.GetGenericTypeSeqs(context);
             typeInfo.Members = type.GetMemberInfos(context);
+            typeInfo.FullName = type.AssemblyQualifiedName;
             return true;
         }
     }

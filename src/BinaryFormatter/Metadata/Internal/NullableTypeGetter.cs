@@ -23,7 +23,10 @@ namespace Xfrogcn.BinaryFormatter.Metadata.Internal
             typeInfo.SerializeType = SerializeTypeEnum.KeyValuePair;
             typeInfo.GenericArguments = type.GetGenericTypeSeqs(context);
             typeInfo.GenericArgumentCount = (sbyte)typeInfo.GenericArguments.Length;
-            typeInfo.Members = new BinaryMemberInfo[0];
+            typeInfo.Members = new BinaryMemberInfo[1]{
+                new BinaryMemberInfo(){ IsField =false, Name = nameof(Nullable<int>.Value), Seq = 0, TypeSeq = context.GetTypeSeq(Nullable.GetUnderlyingType(type), context) }
+            };
+
             return true;
         }
     }

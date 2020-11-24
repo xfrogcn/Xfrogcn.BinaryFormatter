@@ -27,6 +27,7 @@ namespace Xfrogcn.BinaryFormatter.Metadata.Internal
                 .Select(t => context.GetTypeSeq(t, context))
                 .ToArray();
             typeInfo.Members = type.GetMemberInfos(context);
+            typeInfo.FullName = type.AssemblyQualifiedName;
             return true;
         }
     }
