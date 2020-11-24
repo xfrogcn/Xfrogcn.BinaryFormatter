@@ -21,21 +21,22 @@ namespace Xfrogcn.BinaryFormatter.Metadata
             _getters.Add(new Internal.BaseTypeGetter());
             _getters.Add(new Internal.ValueTupleGetter());
             _getters.Add(new Internal.TupleGetter());
-            _getters.Add(new Internal.StructTypeGetter());
             _getters.Add(new Internal.NullableTypeGetter());
             _getters.Add(new Internal.ArrayTypeGetter());
             _getters.Add(new Internal.ListTypeGetter());
             _getters.Add(new Internal.DictionaryTypeGetter());
+           
 
             // 自定义处理器
             if (getters != null)
             {
                 _getters.AddRange(getters);
             }
-           
+
 
             // 类及结构通用处理器
-
+            _getters.Add(new Internal.StructTypeGetter());
+            _getters.Add(new Internal.ObjectTypeGetter());
         }
 
         public ushort GetTypeInfo([NotNull] Type type, [NotNull] MetadataGetterContext context)
