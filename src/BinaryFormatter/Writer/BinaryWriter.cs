@@ -15,7 +15,19 @@ namespace Xfrogcn.BinaryFormatter.Writer
         private ArrayBufferWriter<byte> _arrayBufferWriter;
 
         private Memory<byte> _memory;
+        private byte[] headerBytes = new byte[] { (byte)'X', (byte)'G', (byte)'B' };
+        private byte[] versionBytes = new byte[] { 1 };
 
+        public BinaryWriter(IBufferWriter<byte> writer)
+        {
+            _output = writer;
+        }
+
+        public void WriteHeader()
+        {
+            _output.Write(headerBytes);
+            _output.Write(versionBytes);
+        }
 
         public void Dispose()
         {
