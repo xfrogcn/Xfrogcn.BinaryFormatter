@@ -6,20 +6,34 @@ using Xfrogcn.BinaryFormatter.Serialization;
 
 namespace Xfrogcn.BinaryFormatter
 {
-    internal sealed class MetadataList : IList<IMetadataGetter>
+    internal sealed class MetadataGetterList : IList<IMetadataGetter>
     {
         private readonly List<IMetadataGetter> _list = new List<IMetadataGetter>();
         private readonly BinarySerializerOptions _options;
 
-        public MetadataList(BinarySerializerOptions options)
+        public MetadataGetterList(BinarySerializerOptions options)
         {
             _options = options;
         }
 
-        public MetadataList(BinarySerializerOptions options, MetadataList source)
+        public MetadataGetterList(BinarySerializerOptions options, MetadataGetterList source)
         {
             _options = options;
             _list = new List<IMetadataGetter>(source._list);
+        }
+
+        private void InitDefaltMetadataGetter()
+        {
+            // 默认内置处理器
+            _list.Add(new Metadata.Internal.NumbericGetter());
+            _list.Add(new Metadata.Internal.DateTimeGetter());
+            _list.Add(new Metadata.Internal.BaseTypeGetter());
+            _list.Add(new Metadata.Internal.ValueTupleGetter());
+            _list.Add(new Metadata.Internal.TupleGetter());
+            _list.Add(new Metadata.Internal.NullableTypeGetter());
+            _list.Add(new Metadata.Internal.ArrayTypeGetter());
+            _list.Add(new Metadata.Internal.ListTypeGetter());
+            _list.Add(new Metadata.Internal.DictionaryTypeGetter());
         }
 
         public IMetadataGetter this[int index]

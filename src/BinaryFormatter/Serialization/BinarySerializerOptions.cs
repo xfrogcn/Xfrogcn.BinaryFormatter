@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Xfrogcn.BinaryFormatter.Metadata;
 
@@ -10,10 +11,19 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         private int _defaultBufferSize = BufferSizeDefault;
         internal static readonly BinarySerializerOptions s_defaultOptions = new BinarySerializerOptions();
 
+       
         //private IMetadataProvider _metaDataProvider = new DefaultMetadataProvider(;
 
         private bool _haveTypesBeenCreated;
 
+        public IMetadataProvider MetadataProvider { get; }
+
+        public IList<IMetadataGetter> MetadataGetterList { get; }
+
+        public BinarySerializerOptions()
+        {
+            MetadataGetterList = new MetadataGetterList(this);
+        }
 
         public int DefaultBufferSize
         {
@@ -32,6 +42,13 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
                 _defaultBufferSize = value;
             }
+        }
+
+        internal TypeMap GetTypeMap()
+        {
+            _haveTypesBeenCreated = true;
+
+
         }
 
 

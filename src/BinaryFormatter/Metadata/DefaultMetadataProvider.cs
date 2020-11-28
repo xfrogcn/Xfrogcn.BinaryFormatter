@@ -6,38 +6,12 @@ namespace Xfrogcn.BinaryFormatter.Metadata
 {
     public class DefaultMetadataProvider : IMetadataProvider
     {
-        readonly IServiceProvider _serviceProvider;
-        readonly List<IMetadataGetter> _getters;
+        readonly IList<IMetadataGetter> _getters;
 
         public DefaultMetadataProvider(
-            IServiceProvider serviceProvider,
-            IEnumerable<IMetadataGetter> getters)
+            IList<IMetadataGetter> getters)
         {
-            _serviceProvider = serviceProvider;
-            _getters = new List<IMetadataGetter>();
-            // 默认内置处理器
-            _getters.Add(new Internal.NumbericGetter());
-            _getters.Add(new Internal.DateTimeGetter());
-            _getters.Add(new Internal.BaseTypeGetter());
-            _getters.Add(new Internal.ValueTupleGetter());
-            _getters.Add(new Internal.TupleGetter());
-            _getters.Add(new Internal.NullableTypeGetter());
-            _getters.Add(new Internal.ArrayTypeGetter());
-            _getters.Add(new Internal.ListTypeGetter());
-            _getters.Add(new Internal.DictionaryTypeGetter());
-           
-
-            // 自定义处理器
-            if (getters != null)
-            {
-                _getters.AddRange(getters);
-            }
-
-
-            // 类及结构通用处理器
-            _getters.Add(new Internal.StructTypeGetter());
-            _getters.Add(new Internal.ObjectTypeGetter());
-            _getters.Add(new Internal.ClassTypeGetter());
+            _getters = getters;
         }
 
         public ushort GetTypeInfo([NotNull] Type type, [NotNull] MetadataGetterContext context)

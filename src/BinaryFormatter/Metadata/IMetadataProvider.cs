@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Xfrogcn.BinaryFormatter.Metadata
+namespace Xfrogcn.BinaryFormatter
 {
     public interface IMetadataProvider
     {
