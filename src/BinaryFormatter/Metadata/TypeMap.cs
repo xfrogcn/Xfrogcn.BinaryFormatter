@@ -45,5 +45,14 @@ namespace Xfrogcn.BinaryFormatter
             return _typeInfoMap[_seqTypeMap[seq]];
         }
 
+
+        public BinaryTypeInfo PrimaryTypeInfo
+        {
+            get
+            {
+                return GetTypeInfo(0);
+            }
+        }
+
     }
 }
