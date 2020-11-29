@@ -49,7 +49,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             }
         }
 
-        internal TypeMap GetTypeMap(Type type)
+        internal BinarySerializationContext GetSerializationContext(Type type)
         {
             if (_haveTypesBeenCreated == false)
             {
@@ -58,10 +58,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             }
             _haveTypesBeenCreated = true;
 
-            return _typeMapCache.GetOrAdd(type, (t) =>
+            var map = _typeMapCache.GetOrAdd(type, (t) =>
             {
                 return MetadataProvider.GetTypeMap(t);
             });
+            // 需要拷贝，因为在序列化过程中会动态插入实际类型
+            var typeMap = new TypeMap(map);
+
+            return new BinarySerializationContext(typeMap, MetadataProvider);
         }
 
 

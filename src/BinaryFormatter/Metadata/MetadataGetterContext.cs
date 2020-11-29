@@ -26,6 +26,8 @@ namespace Xfrogcn.BinaryFormatter
 
         public TypeMap Map => _map;
 
+        public IMetadataProvider MetadataProvider => _provider;
+
 
         public ushort GetTypeSeq(Type type, MetadataGetterContext context)
         {

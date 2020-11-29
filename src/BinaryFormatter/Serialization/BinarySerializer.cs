@@ -74,10 +74,20 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     }
 
                     // 获取类型元数据
-                    TypeMap typeMap = options.GetTypeMap(inputType);
+                    var context = options.GetSerializationContext(inputType);
 
                     // 写入序列化数据
-                   
+                    BinaryTypeInfo ti = context.Map.PrimaryTypeInfo;
+                    if(ti.SerializeType == SerializeTypeEnum.SingleValue)
+                    {
+                        // 单值
+                    }
+                    else
+                    {
+
+                    }
+
+                    // 写入类型元数据
 
                     // 写入对象映射
 
