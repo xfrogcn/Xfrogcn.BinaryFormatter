@@ -84,7 +84,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     }
                     else
                     {
-
+                        
                     }
 
                     // 写入类型元数据

@@ -8,6 +8,8 @@ namespace Xfrogcn.BinaryFormatter
 {
     public class TypeMap
     {
+        public static readonly Type ObjectType = typeof(object);
+
         private ushort _currentSeq;
         public ushort CurrentSeq => _currentSeq;
 
