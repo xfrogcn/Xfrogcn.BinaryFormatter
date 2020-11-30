@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Xfrogcn.BinaryFormatter.Metadata;
 
-namespace Xfrogcn.BinaryFormatter.Serialization
+namespace Xfrogcn.BinaryFormatter
 {
     public sealed partial class BinarySerializerOptions
     {

@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 
 namespace Xfrogcn.BinaryFormatter
 {
     [DebuggerDisplay("MemberInfo={MemberInfo}")]
-    internal abstract class JsonPropertyInfo
+    internal abstract class BinaryPropertyInfo
     {
-        public static readonly JsonPropertyInfo s_missingProperty = GetPropertyPlaceholder();
+        public static readonly BinaryPropertyInfo s_missingProperty = GetPropertyPlaceholder();
 
-        private JsonClassInfo? _runtimeClassInfo;
+        private BinaryClassInfo _runtimeClassInfo;
 
         public ClassType ClassType;
 
-        public abstract JsonConverter ConverterBase { get; set; }
+       // public abstract BinaryConverter ConverterBase { get; set; }
 
-        public static JsonPropertyInfo GetPropertyPlaceholder()
+        public static BinaryPropertyInfo GetPropertyPlaceholder()
         {
-            JsonPropertyInfo info = new JsonPropertyInfo<object>();
+            BinaryPropertyInfo info = new BinaryPropertyInfo<object>();
 
             Debug.Assert(!info.IsForClassInfo);
             Debug.Assert(!info.ShouldDeserialize);
@@ -31,9 +32,9 @@ namespace Xfrogcn.BinaryFormatter
 
         // Create a property that is ignored at run-time. It uses the same type (typeof(sbyte)) to help
         // prevent issues with unsupported types and helps ensure we don't accidently (de)serialize it.
-        public static JsonPropertyInfo CreateIgnoredPropertyPlaceholder(MemberInfo memberInfo, JsonSerializerOptions options)
+        public static BinaryPropertyInfo CreateIgnoredPropertyPlaceholder(MemberInfo memberInfo, BinarySerializerOptions options)
         {
-            JsonPropertyInfo jsonPropertyInfo = new JsonPropertyInfo<sbyte>();
+            BinaryPropertyInfo jsonPropertyInfo = new BinaryPropertyInfo<sbyte>();
             jsonPropertyInfo.Options = options;
             jsonPropertyInfo.MemberInfo = memberInfo;
             jsonPropertyInfo.DeterminePropertyName();
@@ -294,52 +295,8 @@ namespace Xfrogcn.BinaryFormatter
         public byte[] EscapedNameSection = null!;
 
         // Options can be referenced here since all JsonPropertyInfos originate from a JsonClassInfo that is cached on JsonSerializerOptions.
-        protected JsonSerializerOptions Options { get; set; } = null!; // initialized in Init method
+        protected BinarySerializerOptions Options { get; set; } = null!; // initialized in Init method
 
-        public bool ReadJsonAndAddExtensionProperty(object obj, ref ReadStack state, ref Utf8JsonReader reader)
-        {
-            object propValue = GetValueAsObject(obj)!;
-
-            if (propValue is IDictionary<string, object?> dictionaryObject)
-            {
-                // Handle case where extension property is System.Object-based.
-
-                if (reader.TokenType == JsonTokenType.Null)
-                {
-                    // A null JSON value is treated as a null object reference.
-                    dictionaryObject[state.Current.JsonPropertyNameAsString!] = null;
-                }
-                else
-                {
-                    JsonConverter<object> converter = (JsonConverter<object>)Options.GetConverter(JsonClassInfo.ObjectType);
-
-                    if (!converter.TryRead(ref reader, typeof(JsonElement), Options, ref state, out object? value))
-                    {
-                        return false;
-                    }
-
-                    dictionaryObject[state.Current.JsonPropertyNameAsString!] = value;
-                }
-            }
-            else
-            {
-                // Handle case where extension property is JsonElement-based.
-
-                Debug.Assert(propValue is IDictionary<string, JsonElement>);
-                IDictionary<string, JsonElement> dictionaryJsonElement = (IDictionary<string, JsonElement>)propValue;
-
-                JsonConverter<JsonElement> converter = (JsonConverter<JsonElement>)Options.GetConverter(typeof(JsonElement));
-
-                if (!converter.TryRead(ref reader, typeof(JsonElement), Options, ref state, out JsonElement value))
-                {
-                    return false;
-                }
-
-                dictionaryJsonElement[state.Current.JsonPropertyNameAsString!] = value;
-            }
-
-            return true;
-        }
 
         public abstract bool ReadJsonAndSetMember(object obj, ref ReadStack state, ref Utf8JsonReader reader);
 

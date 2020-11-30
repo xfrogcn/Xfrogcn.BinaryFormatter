@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Xfrogcn.BinaryFormatter.Serialization
+namespace Xfrogcn.BinaryFormatter
 {
     public class BinarySerializationContext : MetadataGetterContext
     {
