@@ -226,32 +226,32 @@ namespace Xfrogcn.BinaryFormatter
         protected BinarySerializerOptions Options { get; set; } = null!; // initialized in Init method
 
 
-        public abstract bool ReadBinaryAndSetMember(object obj, ref ReadStack state, ref BinaryReader reader);
+        //public abstract bool ReadBinaryAndSetMember(object obj, ref ReadStack state, ref BinaryReader reader);
 
-        public abstract bool ReadBinaryAsObject(ref ReadStack state, ref BinaryReader reader, out object value);
+        //public abstract bool ReadBinaryAsObject(ref ReadStack state, ref BinaryReader reader, out object value);
 
-        public bool ReadBinaryExtensionDataValue(ref ReadStack state, ref BinaryReader reader, out object value)
-        {
-            //Debug.Assert(this == state.Current.BinaryClassInfo.DataExtensionProperty);
+        //public bool ReadBinaryExtensionDataValue(ref ReadStack state, ref BinaryReader reader, out object value)
+        //{
+        //    //Debug.Assert(this == state.Current.BinaryClassInfo.DataExtensionProperty);
 
-            //if (RuntimeClassInfo.ElementType == BinaryClassInfo.ObjectType && reader.TokenType == BinaryTokenType.Null)
-            //{
-            //    value = null;
-            //    return true;
-            //}
+        //    //if (RuntimeClassInfo.ElementType == BinaryClassInfo.ObjectType && reader.TokenType == BinaryTokenType.Null)
+        //    //{
+        //    //    value = null;
+        //    //    return true;
+        //    //}
 
-            //BinaryConverter<BinaryElement> converter = (BinaryConverter<BinaryElement>)Options.GetConverter(typeof(BinaryElement));
-            //if (!converter.TryRead(ref reader, typeof(BinaryElement), Options, ref state, out BinaryElement BinaryElement))
-            //{
-            //    // BinaryElement is a struct that must be read in full.
-            //    value = null;
-            //    return false;
-            //}
+        //    //BinaryConverter<BinaryElement> converter = (BinaryConverter<BinaryElement>)Options.GetConverter(typeof(BinaryElement));
+        //    //if (!converter.TryRead(ref reader, typeof(BinaryElement), Options, ref state, out BinaryElement BinaryElement))
+        //    //{
+        //    //    // BinaryElement is a struct that must be read in full.
+        //    //    value = null;
+        //    //    return false;
+        //    //}
 
-            //value = binaryElement;
-            value = null;
-            return true;
-        }
+        //    //value = binaryElement;
+        //    value = null;
+        //    return true;
+        //}
 
         public Type ParentClassType { get; private set; } = null!;
 

@@ -60,7 +60,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
             using(var bufferWriter = new PooledByteBufferWriter(options.DefaultBufferSize))
             {
-                using(var writer = new Writer.BinaryWriter(bufferWriter))
+                using(var writer = new BinaryWriter(bufferWriter))
                 {
                     // 写入头
                     writer.WriteHeader();

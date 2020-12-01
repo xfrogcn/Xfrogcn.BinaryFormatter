@@ -18,6 +18,7 @@ namespace Xfrogcn.BinaryFormatter
         private readonly ConcurrentDictionary<Type, TypeMap> _typeMapCache = new ConcurrentDictionary<Type, TypeMap>();
         private readonly ConcurrentDictionary<Type, BinaryClassInfo> _classes = new ConcurrentDictionary<Type, BinaryClassInfo>();
 
+        private MemberAccessor _memberAccessorStrategy;
         private BinaryIgnoreCondition _defaultIgnoreCondition;
 
         private bool _haveTypesBeenCreated;
@@ -37,6 +38,20 @@ namespace Xfrogcn.BinaryFormatter
             _metadataGetterList = new MetadataGetterList(this);
             MetadataProvider = new DefaultMetadataProvider(_metadataGetterList);
         }
+
+        internal MemberAccessor MemberAccessorStrategy
+        {
+            get
+            {
+                if (_memberAccessorStrategy == null)
+                {
+                    _memberAccessorStrategy = new ReflectionEmitMemberAccessor();
+                }
+
+                return _memberAccessorStrategy;
+            }
+        }
+
 
         internal BinaryClassInfo GetOrAddClass(Type type)
         {

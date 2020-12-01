@@ -13,6 +13,7 @@ namespace Xfrogcn.BinaryFormatter
         /// </summary>
         public static readonly Type ObjectType = typeof(object);
 
+        public ClassType ClassType { get; private set; }
 
         public BinaryClassInfo(Type type, BinarySerializerOptions options)
         {
