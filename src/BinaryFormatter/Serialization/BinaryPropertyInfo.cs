@@ -62,7 +62,7 @@ namespace Xfrogcn.BinaryFormatter
                 return;
             }
 
-            BinaryPropertyNameAttribute? nameAttribute = GetAttribute<BinaryPropertyNameAttribute>(MemberInfo);
+            BinaryPropertyNameAttribute nameAttribute = GetAttribute<BinaryPropertyNameAttribute>(MemberInfo);
             if (nameAttribute != null)
             {
                 string name = nameAttribute.Name;
@@ -175,7 +175,7 @@ namespace Xfrogcn.BinaryFormatter
         public abstract bool GetMemberAndWriteBinary(object obj, ref WriteStack state, BinaryWriter writer);
         public abstract bool GetMemberAndWriteBinaryExtensionData(object obj, ref WriteStack state, BinaryWriter writer);
 
-        public abstract object? GetValueAsObject(object obj);
+        public abstract object GetValueAsObject(object obj);
 
         public bool HasGetter { get; set; }
         public bool HasSetter { get; set; }
@@ -255,7 +255,7 @@ namespace Xfrogcn.BinaryFormatter
 
         public Type ParentClassType { get; private set; } = null!;
 
-        public MemberInfo? MemberInfo { get; private set; }
+        public MemberInfo MemberInfo { get; private set; }
 
         public BinaryClassInfo RuntimeClassInfo
         {
@@ -270,7 +270,7 @@ namespace Xfrogcn.BinaryFormatter
             }
         }
 
-        public Type? RuntimePropertyType { get; private set; }
+        public Type RuntimePropertyType { get; private set; }
 
         public abstract void SetExtensionDictionaryAsObject(object obj, object extensionDict);
 

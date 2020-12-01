@@ -20,9 +20,9 @@ namespace Xfrogcn.BinaryFormatter
         public override void Initialize(
            Type parentClassType,
            Type declaredPropertyType,
-           Type? runtimePropertyType,
+           Type runtimePropertyType,
            ClassType runtimeClassType,
-           MemberInfo? memberInfo,
+           MemberInfo memberInfo,
            BinaryConverter converter,
            BinaryIgnoreCondition? ignoreCondition,
            BinarySerializerOptions options)
@@ -43,14 +43,14 @@ namespace Xfrogcn.BinaryFormatter
                     {
                         bool useNonPublicAccessors = GetAttribute<BinaryIncludeAttribute>(propertyInfo) != null;
 
-                        MethodInfo? getMethod = propertyInfo.GetMethod;
+                        MethodInfo getMethod = propertyInfo.GetMethod;
                         if (getMethod != null && (getMethod.IsPublic || useNonPublicAccessors))
                         {
                             HasGetter = true;
                             Get = options.MemberAccessorStrategy.CreatePropertyGetter<T>(propertyInfo);
                         }
 
-                        MethodInfo? setMethod = propertyInfo.SetMethod;
+                        MethodInfo setMethod = propertyInfo.SetMethod;
                         if (setMethod != null && (setMethod.IsPublic || useNonPublicAccessors))
                         {
                             HasSetter = true;

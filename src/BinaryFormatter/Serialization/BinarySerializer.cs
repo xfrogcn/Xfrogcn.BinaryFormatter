@@ -12,7 +12,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         public static Task SerializeAsync<TValue>(
             Stream stream,
             TValue value,
-            BinarySerializerOptions? options = null,
+            BinarySerializerOptions options = null,
             CancellationToken cancellationToken = default)
         {
             if (stream == null)
@@ -25,7 +25,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             Stream stream,
             object value,
             Type inputType,
-            BinarySerializerOptions? options = null,
+            BinarySerializerOptions options = null,
             CancellationToken cancellationToken = default)
         {
             if (stream == null)
@@ -50,7 +50,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             Stream stream,
             TValue value,
             Type inputType,
-            BinarySerializerOptions? options,
+            BinarySerializerOptions options,
             CancellationToken cancellationToken)
         {
             if( options == null)

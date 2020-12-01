@@ -59,7 +59,7 @@ namespace Xfrogcn.BinaryFormatter
 
             // todo: for performance and reduced instances, consider using the converters and BinaryClassInfo from s_defaultOptions by cloning (or reference directly if no changes).
             // https://github.com/dotnet/runtime/issues/32357
-            if (!_classes.TryGetValue(type, out BinaryClassInfo? result))
+            if (!_classes.TryGetValue(type, out BinaryClassInfo result))
             {
                 result = _classes.GetOrAdd(type, new BinaryClassInfo(type, this));
             }
