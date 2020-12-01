@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Xfrogcn.BinaryFormatter.Serialization.Attributes
+namespace Xfrogcn.BinaryFormatter.Serialization
 {
     /// <summary>
     /// 指定序列化时所使用的类型转换器
