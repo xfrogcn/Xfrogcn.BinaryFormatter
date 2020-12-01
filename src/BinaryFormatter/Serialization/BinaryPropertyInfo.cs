@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
+using Xfrogcn.BinaryFormatter.Serialization;
 
 namespace Xfrogcn.BinaryFormatter
 {
@@ -15,7 +15,7 @@ namespace Xfrogcn.BinaryFormatter
 
         public ClassType ClassType;
 
-       // public abstract BinaryConverter ConverterBase { get; set; }
+        public abstract BinaryConverter ConverterBase { get; set; }
 
         public static BinaryPropertyInfo GetPropertyPlaceholder()
         {
@@ -34,26 +34,25 @@ namespace Xfrogcn.BinaryFormatter
         // prevent issues with unsupported types and helps ensure we don't accidently (de)serialize it.
         public static BinaryPropertyInfo CreateIgnoredPropertyPlaceholder(MemberInfo memberInfo, BinarySerializerOptions options)
         {
-            BinaryPropertyInfo jsonPropertyInfo = new BinaryPropertyInfo<sbyte>();
-            jsonPropertyInfo.Options = options;
-            jsonPropertyInfo.MemberInfo = memberInfo;
-            jsonPropertyInfo.DeterminePropertyName();
-            jsonPropertyInfo.IsIgnored = true;
+            BinaryPropertyInfo binaryPropertyInfo = new BinaryPropertyInfo<sbyte>();
+            binaryPropertyInfo.Options = options;
+            binaryPropertyInfo.MemberInfo = memberInfo;
+            binaryPropertyInfo.DeterminePropertyName();
+            binaryPropertyInfo.IsIgnored = true;
 
-            Debug.Assert(!jsonPropertyInfo.ShouldDeserialize);
-            Debug.Assert(!jsonPropertyInfo.ShouldSerialize);
+            Debug.Assert(!binaryPropertyInfo.ShouldDeserialize);
+            Debug.Assert(!binaryPropertyInfo.ShouldSerialize);
 
-            return jsonPropertyInfo;
+            return binaryPropertyInfo;
         }
 
         public Type DeclaredPropertyType { get; private set; } = null!;
 
-        public virtual void GetPolicies(JsonIgnoreCondition? ignoreCondition, JsonNumberHandling? parentTypeNumberHandling, bool defaultValueIsNull)
+        public virtual void GetPolicies(BinaryIgnoreCondition? ignoreCondition, bool defaultValueIsNull)
         {
             DetermineSerializationCapabilities(ignoreCondition);
             DeterminePropertyName();
             DetermineIgnoreCondition(ignoreCondition, defaultValueIsNull);
-            DetermineNumberHandling(parentTypeNumberHandling);
         }
 
         private void DeterminePropertyName()
@@ -63,20 +62,10 @@ namespace Xfrogcn.BinaryFormatter
                 return;
             }
 
-            JsonPropertyNameAttribute? nameAttribute = GetAttribute<JsonPropertyNameAttribute>(MemberInfo);
+            BinaryPropertyNameAttribute? nameAttribute = GetAttribute<BinaryPropertyNameAttribute>(MemberInfo);
             if (nameAttribute != null)
             {
                 string name = nameAttribute.Name;
-                if (name == null)
-                {
-                    ThrowHelper.ThrowInvalidOperationException_SerializerPropertyNameNull(ParentClassType, this);
-                }
-
-                NameAsString = name;
-            }
-            else if (Options.PropertyNamingPolicy != null)
-            {
-                string name = Options.PropertyNamingPolicy.ConvertName(MemberInfo.Name);
                 if (name == null)
                 {
                     ThrowHelper.ThrowInvalidOperationException_SerializerPropertyNameNull(ParentClassType, this);
@@ -92,17 +81,16 @@ namespace Xfrogcn.BinaryFormatter
             Debug.Assert(NameAsString != null);
 
             NameAsUtf8Bytes = Encoding.UTF8.GetBytes(NameAsString);
-            EscapedNameSection = JsonHelpers.GetEscapedPropertyNameSection(NameAsUtf8Bytes, Options.Encoder);
         }
 
-        private void DetermineSerializationCapabilities(JsonIgnoreCondition? ignoreCondition)
+        private void DetermineSerializationCapabilities(BinaryIgnoreCondition? ignoreCondition)
         {
             if ((ClassType & (ClassType.Enumerable | ClassType.Dictionary)) == 0)
             {
-                Debug.Assert(ignoreCondition != JsonIgnoreCondition.Always);
+                Debug.Assert(ignoreCondition != BinaryIgnoreCondition.Always);
 
                 // Three possible values for ignoreCondition:
-                // null = JsonIgnore was not placed on this property, global IgnoreReadOnlyProperties/Fields wins
+                // null = BinaryIgnore was not placed on this property, global IgnoreReadOnlyProperties/Fields wins
                 // WhenNull = only ignore when null, global IgnoreReadOnlyProperties/Fields loses
                 // Never = never ignore (always include), global IgnoreReadOnlyProperties/Fields loses
                 bool serializeReadOnlyProperty = ignoreCondition != null || (MemberInfo is PropertyInfo
@@ -131,18 +119,18 @@ namespace Xfrogcn.BinaryFormatter
             }
         }
 
-        private void DetermineIgnoreCondition(JsonIgnoreCondition? ignoreCondition, bool defaultValueIsNull)
+        private void DetermineIgnoreCondition(BinaryIgnoreCondition? ignoreCondition, bool defaultValueIsNull)
         {
             if (ignoreCondition != null)
             {
                 Debug.Assert(MemberInfo != null);
-                Debug.Assert(ignoreCondition != JsonIgnoreCondition.Always);
+                Debug.Assert(ignoreCondition != BinaryIgnoreCondition.Always);
 
-                if (ignoreCondition == JsonIgnoreCondition.WhenWritingDefault)
+                if (ignoreCondition == BinaryIgnoreCondition.WhenWritingDefault)
                 {
                     IgnoreDefaultValuesOnWrite = true;
                 }
-                else if (ignoreCondition == JsonIgnoreCondition.WhenWritingNull)
+                else if (ignoreCondition == BinaryIgnoreCondition.WhenWritingNull)
                 {
                     if (defaultValueIsNull)
                     {
@@ -156,14 +144,14 @@ namespace Xfrogcn.BinaryFormatter
             }
             else if (Options.IgnoreNullValues)
             {
-                Debug.Assert(Options.DefaultIgnoreCondition == JsonIgnoreCondition.Never);
+                Debug.Assert(Options.DefaultIgnoreCondition == BinaryIgnoreCondition.Never);
                 if (defaultValueIsNull)
                 {
                     IgnoreDefaultValuesOnRead = true;
                     IgnoreDefaultValuesOnWrite = true;
                 }
             }
-            else if (Options.DefaultIgnoreCondition == JsonIgnoreCondition.WhenWritingNull)
+            else if (Options.DefaultIgnoreCondition == BinaryIgnoreCondition.WhenWritingNull)
             {
                 Debug.Assert(!Options.IgnoreNullValues);
                 if (defaultValueIsNull)
@@ -171,70 +159,21 @@ namespace Xfrogcn.BinaryFormatter
                     IgnoreDefaultValuesOnWrite = true;
                 }
             }
-            else if (Options.DefaultIgnoreCondition == JsonIgnoreCondition.WhenWritingDefault)
+            else if (Options.DefaultIgnoreCondition == BinaryIgnoreCondition.WhenWritingDefault)
             {
                 Debug.Assert(!Options.IgnoreNullValues);
                 IgnoreDefaultValuesOnWrite = true;
             }
         }
 
-        private void DetermineNumberHandling(JsonNumberHandling? parentTypeNumberHandling)
+    
+        public static TAttribute GetAttribute<TAttribute>(MemberInfo memberInfo) where TAttribute : Attribute
         {
-            if (IsForClassInfo)
-            {
-                if (parentTypeNumberHandling != null && !ConverterBase.IsInternalConverter)
-                {
-                    ThrowHelper.ThrowInvalidOperationException_NumberHandlingOnPropertyInvalid(this);
-                }
-
-                // Priority 1: Get handling from the type (parent type in this case is the type itself).
-                NumberHandling = parentTypeNumberHandling;
-
-                // Priority 2: Get handling from JsonSerializerOptions instance.
-                if (!NumberHandling.HasValue && Options.NumberHandling != JsonNumberHandling.Strict)
-                {
-                    NumberHandling = Options.NumberHandling;
-                }
-            }
-            else
-            {
-                JsonNumberHandling? handling = null;
-
-                // Priority 1: Get handling from attribute on property or field.
-                if (MemberInfo != null)
-                {
-                    JsonNumberHandlingAttribute? attribute = GetAttribute<JsonNumberHandlingAttribute>(MemberInfo);
-
-                    if (attribute != null &&
-                        !ConverterBase.IsInternalConverterForNumberType &&
-                        ((ClassType.Enumerable | ClassType.Dictionary) & ClassType) == 0)
-                    {
-                        ThrowHelper.ThrowInvalidOperationException_NumberHandlingOnPropertyInvalid(this);
-                    }
-
-                    handling = attribute?.Handling;
-                }
-
-                // Priority 2: Get handling from attribute on parent class type.
-                handling ??= parentTypeNumberHandling;
-
-                // Priority 3: Get handling from JsonSerializerOptions instance.
-                if (!handling.HasValue && Options.NumberHandling != JsonNumberHandling.Strict)
-                {
-                    handling = Options.NumberHandling;
-                }
-
-                NumberHandling = handling;
-            }
+            return (TAttribute)memberInfo.GetCustomAttribute(typeof(TAttribute), inherit: false);
         }
 
-        public static TAttribute? GetAttribute<TAttribute>(MemberInfo memberInfo) where TAttribute : Attribute
-        {
-            return (TAttribute?)memberInfo.GetCustomAttribute(typeof(TAttribute), inherit: false);
-        }
-
-        public abstract bool GetMemberAndWriteJson(object obj, ref WriteStack state, Utf8JsonWriter writer);
-        public abstract bool GetMemberAndWriteJsonExtensionData(object obj, ref WriteStack state, Utf8JsonWriter writer);
+        public abstract bool GetMemberAndWriteBinary(object obj, ref WriteStack state, BinaryWriter writer);
+        public abstract bool GetMemberAndWriteBinaryExtensionData(object obj, ref WriteStack state, BinaryWriter writer);
 
         public abstract object? GetValueAsObject(object obj);
 
@@ -244,13 +183,12 @@ namespace Xfrogcn.BinaryFormatter
         public virtual void Initialize(
             Type parentClassType,
             Type declaredPropertyType,
-            Type? runtimePropertyType,
+            Type runtimePropertyType,
             ClassType runtimeClassType,
-            MemberInfo? memberInfo,
-            JsonConverter converter,
-            JsonIgnoreCondition? ignoreCondition,
-            JsonNumberHandling? parentTypeNumberHandling,
-            JsonSerializerOptions options)
+            MemberInfo memberInfo,
+            BinaryConverter converter,
+            BinaryIgnoreCondition? ignoreCondition,
+            BinarySerializerOptions options)
         {
             Debug.Assert(converter != null);
 
@@ -267,21 +205,11 @@ namespace Xfrogcn.BinaryFormatter
         public bool IgnoreDefaultValuesOnWrite { get; private set; }
 
         /// <summary>
-        /// True if the corresponding cref="JsonClassInfo.PropertyInfoForClassInfo"/> is this instance.
+        /// True if the corresponding cref="BinaryClassInfo.PropertyInfoForClassInfo"/> is this instance.
         /// </summary>
         public bool IsForClassInfo { get; protected set; }
 
-        // There are 3 copies of the property name:
-        // 1) NameAsString. The unescaped property name.
-        // 2) NameAsUtf8Bytes. The Utf8 version of NameAsString. Used during during deserialization for property lookup.
-        // 3) EscapedNameSection. The escaped verson of NameAsUtf8Bytes plus the wrapping quotes and a trailing colon. Used during serialization.
 
-        /// <summary>
-        /// The unescaped name of the property.
-        /// Is either the actual CLR property name,
-        /// the value specified in JsonPropertyNameAttribute,
-        /// or the value returned from PropertyNamingPolicy(clrPropertyName).
-        /// </summary>
         public string NameAsString { get; private set; } = null!;
 
         /// <summary>
@@ -294,33 +222,34 @@ namespace Xfrogcn.BinaryFormatter
         /// </summary>
         public byte[] EscapedNameSection = null!;
 
-        // Options can be referenced here since all JsonPropertyInfos originate from a JsonClassInfo that is cached on JsonSerializerOptions.
+        // Options can be referenced here since all BinaryPropertyInfos originate from a BinaryClassInfo that is cached on BinarySerializerOptions.
         protected BinarySerializerOptions Options { get; set; } = null!; // initialized in Init method
 
 
-        public abstract bool ReadJsonAndSetMember(object obj, ref ReadStack state, ref Utf8JsonReader reader);
+        public abstract bool ReadBinaryAndSetMember(object obj, ref ReadStack state, ref BinaryReader reader);
 
-        public abstract bool ReadJsonAsObject(ref ReadStack state, ref Utf8JsonReader reader, out object? value);
+        public abstract bool ReadBinaryAsObject(ref ReadStack state, ref BinaryReader reader, out object value);
 
-        public bool ReadJsonExtensionDataValue(ref ReadStack state, ref Utf8JsonReader reader, out object? value)
+        public bool ReadBinaryExtensionDataValue(ref ReadStack state, ref BinaryReader reader, out object value)
         {
-            Debug.Assert(this == state.Current.JsonClassInfo.DataExtensionProperty);
+            //Debug.Assert(this == state.Current.BinaryClassInfo.DataExtensionProperty);
 
-            if (RuntimeClassInfo.ElementType == JsonClassInfo.ObjectType && reader.TokenType == JsonTokenType.Null)
-            {
-                value = null;
-                return true;
-            }
+            //if (RuntimeClassInfo.ElementType == BinaryClassInfo.ObjectType && reader.TokenType == BinaryTokenType.Null)
+            //{
+            //    value = null;
+            //    return true;
+            //}
 
-            JsonConverter<JsonElement> converter = (JsonConverter<JsonElement>)Options.GetConverter(typeof(JsonElement));
-            if (!converter.TryRead(ref reader, typeof(JsonElement), Options, ref state, out JsonElement jsonElement))
-            {
-                // JsonElement is a struct that must be read in full.
-                value = null;
-                return false;
-            }
+            //BinaryConverter<BinaryElement> converter = (BinaryConverter<BinaryElement>)Options.GetConverter(typeof(BinaryElement));
+            //if (!converter.TryRead(ref reader, typeof(BinaryElement), Options, ref state, out BinaryElement BinaryElement))
+            //{
+            //    // BinaryElement is a struct that must be read in full.
+            //    value = null;
+            //    return false;
+            //}
 
-            value = jsonElement;
+            //value = binaryElement;
+            value = null;
             return true;
         }
 
@@ -328,7 +257,7 @@ namespace Xfrogcn.BinaryFormatter
 
         public MemberInfo? MemberInfo { get; private set; }
 
-        public JsonClassInfo RuntimeClassInfo
+        public BinaryClassInfo RuntimeClassInfo
         {
             get
             {
@@ -343,12 +272,11 @@ namespace Xfrogcn.BinaryFormatter
 
         public Type? RuntimePropertyType { get; private set; }
 
-        public abstract void SetExtensionDictionaryAsObject(object obj, object? extensionDict);
+        public abstract void SetExtensionDictionaryAsObject(object obj, object extensionDict);
 
         public bool ShouldSerialize { get; private set; }
         public bool ShouldDeserialize { get; private set; }
         public bool IsIgnored { get; private set; }
 
-        public JsonNumberHandling? NumberHandling { get; private set; }
     }
 }

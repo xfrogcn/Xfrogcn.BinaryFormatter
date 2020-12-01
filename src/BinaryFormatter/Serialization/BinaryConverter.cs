@@ -2,9 +2,9 @@
 
 namespace Xfrogcn.BinaryFormatter.Serialization
 {
-    public abstract partial class JsonConverter
+    public abstract partial class BinaryConverter
     {
-        internal JsonConverter() { }
+        internal BinaryConverter() { }
 
         public abstract bool CanConvert(Type typeToConvert);
     }

@@ -3,7 +3,7 @@ using System.Buffers;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Xfrogcn.BinaryFormatter.Writer
+namespace Xfrogcn.BinaryFormatter
 {
     public sealed partial class BinaryWriter : IDisposable, IAsyncDisposable
     {
