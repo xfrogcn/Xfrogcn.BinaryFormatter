@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Xfrogcn.BinaryFormatter;
 
@@ -10,6 +11,8 @@ namespace System
 {
     public static class TypeExtensions
     {
+        private static readonly Type s_nullableType = typeof(Nullable<>);
+
         public static Type GetSerializeType([NotNull] this Type type)
         {
             if(type == null)
@@ -96,5 +99,13 @@ namespace System
             }
             return members.ToArray();
         }
+
+        /// <summary>
+        /// Returns <see langword="true" /> when the given type is of type <see cref="Nullable{T}"/>.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullableOfT(this Type type) =>
+            type.IsGenericType && type.GetGenericTypeDefinition() == s_nullableType;
+
     }
 }
