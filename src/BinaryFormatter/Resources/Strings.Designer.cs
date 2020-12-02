@@ -133,6 +133,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 The &apos;IBufferWriter&apos; could not provide an output buffer that is large enough to continue writing. 的本地化字符串。
+        /// </summary>
+        internal static string FailedToGetLargerSpan {
+            get {
+                return ResourceManager.GetString("FailedToGetLargerSpan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The ignore condition &apos;BinaryIgnoreCondition.WhenWritingNull&apos; is not valid on value-type member &apos;{0}&apos; on type &apos;{1}&apos;. Consider using &apos;BinaryIgnoreCondition.WhenWritingDefault&apos;. 的本地化字符串。
         /// </summary>
         internal static string IgnoreConditionOnValueTypeInvalid {

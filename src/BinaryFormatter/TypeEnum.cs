@@ -28,7 +28,7 @@
         Plane = 20,
         Quaternion = 21,
         IntPtr = 22,
-
+        Guid = 23,
         DateTime = 30,
         DateTimeOffset = 31,
         TimeZoneInfo = 32,

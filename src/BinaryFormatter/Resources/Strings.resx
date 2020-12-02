@@ -141,6 +141,9 @@
   <data name="ExtensionDataCannotBindToCtorParam" xml:space="preserve">
     <value>The extension data property '{0}' on type '{1}' cannot bind with a parameter in constructor '{2}'.</value>
   </data>
+  <data name="FailedToGetLargerSpan" xml:space="preserve">
+    <value>The 'IBufferWriter' could not provide an output buffer that is large enough to continue writing.</value>
+  </data>
   <data name="IgnoreConditionOnValueTypeInvalid" xml:space="preserve">
     <value>The ignore condition 'BinaryIgnoreCondition.WhenWritingNull' is not valid on value-type member '{0}' on type '{1}'. Consider using 'BinaryIgnoreCondition.WhenWritingDefault'.</value>
   </data>
