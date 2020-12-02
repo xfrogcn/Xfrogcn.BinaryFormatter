@@ -23,9 +23,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         /// </summary>
         /// <param name="typeToConvert">待处理的类型</param>
         /// <returns>类型转换器</returns>
-        //public virtual BinaryConverter CreateConverter(Type typeToConvert)
-        //{
-        //    return null;
-        //}
+        public virtual BinaryConverter CreateConverter(Type typeToConvert)
+        {
+            return null;
+        }
     }
 }

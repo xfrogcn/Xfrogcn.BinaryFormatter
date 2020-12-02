@@ -20,6 +20,8 @@ namespace Xfrogcn.BinaryFormatter
         // Options can be referenced here since all BinaryPropertyInfos originate from a BinaryClassInfo that is cached on BinarySerializerOptions.
         public BinarySerializerOptions Options { get; set; } // initialized in Init method
 
+        public TypeMap TypeMap { get; set; }
+
         // The name of the parameter as UTF-8 bytes.
         public byte[] NameAsUtf8Bytes { get; private set; } = null!;
 
@@ -47,11 +49,13 @@ namespace Xfrogcn.BinaryFormatter
         public bool ShouldDeserialize { get; private set; }
 
         public virtual void Initialize(
+            TypeMap typeMap,
             Type runtimePropertyType,
             ParameterInfo parameterInfo,
             BinaryPropertyInfo matchingProperty,
             BinarySerializerOptions options)
         {
+            TypeMap = typeMap;
             RuntimePropertyType = runtimePropertyType;
             Position = parameterInfo.Position;
             NameAsUtf8Bytes = matchingProperty.NameAsUtf8Bytes!;
@@ -69,6 +73,7 @@ namespace Xfrogcn.BinaryFormatter
             {
                 RuntimePropertyType = typeof(sbyte),
                 NameAsUtf8Bytes = matchingProperty.NameAsUtf8Bytes!,
+                TypeMap = matchingProperty.TypeMap
             };
         }
     }

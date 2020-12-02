@@ -13,6 +13,16 @@ namespace System
     {
         private static readonly Type s_nullableType = typeof(Nullable<>);
 
+        public static bool IsNullableValueType(this Type type)
+        {
+            return Nullable.GetUnderlyingType(type) != null;
+        }
+
+        public static bool IsNullableType(this Type type)
+        {
+            return !type.IsValueType || IsNullableValueType(type);
+        }
+
         public static Type GetSerializeType([NotNull] this Type type)
         {
             if(type == null)
@@ -107,5 +117,14 @@ namespace System
         public static bool IsNullableOfT(this Type type) =>
             type.IsGenericType && type.GetGenericTypeDefinition() == s_nullableType;
 
+        public static bool IsAssignableFromInternal(this Type type, Type from)
+        {
+            if (IsNullableValueType(from) && type.IsInterface)
+            {
+                return type.IsAssignableFrom(from.GetGenericArguments()[0]);
+            }
+
+            return type.IsAssignableFrom(from);
+        }
     }
 }

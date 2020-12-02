@@ -15,7 +15,7 @@ namespace Xfrogcn.BinaryFormatter
         private int _defaultBufferSize = BufferSizeDefault;
         internal static readonly BinarySerializerOptions s_defaultOptions = new BinarySerializerOptions();
 
-        private readonly ConcurrentDictionary<Type, TypeMap> _typeMapCache = new ConcurrentDictionary<Type, TypeMap>();
+        private readonly TypeMap _typeMap = new TypeMap();
         private readonly ConcurrentDictionary<Type, BinaryClassInfo> _classes = new ConcurrentDictionary<Type, BinaryClassInfo>();
 
         private MemberAccessor _memberAccessorStrategy;
@@ -61,10 +61,15 @@ namespace Xfrogcn.BinaryFormatter
             // https://github.com/dotnet/runtime/issues/32357
             if (!_classes.TryGetValue(type, out BinaryClassInfo result))
             {
-                result = _classes.GetOrAdd(type, new BinaryClassInfo(type, this));
+                result = _classes.GetOrAdd(type, new BinaryClassInfo(type, _typeMap, this));
             }
 
             return result;
+        }
+
+        internal bool TypeIsCached(Type type)
+        {
+            return _classes.ContainsKey(type);
         }
 
         public int DefaultBufferSize
@@ -95,12 +100,12 @@ namespace Xfrogcn.BinaryFormatter
             }
             _haveTypesBeenCreated = true;
 
-            var map = _typeMapCache.GetOrAdd(type, (t) =>
-            {
-                return MetadataProvider.GetTypeMap(t);
-            });
+            //var map = _typeMapCache.GetOrAdd(type, (t) =>
+            //{
+            //    return MetadataProvider.GetTypeMap(t);
+            //});
             // 需要拷贝，因为在序列化过程中会动态插入实际类型
-            var typeMap = new TypeMap(map);
+            var typeMap = new TypeMap();
 
             return new BinarySerializationContext(typeMap, MetadataProvider);
         }

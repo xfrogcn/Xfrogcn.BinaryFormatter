@@ -18,6 +18,7 @@ namespace Xfrogcn.BinaryFormatter
 
       
         public override void Initialize(
+            TypeMap typeMap,
            Type parentClassType,
            Type declaredPropertyType,
            Type runtimePropertyType,
@@ -28,6 +29,7 @@ namespace Xfrogcn.BinaryFormatter
            BinarySerializerOptions options)
         {
             base.Initialize(
+                typeMap,
                 parentClassType,
                 declaredPropertyType,
                 runtimePropertyType,

@@ -1,16 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Xfrogcn.BinaryFormatter.Resources;
+using Xfrogcn.BinaryFormatter.Serialization;
 
 namespace Xfrogcn.BinaryFormatter
 {
     internal static partial class ThrowHelper
     {
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_CannotSerializeInvalidType(Type type, Type parentClassType, MemberInfo memberInfo)
+        {
+            if (parentClassType == null)
+            {
+                Debug.Assert(memberInfo == null);
+                throw new InvalidOperationException(string.Format(Strings.CannotSerializeInvalidType, type));
+            }
+
+            Debug.Assert(memberInfo != null);
+            throw new InvalidOperationException(string.Format(Strings.CannotSerializeInvalidMember, type, memberInfo.Name, parentClassType));
+        }
+
+
+
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void ThrowInvalidOperationException_SerializerPropertyNameNull(Type parentType, BinaryPropertyInfo binaryPropertyInfo)
@@ -191,5 +206,74 @@ namespace Xfrogcn.BinaryFormatter
             throw new NotSupportedException(message, ex);
         }
 
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowNotSupportedException_SerializationNotSupported(Type propertyType)
+        {
+            throw new NotSupportedException(string.Format(Strings.SerializationNotSupportedType, propertyType));
+        }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_SerializationDuplicateAttribute(Type attribute, Type classType, MemberInfo? memberInfo)
+        {
+            string location = classType.ToString();
+            if (memberInfo != null)
+            {
+                location += $".{memberInfo.Name}";
+            }
+
+            throw new InvalidOperationException(string.Format(Strings.SerializationDuplicateAttribute, attribute, location));
+        }
+
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_ConverterCanConvertNullableRedundant(Type runtimePropertyType, BinaryConverter binaryConverter)
+        {
+            throw new InvalidOperationException(string.Format(Strings.ConverterCanConvertNullableRedundant, binaryConverter.GetType(), binaryConverter.TypeToConvert, runtimePropertyType));
+        }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_SerializationConverterOnAttributeNotCompatible(Type classTypeAttributeIsOn, MemberInfo? memberInfo, Type typeToConvert)
+        {
+            string location = classTypeAttributeIsOn.ToString();
+
+            if (memberInfo != null)
+            {
+                location += $".{memberInfo.Name}";
+            }
+
+            throw new InvalidOperationException(string.Format(Strings.SerializationConverterOnAttributeNotCompatible, location, typeToConvert));
+        }
+
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_SerializationConverterOnAttributeInvalid(Type classType, MemberInfo? memberInfo)
+        {
+            string location = classType.ToString();
+            if (memberInfo != null)
+            {
+                location += $".{memberInfo.Name}";
+            }
+
+            throw new InvalidOperationException(string.Format(Strings.SerializationConverterOnAttributeInvalid, location));
+        }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_SerializationConverterNotCompatible(Type converterType, Type type)
+        {
+            throw new InvalidOperationException(string.Format(Strings.SerializationConverterNotCompatible, converterType, type));
+        }
+
+
+        [DoesNotReturn]
+        public static void ThrowInvalidOperationException_SerializerConverterFactoryReturnsNull(Type converterType)
+        {
+            throw new InvalidOperationException(string.Format(Strings.SerializerConverterFactoryReturnsNull, converterType));
+        }
     }
 }

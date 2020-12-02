@@ -12,12 +12,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         public T TypedDefaultValue { get; private set; } = default!;
 
         public override void Initialize(
+            TypeMap typeMap,
             Type runtimePropertyType,
             ParameterInfo parameterInfo,
             BinaryPropertyInfo matchingProperty,
             BinarySerializerOptions options)
         {
             base.Initialize(
+                typeMap,
                 runtimePropertyType,
                 parameterInfo,
                 matchingProperty,

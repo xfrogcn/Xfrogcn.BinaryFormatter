@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Text;
+using Xfrogcn.BinaryFormatter.Serialization;
 
 namespace Xfrogcn.BinaryFormatter
 {
@@ -13,19 +16,73 @@ namespace Xfrogcn.BinaryFormatter
         /// </summary>
         public static readonly Type ObjectType = typeof(object);
 
+        public  TypeMap TypeMap { get; private set; }
+
         public ClassType ClassType { get; private set; }
 
-        public BinaryClassInfo(Type type, BinarySerializerOptions options)
-        {
-            //Type = type;
-            //Options = options;
+        public delegate object ConstructorDelegate();
 
-            //JsonConverter converter = GetConverter(
-            //    Type,
-            //    parentClassType: null, // A ClassInfo never has a "parent" class.
-            //    memberInfo: null, // A ClassInfo never has a "parent" property.
-            //    out Type runtimeType,
-            //    Options);
+        public delegate T ParameterizedConstructorDelegate<T>(object[] arguments);
+
+        public delegate T ParameterizedConstructorDelegate<T, TArg0, TArg1, TArg2, TArg3>(TArg0 arg0, TArg1 arg1, TArg2 arg2, TArg3 arg3);
+
+        public ConstructorDelegate CreateObject { get; private set; }
+
+        public object CreateObjectWithArgs { get; set; }
+
+        // Add method delegate for non-generic Stack and Queue; and types that derive from them.
+        public object AddMethodDelegate { get; set; }
+
+   
+        public BinaryPropertyInfo DataExtensionProperty { get; private set; }
+
+        // If enumerable, the BinaryClassInfo for the element type.
+        private BinaryClassInfo _elementClassInfo;
+
+        /// <summary>
+        /// Return the BinaryClassInfo for the element type, or null if the type is not an enumerable or dictionary.
+        /// </summary>
+        /// <remarks>
+        /// This should not be called during warm-up (initial creation of BinaryClassInfos) to avoid recursive behavior
+        /// which could result in a StackOverflowException.
+        /// </remarks>
+        public BinaryClassInfo ElementClassInfo
+        {
+            get
+            {
+                if (_elementClassInfo == null && ElementType != null)
+                {
+                    Debug.Assert(ClassType == ClassType.Enumerable ||
+                        ClassType == ClassType.Dictionary);
+
+                    _elementClassInfo = Options.GetOrAddClass(ElementType);
+                }
+
+                return _elementClassInfo;
+            }
+        }
+
+        public Type ElementType { get; set; }
+
+        public BinarySerializerOptions Options { get; private set; }
+
+        public Type Type { get; private set; }
+
+      
+        public BinaryPropertyInfo PropertyInfoForClassInfo { get; private set; }
+
+        public BinaryClassInfo([NotNull] Type type, [NotNull]TypeMap typeMap, [NotNull] BinarySerializerOptions options)
+        {
+            TypeMap = typeMap;
+            Type = type;
+            Options = options;
+
+            BinaryConverter converter = GetConverter(
+                Type,
+                parentClassType: null, // A ClassInfo never has a "parent" class.
+                memberInfo: null, // A ClassInfo never has a "parent" property.
+                out Type runtimeType,
+                Options);
 
             //ClassType = converter.ClassType;
             //JsonNumberHandling? typeNumberHandling = GetNumberHandlingForType(Type);
@@ -160,6 +217,88 @@ namespace Xfrogcn.BinaryFormatter
             //        Debug.Fail($"Unexpected class type: {ClassType}");
             //        throw new InvalidOperationException();
             //}
+        }
+
+
+        // This method gets the runtime information for a given type or property.
+        // The runtime information consists of the following:
+        // - class type,
+        // - runtime type,
+        // - element type (if the type is a collection),
+        // - the converter (either native or custom), if one exists.
+        public static BinaryConverter GetConverter(
+            Type type,
+            Type parentClassType,
+            MemberInfo memberInfo,
+            out Type runtimeType,
+            BinarySerializerOptions options)
+        {
+            Debug.Assert(type != null);
+            ValidateType(type, parentClassType, memberInfo, options);
+
+            BinaryConverter converter = options.DetermineConverter(parentClassType, type, memberInfo);
+
+            // The runtimeType is the actual value being assigned to the property.
+            // There are three types to consider for the runtimeType:
+            // 1) The declared type (the actual property type).
+            // 2) The converter.TypeToConvert (the T value that the converter supports).
+            // 3) The converter.RuntimeType (used with interfaces such as IList).
+
+            Type converterRuntimeType = converter.RuntimeType;
+            if (type == converterRuntimeType)
+            {
+                runtimeType = type;
+            }
+            else
+            {
+                if (type.IsInterface)
+                {
+                    runtimeType = converterRuntimeType;
+                }
+                else if (converterRuntimeType.IsInterface)
+                {
+                    runtimeType = type;
+                }
+                else
+                {
+                    // Use the most derived version from the converter.RuntimeType or converter.TypeToConvert.
+                    if (type.IsAssignableFrom(converterRuntimeType))
+                    {
+                        runtimeType = converterRuntimeType;
+                    }
+                    else if (converterRuntimeType.IsAssignableFrom(type) || converter.TypeToConvert.IsAssignableFrom(type))
+                    {
+                        runtimeType = type;
+                    }
+                    else
+                    {
+                        runtimeType = default!;
+                        ThrowHelper.ThrowNotSupportedException_SerializationNotSupported(type);
+                    }
+                }
+            }
+
+            Debug.Assert(!IsInvalidForSerialization(runtimeType));
+
+            return converter;
+        }
+
+        private static void ValidateType(Type type, Type parentClassType, MemberInfo memberInfo, BinarySerializerOptions options)
+        {
+            if (!options.TypeIsCached(type) && IsInvalidForSerialization(type))
+            {
+                ThrowHelper.ThrowInvalidOperationException_CannotSerializeInvalidType(type, parentClassType, memberInfo);
+            }
+        }
+
+        private static bool IsInvalidForSerialization(Type type)
+        {
+            return type.IsPointer || IsByRefLike(type) || type.ContainsGenericParameters;
+        }
+
+        private static bool IsByRefLike(Type type)
+        {
+            return type.IsByRefLike;
         }
 
     }

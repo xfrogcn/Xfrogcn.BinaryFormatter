@@ -15,6 +15,8 @@ namespace Xfrogcn.BinaryFormatter
 
         public ClassType ClassType;
 
+        public TypeMap TypeMap { get; private set; }
+
         public abstract BinaryConverter ConverterBase { get; set; }
 
         public static BinaryPropertyInfo GetPropertyPlaceholder()
@@ -27,18 +29,20 @@ namespace Xfrogcn.BinaryFormatter
 
             info.NameAsString = string.Empty;
 
+
             return info;
         }
 
         // Create a property that is ignored at run-time. It uses the same type (typeof(sbyte)) to help
         // prevent issues with unsupported types and helps ensure we don't accidently (de)serialize it.
-        public static BinaryPropertyInfo CreateIgnoredPropertyPlaceholder(MemberInfo memberInfo, BinarySerializerOptions options)
+        public static BinaryPropertyInfo CreateIgnoredPropertyPlaceholder(TypeMap typeMap, MemberInfo memberInfo, BinarySerializerOptions options)
         {
             BinaryPropertyInfo binaryPropertyInfo = new BinaryPropertyInfo<sbyte>();
             binaryPropertyInfo.Options = options;
             binaryPropertyInfo.MemberInfo = memberInfo;
             binaryPropertyInfo.DeterminePropertyName();
             binaryPropertyInfo.IsIgnored = true;
+            binaryPropertyInfo.TypeMap = typeMap;
 
             Debug.Assert(!binaryPropertyInfo.ShouldDeserialize);
             Debug.Assert(!binaryPropertyInfo.ShouldSerialize);
@@ -181,6 +185,7 @@ namespace Xfrogcn.BinaryFormatter
         public bool HasSetter { get; set; }
 
         public virtual void Initialize(
+            TypeMap typeMap,
             Type parentClassType,
             Type declaredPropertyType,
             Type runtimePropertyType,
@@ -191,7 +196,7 @@ namespace Xfrogcn.BinaryFormatter
             BinarySerializerOptions options)
         {
             Debug.Assert(converter != null);
-
+            TypeMap = typeMap;
             ParentClassType = parentClassType;
             DeclaredPropertyType = declaredPropertyType;
             RuntimePropertyType = runtimePropertyType;

@@ -61,6 +61,33 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 The type &apos;{0}&apos; of property &apos;{1}&apos; on type &apos;{2}&apos; is invalid for serialization or deserialization because it is a pointer type, is a ref struct, or contains generic parameters that have not been replaced by specific types. 的本地化字符串。
+        /// </summary>
+        internal static string CannotSerializeInvalidMember {
+            get {
+                return ResourceManager.GetString("CannotSerializeInvalidMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The type &apos;{0}&apos; is invalid for serialization or deserialization because it is a pointer type, is a ref struct, or contains generic parameters that have not been replaced by specific types. 的本地化字符串。
+        /// </summary>
+        internal static string CannotSerializeInvalidType {
+            get {
+                return ResourceManager.GetString("CannotSerializeInvalidType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The converter &apos;{0}&apos; handles type &apos;{1}&apos; but is being asked to convert type &apos;{2}&apos;. Either create a separate converter for type &apos;{2}&apos; or change the converter&apos;s &apos;CanConvert&apos; method to only return &apos;true&apos; for a single type. 的本地化字符串。
+        /// </summary>
+        internal static string ConverterCanConvertNullableRedundant {
+            get {
+                return ResourceManager.GetString("ConverterCanConvertNullableRedundant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 &apos;IgnoreNullValues&apos; and &apos;DefaultIgnoreCondition&apos; cannot both be set to non-default values. 的本地化字符串。
         /// </summary>
         internal static string DefaultIgnoreConditionAlreadySpecified {
@@ -97,11 +124,65 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 The converter &apos;{0}&apos; is not compatible with the type &apos;{1}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationConverterNotCompatible {
+            get {
+                return ResourceManager.GetString("SerializationConverterNotCompatible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The converter specified on &apos;{0}&apos; does not derive from BinaryConverter or have a public parameterless constructor. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationConverterOnAttributeInvalid {
+            get {
+                return ResourceManager.GetString("SerializationConverterOnAttributeInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The converter specified on &apos;{0}&apos; is not compatible with the type &apos;{1}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationConverterOnAttributeNotCompatible {
+            get {
+                return ResourceManager.GetString("SerializationConverterOnAttributeNotCompatible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The attribute &apos;{0}&apos; cannot exist more than once on &apos;{1}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationDuplicateAttribute {
+            get {
+                return ResourceManager.GetString("SerializationDuplicateAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The unsupported member type is located on type &apos;{0}&apos;. 的本地化字符串。
         /// </summary>
         internal static string SerializationNotSupportedParentType {
             get {
                 return ResourceManager.GetString("SerializationNotSupportedParentType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The type &apos;{0}&apos; is not supported. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationNotSupportedType {
+            get {
+                return ResourceManager.GetString("SerializationNotSupportedType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The converter &apos;{0}&apos; cannot return a null value. 的本地化字符串。
+        /// </summary>
+        internal static string SerializerConverterFactoryReturnsNull {
+            get {
+                return ResourceManager.GetString("SerializerConverterFactoryReturnsNull", resourceCulture);
             }
         }
         
