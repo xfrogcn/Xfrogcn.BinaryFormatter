@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BinaryIncludeOnNonPublicInvalid" xml:space="preserve">
+    <value>The non-public property '{0}' on type '{1}' is annotated with 'BinaryIncludeAttribute' which is invalid.</value>
+  </data>
   <data name="CannotSerializeInvalidMember" xml:space="preserve">
     <value>The type '{0}' of property '{1}' on type '{2}' is invalid for serialization or deserialization because it is a pointer type, is a ref struct, or contains generic parameters that have not been replaced by specific types.</value>
   </data>
@@ -135,8 +138,14 @@
   <data name="DeserializeUnableToConvertValue" xml:space="preserve">
     <value>The Binary value could not be converted to {0}.</value>
   </data>
+  <data name="ExtensionDataCannotBindToCtorParam" xml:space="preserve">
+    <value>The extension data property '{0}' on type '{1}' cannot bind with a parameter in constructor '{2}'.</value>
+  </data>
   <data name="IgnoreConditionOnValueTypeInvalid" xml:space="preserve">
     <value>The ignore condition 'BinaryIgnoreCondition.WhenWritingNull' is not valid on value-type member '{0}' on type '{1}'. Consider using 'BinaryIgnoreCondition.WhenWritingDefault'.</value>
+  </data>
+  <data name="MultipleMembersBindWithConstructorParameter" xml:space="preserve">
+    <value>Members '{0}' and '{1}' on type '{2}' cannot both bind with parameter '{3}' in constructor '{4}' on deserialization.</value>
   </data>
   <data name="SerializationConverterNotCompatible" xml:space="preserve">
     <value>The converter '{0}' is not compatible with the type '{1}'.</value>
@@ -147,8 +156,14 @@
   <data name="SerializationConverterOnAttributeNotCompatible" xml:space="preserve">
     <value>The converter specified on '{0}' is not compatible with the type '{1}'.</value>
   </data>
+  <data name="SerializationDataExtensionPropertyInvalid" xml:space="preserve">
+    <value>The data extension property '{0}.{1}' does not match the required signature of IDictionary&lt;string, BinaryElement&gt; or IDictionary&lt;string, object&gt;.</value>
+  </data>
   <data name="SerializationDuplicateAttribute" xml:space="preserve">
     <value>The attribute '{0}' cannot exist more than once on '{1}'.</value>
+  </data>
+  <data name="SerializationDuplicateTypeAttribute" xml:space="preserve">
+    <value>The type '{0}' cannot have more than one property that has the attribute '{1}'.</value>
   </data>
   <data name="SerializationNotSupportedParentType" xml:space="preserve">
     <value>The unsupported member type is located on type '{0}'.</value>

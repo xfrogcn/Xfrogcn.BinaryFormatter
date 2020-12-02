@@ -2,18 +2,12 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using static Xfrogcn.BinaryFormatter.BinaryClassInfo;
 
 namespace Xfrogcn.BinaryFormatter.Serialization
 {
     internal abstract class MemberAccessor
     {
-        public delegate object ConstructorDelegate();
-
-        public delegate T ParameterizedConstructorDelegate<T>(object[] arguments);
-
-        public delegate T ParameterizedConstructorDelegate<T, TArg0, TArg1, TArg2, TArg3>(TArg0 arg0, TArg1 arg1, TArg2 arg2, TArg3 arg3);
-
-
         public abstract ConstructorDelegate CreateConstructor(Type classType);
 
         public abstract ParameterizedConstructorDelegate<T> CreateParameterizedConstructor<T>(ConstructorInfo constructor);

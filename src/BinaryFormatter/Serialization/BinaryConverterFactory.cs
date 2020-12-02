@@ -74,7 +74,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             ref BinaryReader reader,
             BinarySerializerOptions options,
             ref ReadStack state,
-            out object? value)
+            out object value)
         {
             Debug.Fail("We should never get here.");
 

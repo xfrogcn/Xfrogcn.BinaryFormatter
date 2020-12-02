@@ -13,7 +13,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             // Value types can never have a null except for Nullable<T>.
             if (value == null && IsValueType && Nullable.GetUnderlyingType(TypeToConvert) == null)
             {
-                ThrowHelper.ThrowJsonException_DeserializeUnableToConvertValue(TypeToConvert);
+                ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(TypeToConvert);
             }
 
             T actualValue = (T)value!;

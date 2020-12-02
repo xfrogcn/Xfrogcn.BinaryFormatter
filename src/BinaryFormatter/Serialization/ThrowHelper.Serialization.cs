@@ -43,7 +43,7 @@ namespace Xfrogcn.BinaryFormatter
 
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void ThrowJsonException_DeserializeUnableToConvertValue(Type propertyType)
+        public static void ThrowBinaryException_DeserializeUnableToConvertValue(Type propertyType)
         {
             var ex = new BinaryException(string.Format(Strings.DeserializeUnableToConvertValue, propertyType));
             ex.AppendPathInformation = true;
@@ -215,7 +215,7 @@ namespace Xfrogcn.BinaryFormatter
 
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void ThrowInvalidOperationException_SerializationDuplicateAttribute(Type attribute, Type classType, MemberInfo? memberInfo)
+        public static void ThrowInvalidOperationException_SerializationDuplicateAttribute(Type attribute, Type classType, MemberInfo memberInfo)
         {
             string location = classType.ToString();
             if (memberInfo != null)
@@ -236,7 +236,7 @@ namespace Xfrogcn.BinaryFormatter
 
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void ThrowInvalidOperationException_SerializationConverterOnAttributeNotCompatible(Type classTypeAttributeIsOn, MemberInfo? memberInfo, Type typeToConvert)
+        public static void ThrowInvalidOperationException_SerializationConverterOnAttributeNotCompatible(Type classTypeAttributeIsOn, MemberInfo memberInfo, Type typeToConvert)
         {
             string location = classTypeAttributeIsOn.ToString();
 
@@ -251,7 +251,7 @@ namespace Xfrogcn.BinaryFormatter
 
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void ThrowInvalidOperationException_SerializationConverterOnAttributeInvalid(Type classType, MemberInfo? memberInfo)
+        public static void ThrowInvalidOperationException_SerializationConverterOnAttributeInvalid(Type classType, MemberInfo memberInfo)
         {
             string location = classType.ToString();
             if (memberInfo != null)
@@ -274,6 +274,63 @@ namespace Xfrogcn.BinaryFormatter
         public static void ThrowInvalidOperationException_SerializerConverterFactoryReturnsNull(Type converterType)
         {
             throw new InvalidOperationException(string.Format(Strings.SerializerConverterFactoryReturnsNull, converterType));
+        }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_BinaryIncludeOnNonPublicInvalid(MemberInfo memberInfo, Type parentType)
+        {
+            throw new InvalidOperationException(string.Format(Strings.BinaryIncludeOnNonPublicInvalid, memberInfo.Name, parentType));
+        }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_SerializationDataExtensionPropertyInvalid(Type type, BinaryPropertyInfo binaryPropertyInfo)
+        {
+            throw new InvalidOperationException(string.Format(Strings.SerializationDataExtensionPropertyInvalid, type, binaryPropertyInfo.MemberInfo?.Name));
+        }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_SerializationDuplicateTypeAttribute(Type classType, Type attribute)
+        {
+            throw new InvalidOperationException(string.Format(Strings.SerializationDuplicateTypeAttribute, classType, attribute));
+        }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_MultiplePropertiesBindToConstructorParameters(
+            Type parentType,
+            string parameterName,
+            string firstMatchName,
+            string secondMatchName,
+            ConstructorInfo constructorInfo)
+        {
+            throw new InvalidOperationException(
+                string.Format(
+                    Strings.MultipleMembersBindWithConstructorParameter,
+                    firstMatchName,
+                    secondMatchName,
+                    parentType,
+                    parameterName,
+                    constructorInfo));
+        }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_SerializerPropertyNameConflict(Type type, BinaryPropertyInfo binaryPropertyInfo)
+        {
+            throw new InvalidOperationException(string.Format(Strings.SerializerPropertyNameConflict, type, binaryPropertyInfo.MemberInfo?.Name));
+        }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_ExtensionDataCannotBindToCtorParam(
+            MemberInfo memberInfo,
+            Type classType,
+            ConstructorInfo constructorInfo)
+        {
+            throw new InvalidOperationException(string.Format(Strings.ExtensionDataCannotBindToCtorParam, memberInfo, classType, constructorInfo));
         }
     }
 }

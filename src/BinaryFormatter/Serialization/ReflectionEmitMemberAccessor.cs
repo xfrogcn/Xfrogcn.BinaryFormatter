@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using static Xfrogcn.BinaryFormatter.BinaryClassInfo;
 
 namespace Xfrogcn.BinaryFormatter.Serialization
 {

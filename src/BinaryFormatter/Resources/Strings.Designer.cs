@@ -61,6 +61,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 The non-public property &apos;{0}&apos; on type &apos;{1}&apos; is annotated with &apos;BinaryIncludeAttribute&apos; which is invalid. 的本地化字符串。
+        /// </summary>
+        internal static string BinaryIncludeOnNonPublicInvalid {
+            get {
+                return ResourceManager.GetString("BinaryIncludeOnNonPublicInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The type &apos;{0}&apos; of property &apos;{1}&apos; on type &apos;{2}&apos; is invalid for serialization or deserialization because it is a pointer type, is a ref struct, or contains generic parameters that have not been replaced by specific types. 的本地化字符串。
         /// </summary>
         internal static string CannotSerializeInvalidMember {
@@ -115,11 +124,29 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 The extension data property &apos;{0}&apos; on type &apos;{1}&apos; cannot bind with a parameter in constructor &apos;{2}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string ExtensionDataCannotBindToCtorParam {
+            get {
+                return ResourceManager.GetString("ExtensionDataCannotBindToCtorParam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The ignore condition &apos;BinaryIgnoreCondition.WhenWritingNull&apos; is not valid on value-type member &apos;{0}&apos; on type &apos;{1}&apos;. Consider using &apos;BinaryIgnoreCondition.WhenWritingDefault&apos;. 的本地化字符串。
         /// </summary>
         internal static string IgnoreConditionOnValueTypeInvalid {
             get {
                 return ResourceManager.GetString("IgnoreConditionOnValueTypeInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Members &apos;{0}&apos; and &apos;{1}&apos; on type &apos;{2}&apos; cannot both bind with parameter &apos;{3}&apos; in constructor &apos;{4}&apos; on deserialization. 的本地化字符串。
+        /// </summary>
+        internal static string MultipleMembersBindWithConstructorParameter {
+            get {
+                return ResourceManager.GetString("MultipleMembersBindWithConstructorParameter", resourceCulture);
             }
         }
         
@@ -151,11 +178,29 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 The data extension property &apos;{0}.{1}&apos; does not match the required signature of IDictionary&lt;string, BinaryElement&gt; or IDictionary&lt;string, object&gt;. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationDataExtensionPropertyInvalid {
+            get {
+                return ResourceManager.GetString("SerializationDataExtensionPropertyInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The attribute &apos;{0}&apos; cannot exist more than once on &apos;{1}&apos;. 的本地化字符串。
         /// </summary>
         internal static string SerializationDuplicateAttribute {
             get {
                 return ResourceManager.GetString("SerializationDuplicateAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The type &apos;{0}&apos; cannot have more than one property that has the attribute &apos;{1}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationDuplicateTypeAttribute {
+            get {
+                return ResourceManager.GetString("SerializationDuplicateTypeAttribute", resourceCulture);
             }
         }
         

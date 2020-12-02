@@ -32,7 +32,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         internal abstract BinaryParameterInfo CreateBinaryParameterInfo();
 
-        internal abstract Type? ElementType { get; }
+        internal abstract Type ElementType { get; }
 
         /// <summary>
         /// Cached value of TypeToConvert.IsValueType, which is an expensive call.

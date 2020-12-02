@@ -33,7 +33,7 @@ namespace Xfrogcn.BinaryFormatter
             _message = message;
         }
 
-        public BinaryException(string? message) : base(message)
+        public BinaryException(string message) : base(message)
         {
             _message = message;
         }
@@ -74,7 +74,7 @@ namespace Xfrogcn.BinaryFormatter
             }
         }
 
-        internal void SetMessage(string? message)
+        internal void SetMessage(string message)
         {
             _message = message;
         }

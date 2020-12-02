@@ -26,8 +26,9 @@ namespace Xfrogcn.BinaryFormatter
         private bool _ignoreNullValues;
         private bool _ignoreReadOnlyProperties;
         private bool _ignoreReadonlyFields;
+        private bool _propertyNameCaseInsensitive;
+        private bool _includeFields;
 
-       
         public IMetadataProvider MetadataProvider { get; }
 
         private MetadataGetterList _metadataGetterList = null;
@@ -232,6 +233,39 @@ namespace Xfrogcn.BinaryFormatter
                 }
 
                 _ignoreNullValues = value;
+            }
+        }
+
+        public bool PropertyNameCaseInsensitive
+        {
+            get
+            {
+                return _propertyNameCaseInsensitive;
+            }
+            set
+            {
+                VerifyMutable();
+                _propertyNameCaseInsensitive = value;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether fields are handled serialization and deserialization.
+        /// The default value is false.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if this property is set after serialization or deserialization has occurred.
+        /// </exception>
+        public bool IncludeFields
+        {
+            get
+            {
+                return _includeFields;
+            }
+            set
+            {
+                VerifyMutable();
+                _includeFields = value;
             }
         }
 
