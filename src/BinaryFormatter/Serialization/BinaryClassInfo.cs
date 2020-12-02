@@ -85,7 +85,6 @@ namespace Xfrogcn.BinaryFormatter
                 Options);
 
             ClassType = converter.ClassType;
-            //JsonNumberHandling? typeNumberHandling = GetNumberHandlingForType(Type);
 
             PropertyInfoForClassInfo = CreatePropertyInfoForClassInfo(TypeMap, Type, runtimeType, converter, Options);
 
