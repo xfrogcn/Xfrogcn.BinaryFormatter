@@ -12,7 +12,7 @@ namespace Xfrogcn.BinaryFormatter
         internal string _message;
 
 
-        public BinaryException(string message, string path, long bytePosition, Exception innerException) : base(message, innerException)
+        public BinaryException(string message, string path, long? bytePosition, Exception innerException) : base(message, innerException)
         {
             _message = message;
             BytePosition = bytePosition;
@@ -20,7 +20,7 @@ namespace Xfrogcn.BinaryFormatter
         }
 
 
-        public BinaryException(string message, string path, long bytePosition) : base(message)
+        public BinaryException(string message, string path, long? bytePosition) : base(message)
         {
             _message = message;
             BytePosition = bytePosition;

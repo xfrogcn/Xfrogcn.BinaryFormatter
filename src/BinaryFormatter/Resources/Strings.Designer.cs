@@ -79,11 +79,29 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 The Binary value could not be converted to {0}. 的本地化字符串。
+        /// </summary>
+        internal static string DeserializeUnableToConvertValue {
+            get {
+                return ResourceManager.GetString("DeserializeUnableToConvertValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The ignore condition &apos;BinaryIgnoreCondition.WhenWritingNull&apos; is not valid on value-type member &apos;{0}&apos; on type &apos;{1}&apos;. Consider using &apos;BinaryIgnoreCondition.WhenWritingDefault&apos;. 的本地化字符串。
         /// </summary>
         internal static string IgnoreConditionOnValueTypeInvalid {
             get {
                 return ResourceManager.GetString("IgnoreConditionOnValueTypeInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The unsupported member type is located on type &apos;{0}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationNotSupportedParentType {
+            get {
+                return ResourceManager.GetString("SerializationNotSupportedParentType", resourceCulture);
             }
         }
         
@@ -102,6 +120,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         internal static string SerializerPropertyNameNull {
             get {
                 return ResourceManager.GetString("SerializerPropertyNameNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The object or value could not be serialized. 的本地化字符串。
+        /// </summary>
+        internal static string SerializeUnableToSerialize {
+            get {
+                return ResourceManager.GetString("SerializeUnableToSerialize", resourceCulture);
             }
         }
     }

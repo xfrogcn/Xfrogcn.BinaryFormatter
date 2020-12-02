@@ -123,13 +123,22 @@
   <data name="DefaultIgnoreConditionInvalid" xml:space="preserve">
     <value>The value cannot be 'BinaryIgnoreCondition.Always'.</value>
   </data>
+  <data name="DeserializeUnableToConvertValue" xml:space="preserve">
+    <value>The Binary value could not be converted to {0}.</value>
+  </data>
   <data name="IgnoreConditionOnValueTypeInvalid" xml:space="preserve">
     <value>The ignore condition 'BinaryIgnoreCondition.WhenWritingNull' is not valid on value-type member '{0}' on type '{1}'. Consider using 'BinaryIgnoreCondition.WhenWritingDefault'.</value>
+  </data>
+  <data name="SerializationNotSupportedParentType" xml:space="preserve">
+    <value>The unsupported member type is located on type '{0}'.</value>
   </data>
   <data name="SerializerPropertyNameConflict" xml:space="preserve">
     <value>The Binary property name for '{0}.{1}' collides with another property.</value>
   </data>
   <data name="SerializerPropertyNameNull" xml:space="preserve">
     <value>The Binary property name for '{0}.{1}' cannot be null.</value>
+  </data>
+  <data name="SerializeUnableToSerialize" xml:space="preserve">
+    <value>The object or value could not be serialized.</value>
   </data>
 </root>

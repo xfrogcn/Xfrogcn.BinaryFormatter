@@ -125,10 +125,12 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         /// <param name="typeToConvert">The <see cref="Type"/> being converted.</param>
         /// <param name="options">The <see cref="BinarySerializerOptions"/> being used.</param>
         /// <returns>The value that was converted.</returns>
-//        public abstract T? Read(ref Utf8BinaryReader reader, Type typeToConvert, BinarySerializerOptions options);
+        public abstract T Read(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options);
 
-//        internal bool TryRead(ref Utf8BinaryReader reader, Type typeToConvert, BinarySerializerOptions options, ref ReadStack state, out T? value)
-//        {
+        internal bool TryRead(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options, ref ReadStack state, out T value)
+        {
+            value = default;
+            return true;
 //            if (ClassType == ClassType.Value)
 //            {
 //                // A value converter should never be within a continuation.
@@ -147,19 +149,19 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 //                }
 
 //#if !DEBUG
-//                // For performance, only perform validation on internal converters on debug builds.
-//                if (IsInternalConverter)
-//                {
-//                    if (state.Current.NumberHandling != null)
-//                    {
-//                        value = ReadNumberWithCustomHandling(ref reader, state.Current.NumberHandling.Value);
-//                    }
-//                    else
-//                    {
-//                        value = Read(ref reader, typeToConvert, options);
-//                    }
-//                }
-//                else
+//                        // For performance, only perform validation on internal converters on debug builds.
+//                        if (IsInternalConverter)
+//                        {
+//                            if (state.Current.NumberHandling != null)
+//                            {
+//                                value = ReadNumberWithCustomHandling(ref reader, state.Current.NumberHandling.Value);
+//                            }
+//                            else
+//                            {
+//                                value = Read(ref reader, typeToConvert, options);
+//                            }
+//                        }
+//                        else
 //#endif
 //                {
 //                    BinaryTokenType originalPropertyTokenType = reader.TokenType;
@@ -206,26 +208,26 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 //            state.Push();
 
 //#if !DEBUG
-//            // For performance, only perform validation on internal converters on debug builds.
-//            if (IsInternalConverter)
-//            {
-//                if (reader.TokenType == BinaryTokenType.Null && !HandleNullOnRead && !wasContinuation)
-//                {
-//                    if (!CanBeNull)
+//                    // For performance, only perform validation on internal converters on debug builds.
+//                    if (IsInternalConverter)
 //                    {
-//                        ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(TypeToConvert);
-//                    }
+//                        if (reader.TokenType == BinaryTokenType.Null && !HandleNullOnRead && !wasContinuation)
+//                        {
+//                            if (!CanBeNull)
+//                            {
+//                                ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(TypeToConvert);
+//                            }
 
-//                    // For perf and converter simplicity, handle null here instead of forwarding to the converter.
-//                    value = default;
-//                    success = true;
-//                }
-//                else
-//                {
-//                    success = OnTryRead(ref reader, typeToConvert, options, ref state, out value);
-//                }
-//            }
-//            else
+//                            // For perf and converter simplicity, handle null here instead of forwarding to the converter.
+//                            value = default;
+//                            success = true;
+//                        }
+//                        else
+//                        {
+//                            success = OnTryRead(ref reader, typeToConvert, options, ref state, out value);
+//                        }
+//                    }
+//                    else
 //#endif
 //            {
 //                if (!wasContinuation)
@@ -272,14 +274,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
 //            state.Pop(success);
 //            return success;
-//        }
+        }
 
-//        internal override sealed bool TryReadAsObject(ref Utf8BinaryReader reader, BinarySerializerOptions options, ref ReadStack state, out object? value)
-//        {
-//            bool success = TryRead(ref reader, TypeToConvert, options, ref state, out T? typedValue);
-//            value = typedValue;
-//            return success;
-//        }
+        internal override sealed bool TryReadAsObject(ref BinaryReader reader, BinarySerializerOptions options, ref ReadStack state, out object value)
+        {
+            bool success = TryRead(ref reader, TypeToConvert, options, ref state, out T typedValue);
+            value = typedValue;
+            return success;
+        }
 
         internal bool TryWrite(BinaryWriter writer, in T value, BinarySerializerOptions options, ref WriteStack state)
         {

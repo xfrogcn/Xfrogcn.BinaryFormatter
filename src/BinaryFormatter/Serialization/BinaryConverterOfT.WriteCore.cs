@@ -30,14 +30,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             {
                 return TryWrite(writer, value, options, ref state);
             }
-            catch (InvalidOperationException ex) when (ex.Source == ThrowHelper.ExceptionSourceValueToRethrowAsJsonException)
+            catch (InvalidOperationException ex) when (ex.Source == ThrowHelper.ExceptionSourceValueToRethrowAsBinaryException)
             {
                 ThrowHelper.ReThrowWithPath(state, ex);
                 throw;
             }
-            catch (JsonException ex)
+            catch (BinaryException ex)
             {
-                ThrowHelper.AddJsonExceptionInformation(state, ex);
+                ThrowHelper.AddBinaryExceptionInformation(state, ex);
                 throw;
             }
             catch (NotSupportedException ex)

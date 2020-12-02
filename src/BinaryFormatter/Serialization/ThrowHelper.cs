@@ -8,6 +8,7 @@ namespace Xfrogcn.BinaryFormatter
 {
     internal static partial class ThrowHelper
     {
-        
+        public const string ExceptionSourceValueToRethrowAsBinaryException = "Xfrogcn.BinaryFormatter.Rethrowable";
+
     }
 }
