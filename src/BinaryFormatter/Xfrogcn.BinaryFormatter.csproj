@@ -8,10 +8,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Serialization\Converters\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Resources\Strings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

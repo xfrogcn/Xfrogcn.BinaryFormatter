@@ -24,5 +24,14 @@ namespace Xfrogcn.BinaryFormatter
             MemberInfo memberInfo = binaryPropertyInfo.MemberInfo!;
             throw new InvalidOperationException(string.Format(Strings.IgnoreConditionOnValueTypeInvalid, memberInfo.Name, memberInfo.DeclaringType));
         }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowJsonException_DeserializeUnableToConvertValue(Type propertyType)
+        {
+            var ex = new JsonException(SR.Format(SR.DeserializeUnableToConvertValue, propertyType));
+            ex.AppendPathInformation = true;
+            throw ex;
+        }
     }
 }
