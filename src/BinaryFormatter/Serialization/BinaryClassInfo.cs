@@ -20,6 +20,8 @@ namespace Xfrogcn.BinaryFormatter
 
         public ClassType ClassType { get; private set; }
 
+        internal ushort TypeSeq { get; set; }
+
         public delegate object ConstructorDelegate();
 
         public delegate T ParameterizedConstructorDelegate<T>(object[] arguments);

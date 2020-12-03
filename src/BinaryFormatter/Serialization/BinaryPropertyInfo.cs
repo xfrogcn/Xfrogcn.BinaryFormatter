@@ -15,6 +15,8 @@ namespace Xfrogcn.BinaryFormatter
 
         public ClassType ClassType;
 
+        internal ushort TypeSeq { get; set; }
+
         public TypeMap TypeMap { get; private set; }
 
         public abstract BinaryConverter ConverterBase { get; set; }
