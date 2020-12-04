@@ -2,19 +2,19 @@
 {
     public class BinaryTypeInfo
     {
-        public ushort Seq { get; internal set; }
+        internal ushort Seq { get;  set; }
 
-        public SerializeTypeEnum SerializeType { get; set; }
+        internal ClassType SerializeType { get; set; }
 
-        public bool IsGeneric { get; set; }
+        internal bool IsGeneric { get; set; }
 
-        public sbyte GenericArgumentCount { get; set; }
+        internal sbyte GenericArgumentCount { get; set; }
 
         public TypeEnum Type { get; set; }
         public string FullName { get; set; }
 
-        public ushort[] GenericArguments { get; set; }
+        internal ushort[] GenericArguments { get; set; }
 
-        public BinaryMemberInfo[] Members { get; set; }
+        //public BinaryMemberInfo[] Members { get; set; }
     }
 }

@@ -11,9 +11,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters.Value
             throw new NotImplementedException();
         }
 
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
+        {
+            typeInfo.Type = TypeEnum.Boolean;
+        }
+
         public override void Write(BinaryWriter writer, bool value, BinarySerializerOptions options)
         {
-            throw new NotImplementedException();
+            writer.WriteBooleanValue(value);
         }
     }
 }

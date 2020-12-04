@@ -54,7 +54,7 @@ namespace Xfrogcn.BinaryFormatter
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
-            info.AddValue("BytePositionInLine", BytePosition, typeof(long?));
+            info.AddValue("BytePosition", BytePosition, typeof(long?));
             info.AddValue("Path", Path, typeof(string));
             info.AddValue("ActualMessage", Message, typeof(string));
         }

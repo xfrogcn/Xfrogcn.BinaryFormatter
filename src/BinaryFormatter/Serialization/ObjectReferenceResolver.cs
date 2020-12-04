@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace Xfrogcn.BinaryFormatter.Serialization
+namespace Xfrogcn.BinaryFormatter
 {
     public class ObjectReferenceResolver
     {

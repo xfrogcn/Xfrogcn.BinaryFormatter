@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Xfrogcn.BinaryFormatter.Serialization
@@ -33,6 +34,31 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         internal abstract BinaryParameterInfo CreateBinaryParameterInfo();
 
         internal abstract Type ElementType { get; }
+
+        /// <summary>
+        /// 设置类型的元数据
+        /// </summary>
+        /// <param name="typeInfo">类型元数据</param>
+        /// <param name="typeMap">当前序列化的TypeMap</param>
+        /// <returns></returns>
+        public abstract void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap);
+
+        internal ushort GetTypeSeq(TypeMap typeMap)
+        {
+            Debug.Assert(RuntimeType != null);
+            Debug.Assert(typeMap != null);
+
+            bool exists = typeMap.TryAdd(RuntimeType, out BinaryTypeInfo ti);
+            if (!exists)
+            {
+                ti.IsGeneric = RuntimeType.IsGenericType;
+                ti.GenericArgumentCount = RuntimeType.GetGenericArgumentCount();
+                ti.GenericArguments = RuntimeType.GetGenericTypeSeqs(typeMap);
+                SetTypeMetadata(ti, typeMap);
+            }
+           
+            return ti.Seq;
+        }
 
         /// <summary>
         /// Cached value of TypeToConvert.IsValueType, which is an expensive call.

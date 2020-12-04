@@ -26,24 +26,24 @@ namespace Xfrogcn.BinaryFormatter
         {
             List<IMetadataGetter> list = new List<IMetadataGetter>();
             // 默认内置处理器
-            list.Add(new Metadata.Internal.NumbericGetter());
-            list.Add(new Metadata.Internal.DateTimeGetter());
-            list.Add(new Metadata.Internal.BaseTypeGetter());
-            list.Add(new Metadata.Internal.ValueTupleGetter());
-            list.Add(new Metadata.Internal.TupleGetter());
-            list.Add(new Metadata.Internal.NullableTypeGetter());
-            list.Add(new Metadata.Internal.ArrayTypeGetter());
-            list.Add(new Metadata.Internal.ListTypeGetter());
-            list.Add(new Metadata.Internal.DictionaryTypeGetter());
-            list.Add(new Metadata.Internal.ObjectTypeGetter());
+            //list.Add(new Metadata.Internal.NumbericGetter());
+            //list.Add(new Metadata.Internal.DateTimeGetter());
+            //list.Add(new Metadata.Internal.BaseTypeGetter());
+            //list.Add(new Metadata.Internal.ValueTupleGetter());
+            //list.Add(new Metadata.Internal.TupleGetter());
+            //list.Add(new Metadata.Internal.NullableTypeGetter());
+            //list.Add(new Metadata.Internal.ArrayTypeGetter());
+            //list.Add(new Metadata.Internal.ListTypeGetter());
+            //list.Add(new Metadata.Internal.DictionaryTypeGetter());
+            //list.Add(new Metadata.Internal.ObjectTypeGetter());
             return list;
         }
 
         internal void InitMetadataGetterList()
         {
             _list.InsertRange(0, DefaultMetadataGetter());
-            _list.Add(new Metadata.Internal.StructTypeGetter());
-            _list.Add(new Metadata.Internal.ClassTypeGetter());
+            //_list.Add(new Metadata.Internal.StructTypeGetter());
+            //_list.Add(new Metadata.Internal.ClassTypeGetter());
         }
 
         public IMetadataGetter this[int index]

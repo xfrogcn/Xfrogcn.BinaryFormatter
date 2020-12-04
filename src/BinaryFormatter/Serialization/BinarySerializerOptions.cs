@@ -37,7 +37,6 @@ namespace Xfrogcn.BinaryFormatter
         public BinarySerializerOptions()
         {
             _metadataGetterList = new MetadataGetterList(this);
-            MetadataProvider = new DefaultMetadataProvider(_metadataGetterList);
         }
 
         internal MemberAccessor MemberAccessorStrategy

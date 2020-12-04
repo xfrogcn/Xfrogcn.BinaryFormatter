@@ -64,7 +64,7 @@ namespace System
             return new Type[0];
         }
 
-        public static ushort[] GetGenericTypeSeqs([NotNull]this Type type, [NotNull] MetadataGetterContext context)
+        public static ushort[] GetGenericTypeSeqs([NotNull]this Type type, [NotNull] TypeMap typeMap)
         {
             if (!type.IsGenericType)
             {
@@ -72,7 +72,11 @@ namespace System
             }
 
             return type.GetGenericArguments()
-                .Select(t => context.GetTypeSeq(t, context))
+                .Select(t =>
+                {
+                    typeMap.TryAdd(t, out BinaryTypeInfo ti);
+                    return ti.Seq;
+                })
                 .ToArray();
         }
 

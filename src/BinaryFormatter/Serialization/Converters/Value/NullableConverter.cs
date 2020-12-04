@@ -17,6 +17,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             throw new NotImplementedException();
         }
 
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
+        {
+            
+        }
+
         public override void Write(BinaryWriter writer, T? value, BinarySerializerOptions options)
         {
             throw new NotImplementedException();

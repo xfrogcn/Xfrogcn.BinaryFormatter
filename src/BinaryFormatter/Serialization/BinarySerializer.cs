@@ -2,8 +2,9 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Xfrogcn.BinaryFormatter.Serialization;
 
-namespace Xfrogcn.BinaryFormatter.Serialization
+namespace Xfrogcn.BinaryFormatter
 {
     public static partial class BinarySerializer
     {
@@ -56,7 +57,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 options = BinarySerializerOptions.s_defaultOptions;
             }
 
-            using(var bufferWriter = new PooledByteBufferWriter(options.DefaultBufferSize))
+            const float FlushThreshold = .9f;
+
+            using (var bufferWriter = new PooledByteBufferWriter(options.DefaultBufferSize))
             {
                 using(var writer = new BinaryWriter(bufferWriter, options))
                 {
@@ -71,19 +74,36 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                         inputType = value!.GetType();
                     }
 
-                    // 获取类型元数据
-                    var context = options.GetSerializationContext(inputType);
+                    WriteStack state = default;
 
-                    // 写入序列化数据
-                    BinaryTypeInfo ti = context.Map.PrimaryTypeInfo;
-                    if(ti.SerializeType == SerializeTypeEnum.SingleValue)
+                    BinaryConverter converterBase = state.Initialize(inputType, options, true);
+
+                    bool isFinalBlock;
+                    do
                     {
-                        // 单值
-                    }
-                    else
-                    {
+                        state.FlushThreshold = (int)(bufferWriter.Capacity * FlushThreshold);
+
+                        isFinalBlock = WriteCore(converterBase, writer, value, options, ref state);
+
+                        await bufferWriter.WriteToStreamAsync(stream, cancellationToken);
+
+                        bufferWriter.Clear();
+
+                    } while (!isFinalBlock);
+
+                    //// 获取类型元数据
+                    //var context = options.GetSerializationContext(inputType);
+
+                    //// 写入序列化数据
+                    //BinaryTypeInfo ti = context.Map.PrimaryTypeInfo;
+                    //if(ti.SerializeType == SerializeTypeEnum.SingleValue)
+                    //{
+                    //    // 单值
+                    //}
+                    //else
+                    //{
                         
-                    }
+                    //}
 
                     // 写入类型元数据
 

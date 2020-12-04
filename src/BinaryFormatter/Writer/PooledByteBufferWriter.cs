@@ -160,5 +160,8 @@ namespace Xfrogcn.BinaryFormatter
             Debug.Assert(_rentedBuffer.Length - _index > 0);
             Debug.Assert(_rentedBuffer.Length - _index >= sizeHint);
         }
+
+
+       
     }
 }

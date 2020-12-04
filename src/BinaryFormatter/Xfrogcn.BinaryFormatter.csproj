@@ -4,6 +4,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Metadata\Internal\**" />
+    <EmbeddedResource Remove="Metadata\Internal\**" />
+    <None Remove="Metadata\Internal\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 

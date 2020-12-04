@@ -43,7 +43,6 @@ namespace Xfrogcn.BinaryFormatter
 
         public int CurrentDepth => _currentDepth;
 
-        private byte[] headerBytes = new byte[] { (byte)'X', (byte)'G', (byte)'B' };
         private byte[] versionBytes = new byte[] { 1 };
 
         public BinaryWriter(IBufferWriter<byte> bufferWriter, BinarySerializerOptions options)
@@ -54,8 +53,17 @@ namespace Xfrogcn.BinaryFormatter
 
         public void WriteHeader()
         {
-            _output.Write(headerBytes);
-            _output.Write(versionBytes);
+            int required = 4;
+            if (_memory.Length - BytesPending < required)
+            {
+                Grow(required);
+            }
+
+            Span<byte> span = _memory.Span;
+            span[BytesPending++] = (byte)'X';
+            span[BytesPending++] = (byte)'B';
+            span[BytesPending++] = (byte)'F';
+            span[BytesPending++] = 1;
         }
 
         public void Reset()
@@ -135,6 +143,46 @@ namespace Xfrogcn.BinaryFormatter
 
 
             _output = null;
+        }
+
+        internal void WriteTypeSeq(TypeEnum type)
+        {
+            if(_memory.Length - BytesPending < 2)
+            {
+                Grow(2);
+            }
+            byte[] typeBytes = BitConverter.GetBytes((ushort)TypeEnum.Boolean);
+            Span<byte> output = _memory.Span;
+            output[BytesPending++] = typeBytes[0];
+            output[BytesPending++] = typeBytes[1];
+        }
+
+        internal void WriteTypeSeqAndBytes(TypeEnum type, ReadOnlySpan<byte> bytes)
+        {
+            int maxRequired = 2 + bytes.Length;
+            if(_memory.Length - BytesPending < maxRequired)
+            {
+                Grow(maxRequired);
+            }
+
+            byte[] typeBytes =  BitConverter.GetBytes((ushort)TypeEnum.Boolean);
+            Span<byte> output = _memory.Span;
+            output[BytesPending++] = typeBytes[0];
+            output[BytesPending++] = typeBytes[1];
+
+            Span<byte> bytesOutput = output.Slice(BytesPending);
+            bytes.CopyTo(bytesOutput);
+        }
+
+        internal void WriteBytes(ReadOnlySpan<byte> bytes)
+        {
+            if (_memory.Length - BytesPending < bytes.Length)
+            {
+                Grow(bytes.Length);
+            }
+
+            var output = _memory.Span.Slice(BytesPending);
+            bytes.CopyTo(output);
         }
 
         public Task FlushAsync(CancellationToken cancellationToken = default)
