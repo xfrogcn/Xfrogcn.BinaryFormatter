@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Xfrogcn.BinaryFormatter.Serialization.Converters.Value
+namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
     internal sealed class BooleanConverter : BinaryConverter<bool>
     {

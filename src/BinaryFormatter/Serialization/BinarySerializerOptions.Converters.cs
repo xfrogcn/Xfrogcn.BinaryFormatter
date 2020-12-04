@@ -30,12 +30,12 @@ namespace Xfrogcn.BinaryFormatter
 
         private static Dictionary<Type, BinaryConverter> GetDefaultSimpleConverters()
         {
-            const int NumberOfSimpleConverters = 23;
+            const int NumberOfSimpleConverters = 1;
             var converters = new Dictionary<Type, BinaryConverter>(NumberOfSimpleConverters);
 
             // Use a dictionary for simple converters.
             // When adding to this, update NumberOfSimpleConverters above.
-            //Add(new BooleanConverter());
+            Add(new BooleanConverter());
             //Add(new ByteConverter());
             //Add(new ByteArrayConverter());
             //Add(new CharConverter());

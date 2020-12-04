@@ -104,6 +104,7 @@ namespace Xfrogcn.BinaryFormatter
                     long endPosition = writer.BytesCommitted + writer.BytesPending;
 
                     writer.WriteBytes(BitConverter.GetBytes((uint)(endPosition - startPosition)));
+                    writer.Flush();
 
                     await bufferWriter.WriteToStreamAsync(stream, cancellationToken);
                     bufferWriter.Clear();

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using Xfrogcn.BinaryFormatter.Metadata;
 using Xfrogcn.BinaryFormatter.Resources;
 using Xfrogcn.BinaryFormatter.Serialization;
 
@@ -30,16 +28,42 @@ namespace Xfrogcn.BinaryFormatter
         private bool _propertyNameCaseInsensitive;
         private bool _includeFields;
 
-        public IMetadataProvider MetadataProvider { get; }
-
-        private MetadataGetterList _metadataGetterList = null;
-        public IList<IMetadataGetter> MetadataGetterList => _metadataGetterList;
-
         internal TypeMap TypeMap => _typeMap;
 
         public BinarySerializerOptions()
         {
-            _metadataGetterList = new MetadataGetterList(this);
+            Converters = new ConverterList(this);
+        }
+
+        public BinarySerializerOptions(BinarySerializerOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            _memberAccessorStrategy = options._memberAccessorStrategy;
+            //_dictionaryKeyPolicy = options._dictionaryKeyPolicy;
+            //_jsonPropertyNamingPolicy = options._jsonPropertyNamingPolicy;
+            //_readCommentHandling = options._readCommentHandling;
+            //_referenceHandler = options._referenceHandler;
+            //_encoder = options._encoder;
+            _defaultIgnoreCondition = options._defaultIgnoreCondition;
+           // _numberHandling = options._numberHandling;
+
+            _defaultBufferSize = options._defaultBufferSize;
+            // _maxDepth = options._maxDepth;
+            //_allowTrailingCommas = options._allowTrailingCommas;
+            _ignoreNullValues = options._ignoreNullValues;
+            _ignoreReadOnlyProperties = options._ignoreReadOnlyProperties;
+            _ignoreReadonlyFields = options._ignoreReadonlyFields;
+            _includeFields = options._includeFields;
+            _propertyNameCaseInsensitive = options._propertyNameCaseInsensitive;
+          // _writeIndented = options._writeIndented;
+
+            Converters = new ConverterList(this, (ConverterList)options.Converters);
+            EffectiveMaxDepth = options.EffectiveMaxDepth;
+
         }
 
         internal MemberAccessor MemberAccessorStrategy
@@ -94,24 +118,24 @@ namespace Xfrogcn.BinaryFormatter
             }
         }
 
-        internal BinarySerializationContext GetSerializationContext(Type type)
-        {
-            if (_haveTypesBeenCreated == false)
-            {
-                // 初始化MetadataGetter
-                _metadataGetterList.InitMetadataGetterList();
-            }
-            _haveTypesBeenCreated = true;
+        //internal BinarySerializationContext GetSerializationContext(Type type)
+        //{
+        //    if (_haveTypesBeenCreated == false)
+        //    {
+        //        // 初始化MetadataGetter
+        //        _metadataGetterList.InitMetadataGetterList();
+        //    }
+        //    _haveTypesBeenCreated = true;
 
-            //var map = _typeMapCache.GetOrAdd(type, (t) =>
-            //{
-            //    return MetadataProvider.GetTypeMap(t);
-            //});
-            // 需要拷贝，因为在序列化过程中会动态插入实际类型
-            var typeMap = new TypeMap();
+        //    //var map = _typeMapCache.GetOrAdd(type, (t) =>
+        //    //{
+        //    //    return MetadataProvider.GetTypeMap(t);
+        //    //});
+        //    // 需要拷贝，因为在序列化过程中会动态插入实际类型
+        //    var typeMap = new TypeMap();
 
-            return new BinarySerializationContext(typeMap, MetadataProvider);
-        }
+        //    return new BinarySerializationContext(typeMap, MetadataProvider);
+        //}
 
 
         internal void VerifyMutable()

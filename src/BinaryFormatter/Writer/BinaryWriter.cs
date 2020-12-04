@@ -183,6 +183,7 @@ namespace Xfrogcn.BinaryFormatter
 
             var output = _memory.Span.Slice(BytesPending);
             bytes.CopyTo(output);
+            BytesPending += bytes.Length;
         }
 
         internal void WriteTypeInfo(BinaryTypeInfo typeInfo)
@@ -212,6 +213,11 @@ namespace Xfrogcn.BinaryFormatter
         {
             Debug.Assert(requiredSize > 0);
 
+            if (_memory.Length == 0)
+            {
+                FirstCallToGetMemory(requiredSize);
+                return;
+            }
 
             int sizeHint = Math.Max(DefaultGrowthSize, requiredSize);
 
@@ -224,6 +230,23 @@ namespace Xfrogcn.BinaryFormatter
             BytesCommitted += BytesPending;
             BytesPending = 0;
 
+            _memory = _output.GetMemory(sizeHint);
+
+            if (_memory.Length < sizeHint)
+            {
+                ThrowHelper.ThrowInvalidOperationException_NeedLargerSpan();
+            }
+
+        }
+
+        private void FirstCallToGetMemory(int requiredSize)
+        {
+            Debug.Assert(_memory.Length == 0);
+            Debug.Assert(BytesPending == 0);
+
+            int sizeHint = Math.Max(InitialGrowthSize, requiredSize);
+
+            Debug.Assert(_output != null);
             _memory = _output.GetMemory(sizeHint);
 
             if (_memory.Length < sizeHint)

@@ -48,8 +48,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             Debug.Assert(RuntimeType != null);
             Debug.Assert(typeMap != null);
 
-            bool exists = typeMap.TryAdd(RuntimeType, out BinaryTypeInfo ti);
-            if (!exists)
+            bool isAdd = typeMap.TryAdd(RuntimeType, out BinaryTypeInfo ti);
+            if (isAdd)
             {
                 ti.IsGeneric = RuntimeType.IsGenericType;
                 ti.GenericArgumentCount = RuntimeType.GetGenericArgumentCount();
