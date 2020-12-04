@@ -3,7 +3,7 @@
     /// <summary>
     /// 内部类型
     /// </summary>
-    public enum TypeEnum : sbyte
+    public enum TypeEnum : byte
     {
         None = 0,
         Byte = 1,

@@ -285,100 +285,94 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         internal bool TryWrite(BinaryWriter writer, in T value, BinarySerializerOptions options, ref WriteStack state)
         {
-            //if (writer.CurrentDepth >= options.EffectiveMaxDepth)
-            //{
-            //    ThrowHelper.ThrowBinaryException_SerializerCycleDetected(options.EffectiveMaxDepth);
-            //}
+            if (writer.CurrentDepth >= options.EffectiveMaxDepth)
+            {
+                ThrowHelper.ThrowBinaryException_SerializerCycleDetected(options.EffectiveMaxDepth);
+            }
 
-            //if (CanBePolymorphic)
-            //{
-            //    if (value == null)
-            //    {
-            //        if (!HandleNullOnWrite)
-            //        {
-            //            writer.WriteNullValue();
-            //        }
-            //        else
-            //        {
-            //            Debug.Assert(ClassType == ClassType.Value);
-            //            Debug.Assert(!state.IsContinuation);
+            
+            ushort typeSeq = state.PushType(value==null? typeof(T) : value.GetType());
+            writer.WriteTypeSeq(typeSeq);
 
-            //            int originalPropertyDepth = writer.CurrentDepth;
-            //            Write(writer, value, options);
-            //            VerifyWrite(originalPropertyDepth, writer);
-            //        }
+            if (CanBePolymorphic)
+            {
+                if (value == null)
+                {
+                    if (!HandleNullOnWrite)
+                    {
+                        writer.WriteNullValue();
+                    }
+                    else
+                    {
+                        Debug.Assert(ClassType == ClassType.Value);
+                        Debug.Assert(!state.IsContinuation);
 
-            //        return true;
-            //    }
+                        int originalPropertyDepth = writer.CurrentDepth;
+                        Write(writer, value, options);
+                        VerifyWrite(originalPropertyDepth, writer);
+                    }
 
-            //    Type type = value.GetType();
-            //    if (type == BinaryClassInfo.ObjectType)
-            //    {
-            //        writer.WriteStartObject();
-            //        writer.WriteEndObject();
-            //        return true;
-            //    }
+                    return true;
+                }
 
-            //    if (type != TypeToConvert && IsInternalConverter)
-            //    {
-            //        // For internal converter only: Handle polymorphic case and get the new converter.
-            //        // Custom converter, even though polymorphic converter, get called for reading AND writing.
-            //        BinaryConverter BinaryConverter = state.Current.InitializeReEntry(type, options);
-            //        if (BinaryConverter != this)
-            //        {
-            //            // We found a different converter; forward to that.
-            //            return BinaryConverter.TryWriteAsObject(writer, value, options, ref state);
-            //        }
-            //    }
-            //}
-            //else if (value == null && !HandleNullOnWrite)
-            //{
-            //    // We do not pass null values to converters unless HandleNullOnWrite is true. Null values for properties were
-            //    // already handled in GetMemberAndWriteBinary() so we don't need to check for IgnoreNullValues here.
-            //    writer.WriteNullValue();
-            //    return true;
-            //}
+                Type type = value.GetType();
+                if (type == BinaryClassInfo.ObjectType)
+                {
+                    //writer.WriteStartObject();
+                    //writer.WriteEndObject();
+                    return true;
+                }
 
-            //if (ClassType == ClassType.Value)
-            //{
-            //    Debug.Assert(!state.IsContinuation);
+                if (type != TypeToConvert && IsInternalConverter)
+                {
+                    // For internal converter only: Handle polymorphic case and get the new converter.
+                    // Custom converter, even though polymorphic converter, get called for reading AND writing.
+                    BinaryConverter BinaryConverter = state.Current.InitializeReEntry(type, options);
+                    if (BinaryConverter != this)
+                    {
+                        // We found a different converter; forward to that.
+                        return BinaryConverter.TryWriteAsObject(writer, value, options, ref state);
+                    }
+                }
+            }
+            else if (value == null && !HandleNullOnWrite)
+            {
+                // We do not pass null values to converters unless HandleNullOnWrite is true. Null values for properties were
+                // already handled in GetMemberAndWriteBinary() so we don't need to check for IgnoreNullValues here.
+                writer.WriteNullValue();
+                return true;
+            }
 
-            //    int originalPropertyDepth = writer.CurrentDepth;
+            if (ClassType == ClassType.Value)
+            {
+                Debug.Assert(!state.IsContinuation);
 
-            //    if (state.Current.NumberHandling != null && IsInternalConverterForNumberType)
-            //    {
-            //        WriteNumberWithCustomHandling(writer, value, state.Current.NumberHandling.Value);
-            //    }
-            //    else
-            //    {
-            //        Write(writer, value, options);
-            //    }
+                int originalPropertyDepth = writer.CurrentDepth;
+                Write(writer, value, options);
+                VerifyWrite(originalPropertyDepth, writer);
+                return true;
+            }
 
-            //    VerifyWrite(originalPropertyDepth, writer);
-            //    return true;
-            //}
+            bool isContinuation = state.IsContinuation;
 
-            //bool isContinuation = state.IsContinuation;
+            state.Push();
 
-            //state.Push();
+            if (!isContinuation)
+            {
+                Debug.Assert(state.Current.OriginalDepth == 0);
+                state.Current.OriginalDepth = writer.CurrentDepth;
+            }
 
-            //if (!isContinuation)
-            //{
-            //    Debug.Assert(state.Current.OriginalDepth == 0);
-            //    state.Current.OriginalDepth = writer.CurrentDepth;
-            //}
+            bool success = OnTryWrite(writer, value, options, ref state);
+            if (success)
+            {
+                VerifyWrite(state.Current.OriginalDepth, writer);
+                // No need to clear state.Current.OriginalDepth since a stack pop will occur.
+            }
 
-            //bool success = OnTryWrite(writer, value, options, ref state);
-            //if (success)
-            //{
-            //    VerifyWrite(state.Current.OriginalDepth, writer);
-            //    // No need to clear state.Current.OriginalDepth since a stack pop will occur.
-            //}
+            state.Pop(success);
 
-            //state.Pop(success);
-
-            // return success;
-            return true;
+            return success;
         }
 
         internal bool TryWriteDataExtensionProperty(BinaryWriter writer, T value, BinarySerializerOptions options, ref WriteStack state)

@@ -145,19 +145,19 @@ namespace Xfrogcn.BinaryFormatter
             _output = null;
         }
 
-        internal void WriteTypeSeq(TypeEnum type)
+        internal void WriteTypeSeq(ushort typeSeq)
         {
             if(_memory.Length - BytesPending < 2)
             {
                 Grow(2);
             }
-            byte[] typeBytes = BitConverter.GetBytes((ushort)TypeEnum.Boolean);
+            byte[] typeBytes = BitConverter.GetBytes(typeSeq);
             Span<byte> output = _memory.Span;
             output[BytesPending++] = typeBytes[0];
             output[BytesPending++] = typeBytes[1];
         }
 
-        internal void WriteTypeSeqAndBytes(TypeEnum type, ReadOnlySpan<byte> bytes)
+        internal void WriteTypeSeqAndBytes(ushort typeSeq, ReadOnlySpan<byte> bytes)
         {
             int maxRequired = 2 + bytes.Length;
             if(_memory.Length - BytesPending < maxRequired)
@@ -165,7 +165,7 @@ namespace Xfrogcn.BinaryFormatter
                 Grow(maxRequired);
             }
 
-            byte[] typeBytes =  BitConverter.GetBytes((ushort)TypeEnum.Boolean);
+            byte[] typeBytes =  BitConverter.GetBytes(typeSeq);
             Span<byte> output = _memory.Span;
             output[BytesPending++] = typeBytes[0];
             output[BytesPending++] = typeBytes[1];
@@ -183,6 +183,12 @@ namespace Xfrogcn.BinaryFormatter
 
             var output = _memory.Span.Slice(BytesPending);
             bytes.CopyTo(output);
+        }
+
+        internal void WriteTypeInfo(BinaryTypeInfo typeInfo)
+        {
+            byte[] typeData = typeInfo.GetBytes();
+            WriteBytes(typeData);
         }
 
         public Task FlushAsync(CancellationToken cancellationToken = default)

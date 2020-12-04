@@ -61,6 +61,11 @@ namespace Xfrogcn.BinaryFormatter
             return isAdd;
         } 
 
+        public ushort GetTypeSeq(Type type)
+        {
+            TryAdd(type, out BinaryTypeInfo ti);
+            return ti.Seq;
+        }
 
         public BinaryTypeInfo GetTypeInfo(ushort seq)
         {

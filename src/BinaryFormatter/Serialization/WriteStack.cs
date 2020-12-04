@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using Xfrogcn.BinaryFormatter.Serialization;
 
@@ -31,6 +32,15 @@ namespace Xfrogcn.BinaryFormatter
         public int FlushThreshold;
 
         public bool IsContinuation => _continuationCount != 0;
+
+        public TypeMap TypeMap { get; set; }
+
+        public ushort PrimaryTypeSeq;
+
+
+        private List<ushort> _typeSeqList;
+        public IReadOnlyList<ushort> TypeSeqList => _typeSeqList;
+        
 
         // The bag of preservable references.
         public ObjectReferenceResolver ReferenceResolver;
@@ -66,7 +76,13 @@ namespace Xfrogcn.BinaryFormatter
         /// </summary>
         public BinaryConverter Initialize(Type type, BinarySerializerOptions options, bool supportContinuation)
         {
+            _typeSeqList = new List<ushort>();
+
             BinaryClassInfo binaryClassInfo = options.GetOrAddClass(type);
+
+            TypeMap = options.TypeMap;
+            AddTypeSeq(binaryClassInfo.TypeSeq);
+            PrimaryTypeSeq = binaryClassInfo.TypeSeq;
 
             Current.BinaryClassInfo = binaryClassInfo;
             Current.DeclaredBinaryPropertyInfo = binaryClassInfo.PropertyInfoForClassInfo;
@@ -79,6 +95,29 @@ namespace Xfrogcn.BinaryFormatter
             SupportContinuation = supportContinuation;
 
             return binaryClassInfo.PropertyInfoForClassInfo.ConverterBase;
+        }
+
+
+        public void AddTypeSeq(ushort typeSeq)
+        {
+            if (!_typeSeqList.Contains(typeSeq))
+            {
+                _typeSeqList.Add(typeSeq);
+            }
+        }
+
+        public ushort PushType(Type type)
+        {
+            ushort typeSeq = TypeMap.GetTypeSeq(type);
+            AddTypeSeq(typeSeq);
+
+            return typeSeq;
+        }
+
+        public List<BinaryTypeInfo> GetTypeList()
+        {
+            TypeMap tm = TypeMap;
+            return _typeSeqList.Select(s => tm.GetTypeInfo(s)).ToList();
         }
 
         public void Push()

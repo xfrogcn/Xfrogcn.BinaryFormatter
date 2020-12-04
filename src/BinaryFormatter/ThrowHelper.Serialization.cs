@@ -332,5 +332,13 @@ namespace Xfrogcn.BinaryFormatter
         {
             throw new InvalidOperationException(string.Format(Strings.ExtensionDataCannotBindToCtorParam, memberInfo, classType, constructorInfo));
         }
+
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowBinaryException_SerializerCycleDetected(int maxDepth)
+        {
+            throw new BinaryException(string.Format(Strings.SerializerCycleDetected, maxDepth));
+        }
     }
 }

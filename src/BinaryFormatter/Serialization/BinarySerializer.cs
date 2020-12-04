@@ -91,24 +91,22 @@ namespace Xfrogcn.BinaryFormatter
 
                     } while (!isFinalBlock);
 
-                    //// 获取类型元数据
-                    //var context = options.GetSerializationContext(inputType);
+                    //元数据
+                    long startPosition = writer.BytesCommitted;
 
-                    //// 写入序列化数据
-                    //BinaryTypeInfo ti = context.Map.PrimaryTypeInfo;
-                    //if(ti.SerializeType == SerializeTypeEnum.SingleValue)
-                    //{
-                    //    // 单值
-                    //}
-                    //else
-                    //{
-                        
-                    //}
+                    state.GetTypeList().ForEach(bi =>
+                    {
+                        writer.WriteTypeInfo(bi);
+                    });
+                    // 主类型
+                    writer.WriteBytes(BitConverter.GetBytes(state.PrimaryTypeSeq));
+                    // 类型元数据偏移
+                    long endPosition = writer.BytesCommitted + writer.BytesPending;
 
-                    // 写入类型元数据
+                    writer.WriteBytes(BitConverter.GetBytes((uint)(endPosition - startPosition)));
 
-                    // 写入对象映射
-
+                    await bufferWriter.WriteToStreamAsync(stream, cancellationToken);
+                    bufferWriter.Clear();
 
                 }
             }

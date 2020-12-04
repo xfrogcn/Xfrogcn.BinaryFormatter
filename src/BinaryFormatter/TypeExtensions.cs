@@ -38,7 +38,7 @@ namespace System
             return rt;
         }
 
-        public static sbyte GetGenericArgumentCount([NotNull]this Type type)
+        public static byte GetGenericArgumentCount([NotNull]this Type type)
         {
             if(type ==null)
             {
@@ -46,7 +46,7 @@ namespace System
             }
             if (type.IsGenericType)
             {
-                return (sbyte)type.GetGenericArguments().Length;
+                return (byte)type.GetGenericArguments().Length;
             }
             return 0;
         }

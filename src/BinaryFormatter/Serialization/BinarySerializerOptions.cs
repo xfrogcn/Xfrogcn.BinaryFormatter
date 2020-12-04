@@ -13,6 +13,7 @@ namespace Xfrogcn.BinaryFormatter
     {
         internal const int BufferSizeDefault = 16 * 1024;
         private int _defaultBufferSize = BufferSizeDefault;
+        internal const int DefaultMaxDepth = 64;
         internal static readonly BinarySerializerOptions s_defaultOptions = new BinarySerializerOptions();
 
         private readonly TypeMap _typeMap = new TypeMap();
@@ -33,6 +34,8 @@ namespace Xfrogcn.BinaryFormatter
 
         private MetadataGetterList _metadataGetterList = null;
         public IList<IMetadataGetter> MetadataGetterList => _metadataGetterList;
+
+        internal TypeMap TypeMap => _typeMap;
 
         public BinarySerializerOptions()
         {
@@ -267,6 +270,9 @@ namespace Xfrogcn.BinaryFormatter
                 _includeFields = value;
             }
         }
+
+        internal int EffectiveMaxDepth { get; private set; } = DefaultMaxDepth;
+
 
     }
 }

@@ -241,6 +241,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 A possible object cycle was detected. This can either be due to a cycle or if the object depth is larger than the maximum allowed depth of {0}.  的本地化字符串。
+        /// </summary>
+        internal static string SerializerCycleDetected {
+            get {
+                return ResourceManager.GetString("SerializerCycleDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The Binary property name for &apos;{0}.{1}&apos; collides with another property. 的本地化字符串。
         /// </summary>
         internal static string SerializerPropertyNameConflict {
