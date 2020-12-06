@@ -89,5 +89,48 @@ namespace Xfrogcn.BinaryFormatter
         }
 
         internal bool IsInArray => !_inObject;
+
+        public BinaryReader(ReadOnlySpan<byte> jsonData, bool isFinalBlock, BinaryReaderState state)
+        {
+            _buffer = jsonData;
+
+            _isFinalBlock = isFinalBlock;
+            _isInputSequence = false;
+
+            //_lineNumber = state._lineNumber;
+            //_bytePositionInLine = state._bytePositionInLine;
+            //_inObject = state._inObject;
+            //_isNotPrimitive = state._isNotPrimitive;
+            //_stringHasEscaping = state._stringHasEscaping;
+            //_trailingCommaBeforeComment = state._trailingCommaBeforeComment;
+            //_tokenType = state._tokenType;
+            //_previousTokenType = state._previousTokenType;
+            //_readerOptions = state._readerOptions;
+            //if (_readerOptions.MaxDepth == 0)
+            //{
+            //    _readerOptions.MaxDepth = JsonReaderOptions.DefaultMaxDepth;  // If max depth is not set, revert to the default depth.
+            //}
+            //_bitStack = state._bitStack;
+
+            //_consumed = 0;
+            //TokenStartIndex = 0;
+            //_totalConsumed = 0;
+            //_isLastSegment = _isFinalBlock;
+            //_isMultiSegment = false;
+
+            //ValueSpan = ReadOnlySpan<byte>.Empty;
+
+            //_currentPosition = default;
+            //_nextPosition = default;
+            //_sequence = default;
+            //HasValueSequence = false;
+            //ValueSequence = ReadOnlySequence<byte>.Empty;
+        }
+
+        
+        public BinaryReader(ReadOnlySpan<byte> jsonData, BinarySerializerOptions options = default)
+            : this(jsonData, isFinalBlock: true, new BinaryReaderState())
+        {
+        }
     }
 }
