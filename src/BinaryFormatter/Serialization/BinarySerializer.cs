@@ -94,7 +94,10 @@ namespace Xfrogcn.BinaryFormatter
                     //元数据
                     long startPosition = writer.BytesCommitted;
 
-                    state.GetTypeList().ForEach(bi =>
+
+                    var typeList = state.GetTypeList();
+                    writer.WriteBytes(BitConverter.GetBytes((ushort)(typeList.Count)));
+                    typeList.ForEach(bi =>
                     {
                         writer.WriteTypeInfo(bi);
                     });

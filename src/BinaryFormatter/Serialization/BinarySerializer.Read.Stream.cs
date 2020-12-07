@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -71,7 +72,62 @@ namespace Xfrogcn.BinaryFormatter
             }
 
             ReadStack state = default;
-            
+
+            // 读取头
+            if (stream.Length < 4)
+            {
+                //
+                throw new Exception();
+            }
+
+            byte[] headerBytes =  new byte[4];
+            await stream.ReadAsync(headerBytes, 0, 4).ConfigureAwait(false);
+            if(headerBytes[0]!= (byte)'X' || headerBytes[1] != (byte)'B' || headerBytes[2] != (byte)'F')
+            {
+                throw new Exception();
+            }
+
+            state.Version = headerBytes[3];
+
+            // 读取类型映射
+            long position = stream.Position;
+
+            stream.Seek(-4, SeekOrigin.End);
+            await stream.ReadAsync(headerBytes, 0, 4).ConfigureAwait(false);
+            uint mapPosition = BitConverter.ToUInt32(headerBytes);
+            if (mapPosition >= stream.Length)
+            {
+                throw new Exception();
+            }
+
+            stream.Seek(-(mapPosition+4), SeekOrigin.End);
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(options.DefaultBufferSize);
+            int bytesInBuffer = 0;
+
+            while (true)
+            {
+                while (true)
+                {
+                    int bytesRead = await stream.ReadAsync(buffer.AsMemory(bytesInBuffer), cancellationToken).ConfigureAwait(false);
+                    if (bytesRead == 0)
+                    {
+                        break;
+                    }
+
+                    if(bytesInBuffer == buffer.Length)
+                    {
+                        break;
+                    }
+                }
+
+                // Read
+
+
+
+            }
+
+            return default;
+
         }
 
     }

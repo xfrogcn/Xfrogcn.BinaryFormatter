@@ -19,6 +19,10 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
             ms.Position = 0;
             byte[] data = ms.GetBuffer();
+
+            ms.Position = 0;
+
+            await BinarySerializer.DeserializeAsync(ms);
         }
     }
 }
