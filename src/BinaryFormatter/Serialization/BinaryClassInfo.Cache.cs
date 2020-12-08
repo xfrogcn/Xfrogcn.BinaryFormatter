@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Xfrogcn.BinaryFormatter.Serialization;
@@ -24,6 +25,17 @@ namespace Xfrogcn.BinaryFormatter
         // All of the serializable properties on a POCO including the optional extension property.
         // Used for performance during serialization instead of 'PropertyCache' above.
         public BinaryPropertyInfo[] PropertyCacheArray;
+
+
+        public BinaryMemberInfo[] GetMemberInfos()
+        {
+            if (PropertyCacheArray == null || PropertyCacheArray.Length == 0)
+            {
+                return new BinaryMemberInfo[0];
+            }
+
+            return PropertyCacheArray.Select(p => p.GetBinaryMemberInfo()).ToArray();
+        }
 
         public static BinaryPropertyInfo AddProperty(
             TypeMap typeMap,

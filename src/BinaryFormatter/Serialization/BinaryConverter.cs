@@ -43,6 +43,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         /// <returns></returns>
         public abstract void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap);
 
+
+
         internal ushort GetTypeSeq(TypeMap typeMap)
         {
             Debug.Assert(RuntimeType != null);

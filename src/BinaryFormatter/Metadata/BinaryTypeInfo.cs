@@ -19,6 +19,8 @@ namespace Xfrogcn.BinaryFormatter
 
         internal ushort[] GenericArguments { get; set; }
 
+        internal BinaryMemberInfo[] MemberInfos { get; set; }
+
 
         private byte[] _bytes = null;
         private object _locker = new object();

@@ -190,7 +190,20 @@ namespace Xfrogcn.BinaryFormatter
         {
             byte[] typeData = typeInfo.GetBytes();
             WriteBytes(typeData);
+            ushort memberCount = (ushort)(typeInfo.MemberInfos == null ? 0 : typeInfo.MemberInfos.Length);
+            WriteUInt16Value(memberCount);
+            if (memberCount > 0)
+            {
+                foreach(BinaryMemberInfo mi in typeInfo.MemberInfos)
+                {
+                    byte[] memberData = mi.GetBytes();
+                    WriteBytes(memberData);
+                }
+            }
+
         }
+
+        
 
         public Task FlushAsync(CancellationToken cancellationToken = default)
         {

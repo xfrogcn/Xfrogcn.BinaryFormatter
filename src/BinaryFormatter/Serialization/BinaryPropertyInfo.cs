@@ -17,9 +17,21 @@ namespace Xfrogcn.BinaryFormatter
 
         internal ushort TypeSeq { get; set; }
 
+        internal ushort Seq { get; set; }
+
         public TypeMap TypeMap { get; private set; }
 
         public abstract BinaryConverter ConverterBase { get; set; }
+
+        public virtual BinaryMemberInfo GetBinaryMemberInfo()
+        {
+            return new BinaryMemberInfo()
+            {
+                TypeSeq = TypeSeq,
+                Seq = Seq,
+                Name = NameAsUtf8Bytes,
+            };
+        }
 
         public static BinaryPropertyInfo GetPropertyPlaceholder()
         {

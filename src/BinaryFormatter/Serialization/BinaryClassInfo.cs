@@ -193,6 +193,8 @@ namespace Xfrogcn.BinaryFormatter
                         {
                             InitializeConstructorParameters(converter.ConstructorInfo!);
                         }
+
+                        typeMap.TrySetTypeMemberInfos(TypeSeq, this.GetMemberInfos);
                     }
                     break;
                 case ClassType.Enumerable:
@@ -219,7 +221,7 @@ namespace Xfrogcn.BinaryFormatter
             }
         }
 
-
+        private int _propertySeq = 0;
         private void CacheMember(
             Type declaringType,
             Type memberType,
@@ -256,6 +258,11 @@ namespace Xfrogcn.BinaryFormatter
                     ThrowHelper.ThrowInvalidOperationException_SerializerPropertyNameConflict(Type, binaryPropertyInfo);
                 }
                 // Ignore the current property.
+            }
+            else
+            {
+                int seq =  System.Threading.Interlocked.Increment(ref _propertySeq);
+                binaryPropertyInfo.Seq = (ushort)seq;
             }
 
             if (binaryPropertyInfo.IsIgnored)

@@ -77,6 +77,16 @@ namespace Xfrogcn.BinaryFormatter
             return _typeInfoMap[_seqTypeMap[seq]];
         }
 
+        internal bool TrySetTypeMemberInfos(ushort seq, Func<BinaryMemberInfo[]> getMemberInfos)
+        {
+            BinaryTypeInfo ti = GetTypeInfo(seq);
+            if(ti !=null && ti.MemberInfos == null)
+            {
+                ti.MemberInfos = getMemberInfos();
+                return true;
+            }
+            return false;
+        }
 
         //public BinaryTypeInfo PrimaryTypeInfo
         //{
@@ -87,6 +97,6 @@ namespace Xfrogcn.BinaryFormatter
         //}
 
 
-         
+
     }
 }
