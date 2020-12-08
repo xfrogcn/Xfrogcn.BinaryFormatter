@@ -21,30 +21,35 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         {
             try
             {
+                if (!reader.Read())
+                {
+                    return default;
+                }
                 //if (!state.IsContinuation)
                 //{
-                //    if (!SingleValueReadWithReadAhead(ClassType, ref reader, ref state))
-                //    {
-                //        if (state.SupportContinuation)
+                //    if (state.Current.BinaryClassInfo.ClassType == ClassType.)
+                //        if (!SingleValueReadWithReadAhead(ClassType, ref reader, ref state))
                 //        {
-                //            // If a Stream-based scenaio, return the actual value previously found;
-                //            // this may or may not be the final pass through here.
-                //            state.BytesConsumed += reader.BytesConsumed;
-                //            if (state.Current.ReturnValue == null)
+                //            if (state.SupportContinuation)
                 //            {
-                //                // Avoid returning null for value types.
+                //                // If a Stream-based scenaio, return the actual value previously found;
+                //                // this may or may not be the final pass through here.
+                //                state.BytesConsumed += reader.BytesConsumed;
+                //                if (state.Current.ReturnValue == null)
+                //                {
+                //                    // Avoid returning null for value types.
+                //                    return default;
+                //                }
+
+                //                return (T)state.Current.ReturnValue!;
+                //            }
+                //            else
+                //            {
+                //                // Read more data until we have the full element.
+                //                state.BytesConsumed += reader.BytesConsumed;
                 //                return default;
                 //            }
-
-                //            return (T)state.Current.ReturnValue!;
                 //        }
-                //        else
-                //        {
-                //            // Read more data until we have the full element.
-                //            state.BytesConsumed += reader.BytesConsumed;
-                //            return default;
-                //        }
-                //    }
                 //}
                 //else
                 //{
@@ -57,22 +62,21 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 //    }
                 //}
 
-                //BinaryPropertyInfo jsonPropertyInfo = state.Current.JsonClassInfo.PropertyInfoForClassInfo;
-                //bool success = TryRead(ref reader, jsonPropertyInfo.RuntimePropertyType!, options, ref state, out T value);
-                //if (success)
-                //{
-                //    // Read any trailing whitespace. This will throw if JsonCommentHandling=Disallow.
-                //    // Avoiding setting ReturnValue for the final block; reader.Read() returns 'false' even when this is the final block.
-                //    if (!reader.Read() && !reader.IsFinalBlock)
-                //    {
-                //        // This method will re-enter if so set `ReturnValue` which will be returned during re-entry.
-                //        state.Current.ReturnValue = value;
-                //    }
-                //}
+                BinaryPropertyInfo jsonPropertyInfo = state.Current.BinaryClassInfo.PropertyInfoForClassInfo;
+                bool success = TryRead(ref reader, jsonPropertyInfo.RuntimePropertyType!, options, ref state, out T value);
+                if (success)
+                {
+                    // Read any trailing whitespace. This will throw if JsonCommentHandling=Disallow.
+                    // Avoiding setting ReturnValue for the final block; reader.Read() returns 'false' even when this is the final block.
+                    if (!reader.Read() && !reader.IsFinalBlock)
+                    {
+                        // This method will re-enter if so set `ReturnValue` which will be returned during re-entry.
+                        state.Current.ReturnValue = value;
+                    }
+                }
 
-                //state.BytesConsumed += reader.BytesConsumed;
-                //return value;
-                return default;
+                state.BytesConsumed += reader.BytesConsumed;
+                return value;
             }
             catch (BinaryReaderException ex)
             {

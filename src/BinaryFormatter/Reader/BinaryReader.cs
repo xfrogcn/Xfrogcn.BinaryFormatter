@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Xfrogcn.BinaryFormatter
@@ -21,28 +22,32 @@ namespace Xfrogcn.BinaryFormatter
         private int _consumed;
         //private bool _inObject;
         //private bool _isNotPrimitive;
-        //private BinaryTokenType _tokenType;
-        //private BinaryTokenType _previousTokenType;
+        private BinaryTokenType _tokenType;
+        private BinaryTokenType _previousTokenType;
       //  private BinarySerializerOptions _readerOptions;
         // private BitStack _bitStack;
 
         private long _totalConsumed;
         //private bool _isLastSegment;
         //internal bool _stringHasEscaping;
-        //private readonly bool _isMultiSegment;
+        private readonly bool _isMultiSegment;
         //private bool _trailingCommaBeforeComment;
 
         //private SequencePosition _nextPosition;
         //private SequencePosition _currentPosition;
         private readonly ReadOnlySequence<byte> _sequence;
 
-      //  private bool IsLastSpan => _isFinalBlock && (!_isMultiSegment || _isLastSegment);
+        public BinaryTokenType TokenType => _tokenType;
+
+
+        // private bool IsLastSpan => _isFinalBlock && (!_isMultiSegment || _isLastSegment);
 
         internal ReadOnlySequence<byte> OriginalSequence => _sequence;
 
         internal ReadOnlySpan<byte> OriginalSpan => _sequence.IsEmpty ? _buffer : default;
 
-        
+        public bool IsFinalBlock => _isFinalBlock;
+
         public ReadOnlySpan<byte> ValueSpan { get; private set; }
 
         /// <summary>
@@ -103,8 +108,8 @@ namespace Xfrogcn.BinaryFormatter
            // _isNotPrimitive = state._isNotPrimitive;
             //_stringHasEscaping = state._stringHasEscaping;
             //_trailingCommaBeforeComment = state._trailingCommaBeforeComment;
-           // _tokenType = state._tokenType;
-            //_previousTokenType = state._previousTokenType;
+            _tokenType = state._tokenType;
+            _previousTokenType = state._previousTokenType;
             //_readerOptions = state._readerOptions;
             //if (_readerOptions.MaxDepth == 0)
             //{
@@ -116,7 +121,7 @@ namespace Xfrogcn.BinaryFormatter
             TokenStartIndex = 0;
             _totalConsumed = 0;
             //_isLastSegment = _isFinalBlock;
-            //_isMultiSegment = false;
+            _isMultiSegment = false;
 
             ValueSpan = ReadOnlySpan<byte>.Empty;
 
@@ -145,6 +150,129 @@ namespace Xfrogcn.BinaryFormatter
             return true;
         }
 
-        
+        public BinaryReaderState CurrentState => new BinaryReaderState
+        {
+            _bytePosition = _consumed
+        };
+
+        public bool Read()
+        {
+            bool retVal = _isMultiSegment ? ReadMultiSegment() : ReadSingleSegment();
+
+            if (!retVal)
+            {
+                if (_isFinalBlock && TokenType == BinaryTokenType.None)
+                {
+                    ThrowHelper.ThrowBinaryReaderException(ref this, ExceptionResource.ExpectedBinaryTokens);
+                }
+            }
+            return retVal;
+        }
+
+        private bool ReadSingleSegment()
+        {
+            bool retVal = false;
+            ValueSpan = default;
+
+            if (!HasMoreData())
+            {
+                goto Done;
+            }
+
+            byte first = _buffer[_consumed];
+
+            TokenStartIndex = _consumed;
+
+            if (_tokenType == BinaryTokenType.None)
+            {
+                goto ReadFirstToken;
+            }
+
+
+            if (_tokenType == BinaryTokenType.StartObject)
+            {
+                //if (first == JsonConstants.CloseBrace)
+                //{
+                //    EndObject();
+                //}
+                //else
+                //{
+                //    if (first != JsonConstants.Quote)
+                //    {
+                //        ThrowHelper.ThrowJsonReaderException(ref this, ExceptionResource.ExpectedStartOfPropertyNotFound, first);
+                //    }
+
+                //    int prevConsumed = _consumed;
+                //    long prevPosition = _bytePositionInLine;
+                //    long prevLineNumber = _lineNumber;
+                //    retVal = ConsumePropertyName();
+                //    if (!retVal)
+                //    {
+                //        // roll back potential changes
+                //        _consumed = prevConsumed;
+                //        _tokenType = JsonTokenType.StartObject;
+                //        _bytePositionInLine = prevPosition;
+                //        _lineNumber = prevLineNumber;
+                //    }
+                //    goto Done;
+                //}
+            }
+            else if (_tokenType == BinaryTokenType.StartArray)
+            {
+                //if (first == JsonConstants.CloseBracket)
+                //{
+                //    EndArray();
+                //}
+                //else
+                //{
+                //    retVal = ConsumeValue(first);
+                //    goto Done;
+                //}
+            }
+            else if (_tokenType == BinaryTokenType.PropertyName)
+            {
+                //retVal = ConsumeValue(first);
+                goto Done;
+            }
+            else
+            {
+                //retVal = ConsumeNextTokenOrRollback(first);
+                goto Done;
+            }
+
+            retVal = true;
+
+        Done:
+            return retVal;
+
+        ReadFirstToken:
+            retVal = ReadFirstToken();
+            goto Done;
+        }
+
+        private bool ReadFirstToken()
+        {
+            if((_consumed+2)>= _buffer.Length)
+            {
+                return false;
+            }
+
+            _tokenType = BinaryTokenType.TypeSeq;
+            ValueSpan = _buffer.Slice(_consumed, 2);
+            _consumed += 2;
+            
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool HasMoreData()
+        {
+            if (_consumed >= (uint)_buffer.Length)
+            {
+                return false;
+            }
+            return true;
+        }
+
     }
 }

@@ -138,6 +138,9 @@
   <data name="DeserializeUnableToConvertValue" xml:space="preserve">
     <value>The Binary value could not be converted to {0}.</value>
   </data>
+  <data name="ExpectedBinaryTokens" xml:space="preserve">
+    <value>The input does not contain any Binary tokens. Expected the input to start with a valid Binary token, when isFinalBlock is true.</value>
+  </data>
   <data name="ExtensionDataCannotBindToCtorParam" xml:space="preserve">
     <value>The extension data property '{0}' on type '{1}' cannot bind with a parameter in constructor '{2}'.</value>
   </data>
@@ -146,6 +149,9 @@
   </data>
   <data name="IgnoreConditionOnValueTypeInvalid" xml:space="preserve">
     <value>The ignore condition 'BinaryIgnoreCondition.WhenWritingNull' is not valid on value-type member '{0}' on type '{1}'. Consider using 'BinaryIgnoreCondition.WhenWritingDefault'.</value>
+  </data>
+  <data name="MaxDepthMustBePositive" xml:space="preserve">
+    <value>Max depth must be positive.</value>
   </data>
   <data name="MultipleMembersBindWithConstructorParameter" xml:space="preserve">
     <value>Members '{0}' and '{1}' on type '{2}' cannot both bind with parameter '{3}' in constructor '{4}' on deserialization.</value>

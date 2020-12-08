@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xfrogcn.BinaryFormatter.Serialization;
 using System.IO;
+using System.Reflection.Emit;
 
 namespace Xfrogcn.BinaryFormatter.Tests
 {
@@ -22,7 +23,10 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
             ms.Position = 0;
 
-            await BinarySerializer.DeserializeAsync(ms);
+            await BinarySerializer.DeserializeAsync<bool>(ms);
+
+            Type t = typeof(Nullable<int>);
+            
         }
     }
 }

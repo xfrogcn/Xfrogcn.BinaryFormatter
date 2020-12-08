@@ -9,7 +9,7 @@ namespace Xfrogcn.BinaryFormatter
    public static partial class BinarySerializer
     {
          private static bool WriteCore<TValue>(
-            BinaryConverter jsonConverter,
+            BinaryConverter binaryConverter,
             BinaryWriter writer,
             in TValue value,
             BinarySerializerOptions options,
@@ -19,7 +19,7 @@ namespace Xfrogcn.BinaryFormatter
 
             bool success;
 
-            if (jsonConverter is BinaryConverter<TValue> converter)
+            if (binaryConverter is BinaryConverter<TValue> converter)
             {
                 // Call the strongly-typed WriteCore that will not box structs.
                 success = converter.WriteCore(writer, value, options, ref state);
@@ -27,7 +27,7 @@ namespace Xfrogcn.BinaryFormatter
             else
             {
                 // The non-generic API was called or we have a polymorphic case where TValue is not equal to the T in BinaryConverter<T>.
-                success = jsonConverter.WriteCoreAsObject(writer, value, options, ref state);
+                success = binaryConverter.WriteCoreAsObject(writer, value, options, ref state);
             }
 
             writer.Flush();

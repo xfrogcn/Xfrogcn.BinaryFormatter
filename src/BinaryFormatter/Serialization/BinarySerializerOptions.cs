@@ -19,8 +19,11 @@ namespace Xfrogcn.BinaryFormatter
 
         private MemberAccessor _memberAccessorStrategy;
         private BinaryIgnoreCondition _defaultIgnoreCondition;
+        public TypeHandler TypeHandler { get; set; }
 
         private bool _haveTypesBeenCreated;
+
+        private int _maxDepth;
 
         private bool _ignoreNullValues;
         private bool _ignoreReadOnlyProperties;
@@ -64,6 +67,31 @@ namespace Xfrogcn.BinaryFormatter
             Converters = new ConverterList(this, (ConverterList)options.Converters);
             EffectiveMaxDepth = options.EffectiveMaxDepth;
 
+        }
+
+        internal BinaryReaderOptions GetReaderOptions()
+        {
+            return new BinaryReaderOptions
+            {
+                MaxDepth = MaxDepth
+            };
+        }
+
+        public int MaxDepth
+        {
+            get => _maxDepth;
+            set
+            {
+                VerifyMutable();
+
+                if (value < 0)
+                {
+                    throw ThrowHelper.GetArgumentOutOfRangeException_MaxDepthMustBePositive(nameof(value));
+                }
+
+                _maxDepth = value;
+                EffectiveMaxDepth = (value == 0 ? BinaryReaderOptions.DefaultMaxDepth : value);
+            }
         }
 
         internal MemberAccessor MemberAccessorStrategy

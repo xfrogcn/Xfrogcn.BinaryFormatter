@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Xfrogcn.BinaryFormatter
+﻿namespace Xfrogcn.BinaryFormatter
 {
     public enum BinaryTokenType : byte
     {
-
+        None,
+        StartObject,
+        EndObject,
+        StartArray,
+        EndArray,
+        PropertyName,
+        TypeSeq,
+        Null
     }
 }

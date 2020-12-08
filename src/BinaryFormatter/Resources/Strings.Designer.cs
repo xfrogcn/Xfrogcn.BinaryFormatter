@@ -124,6 +124,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 The input does not contain any Binary tokens. Expected the input to start with a valid Binary token, when isFinalBlock is true. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedBinaryTokens {
+            get {
+                return ResourceManager.GetString("ExpectedBinaryTokens", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The extension data property &apos;{0}&apos; on type &apos;{1}&apos; cannot bind with a parameter in constructor &apos;{2}&apos;. 的本地化字符串。
         /// </summary>
         internal static string ExtensionDataCannotBindToCtorParam {
@@ -147,6 +156,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         internal static string IgnoreConditionOnValueTypeInvalid {
             get {
                 return ResourceManager.GetString("IgnoreConditionOnValueTypeInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Max depth must be positive. 的本地化字符串。
+        /// </summary>
+        internal static string MaxDepthMustBePositive {
+            get {
+                return ResourceManager.GetString("MaxDepthMustBePositive", resourceCulture);
             }
         }
         
