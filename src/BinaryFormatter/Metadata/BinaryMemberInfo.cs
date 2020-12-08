@@ -8,7 +8,9 @@ namespace Xfrogcn.BinaryFormatter
 
         public ushort Seq { get; internal set; }
 
-        public byte[] Name { get; set; }
+        public byte[] NameAsUtf8Bytes { get; set; }
+
+        public string NameAsString { get; set; }
 
         public ushort TypeSeq { get; set; }
 
@@ -28,7 +30,7 @@ namespace Xfrogcn.BinaryFormatter
                 {
                     return _bytes;
                 }
-                ushort nameLen = (ushort)(Name == null ? 0 : Name.Length);
+                ushort nameLen = (ushort)(NameAsUtf8Bytes == null ? 0 : NameAsUtf8Bytes.Length);
                 int len = 2 + 2 + nameLen + 2;
                
                 byte[] data = new byte[len];
@@ -40,7 +42,7 @@ namespace Xfrogcn.BinaryFormatter
                 position += 2;
                 if (nameLen > 0)
                 {
-                    Name.CopyTo(data, position);
+                    NameAsUtf8Bytes.CopyTo(data, position);
                     position += nameLen;
                 }
                 BitConverter.GetBytes(TypeSeq).CopyTo(data, position);

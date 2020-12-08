@@ -25,11 +25,11 @@ namespace Xfrogcn.BinaryFormatter
             _typeInfoMap = new Dictionary<Type, BinaryTypeInfo>();
         }
 
-        internal TypeMap(TypeMap other)
+        internal TypeMap(BinaryTypeInfo[] typeList)
         {
-            _typeSeqMap = new ConcurrentDictionary<Type, ushort>(other._typeSeqMap);
-            _seqTypeMap = new Dictionary<ushort, Type>(other._seqTypeMap);
-            _typeInfoMap = new Dictionary<Type, BinaryTypeInfo>(other._typeInfoMap);
+            _typeSeqMap = new ConcurrentDictionary<Type, ushort>();
+            _seqTypeMap = new Dictionary<ushort, Type>(typeList.Length);
+            _typeInfoMap = new Dictionary<Type, BinaryTypeInfo>(typeList.Length);
         }
 
         public bool HasType([NotNull]Type type) => _typeSeqMap.ContainsKey(type);

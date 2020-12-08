@@ -19,24 +19,24 @@ namespace Xfrogcn.BinaryFormatter
 
         // bytes consumed in the current segment (not token)
         private int _consumed;
-        private bool _inObject;
-        private bool _isNotPrimitive;
-        private BinaryTokenType _tokenType;
-        private BinaryTokenType _previousTokenType;
-        private BinarySerializerOptions _readerOptions;
+        //private bool _inObject;
+        //private bool _isNotPrimitive;
+        //private BinaryTokenType _tokenType;
+        //private BinaryTokenType _previousTokenType;
+      //  private BinarySerializerOptions _readerOptions;
         // private BitStack _bitStack;
 
         private long _totalConsumed;
-        private bool _isLastSegment;
-        internal bool _stringHasEscaping;
-        private readonly bool _isMultiSegment;
-        private bool _trailingCommaBeforeComment;
+        //private bool _isLastSegment;
+        //internal bool _stringHasEscaping;
+        //private readonly bool _isMultiSegment;
+        //private bool _trailingCommaBeforeComment;
 
-        private SequencePosition _nextPosition;
-        private SequencePosition _currentPosition;
+        //private SequencePosition _nextPosition;
+        //private SequencePosition _currentPosition;
         private readonly ReadOnlySequence<byte> _sequence;
 
-        private bool IsLastSpan => _isFinalBlock && (!_isMultiSegment || _isLastSegment);
+      //  private bool IsLastSpan => _isFinalBlock && (!_isMultiSegment || _isLastSegment);
 
         internal ReadOnlySequence<byte> OriginalSequence => _sequence;
 
@@ -88,49 +88,63 @@ namespace Xfrogcn.BinaryFormatter
             }
         }
 
-        internal bool IsInArray => !_inObject;
+       // internal bool IsInArray => !_inObject;
 
-        //public BinaryReader(ReadOnlySpan<byte> jsonData, bool isFinalBlock, BinaryReaderState state)
-        //{
-        //    _buffer = jsonData;
+        public BinaryReader(ReadOnlySpan<byte> binaryData, bool isFinalBlock, BinaryReaderState state)
+        {
+            _buffer = binaryData;
 
-        //    _isFinalBlock = isFinalBlock;
-        //    _isInputSequence = false;
+            _isFinalBlock = isFinalBlock;
+            _isInputSequence = false;
 
-        //    //_lineNumber = state._lineNumber;
-        //    //_bytePositionInLine = state._bytePositionInLine;
-        //    //_inObject = state._inObject;
-        //    //_isNotPrimitive = state._isNotPrimitive;
-        //    //_stringHasEscaping = state._stringHasEscaping;
-        //    //_trailingCommaBeforeComment = state._trailingCommaBeforeComment;
-        //    //_tokenType = state._tokenType;
-        //    //_previousTokenType = state._previousTokenType;
-        //    //_readerOptions = state._readerOptions;
-        //    //if (_readerOptions.MaxDepth == 0)
-        //    //{
-        //    //    _readerOptions.MaxDepth = JsonReaderOptions.DefaultMaxDepth;  // If max depth is not set, revert to the default depth.
-        //    //}
-        //    //_bitStack = state._bitStack;
+            //_lineNumber = state._lineNumber;
+            //_bytePositionInLine = state._bytePositionInLine;
+            // _inObject = default; //state._inObject;
+           // _isNotPrimitive = state._isNotPrimitive;
+            //_stringHasEscaping = state._stringHasEscaping;
+            //_trailingCommaBeforeComment = state._trailingCommaBeforeComment;
+           // _tokenType = state._tokenType;
+            //_previousTokenType = state._previousTokenType;
+            //_readerOptions = state._readerOptions;
+            //if (_readerOptions.MaxDepth == 0)
+            //{
+            //    _readerOptions.MaxDepth = JsonReaderOptions.DefaultMaxDepth;  // If max depth is not set, revert to the default depth.
+            //}
+            //_bitStack = state._bitStack;
 
-        //    //_consumed = 0;
-        //    //TokenStartIndex = 0;
-        //    //_totalConsumed = 0;
-        //    //_isLastSegment = _isFinalBlock;
-        //    //_isMultiSegment = false;
+            _consumed = 0;
+            TokenStartIndex = 0;
+            _totalConsumed = 0;
+            //_isLastSegment = _isFinalBlock;
+            //_isMultiSegment = false;
 
-        //    //ValueSpan = ReadOnlySpan<byte>.Empty;
+            ValueSpan = ReadOnlySpan<byte>.Empty;
 
-        //    //_currentPosition = default;
-        //    //_nextPosition = default;
-        //    //_sequence = default;
-        //    //HasValueSequence = false;
-        //    //ValueSequence = ReadOnlySequence<byte>.Empty;
-        //}
+            //_currentPosition = default;
+            //_nextPosition = default;
+            _sequence = default;
+          // HasValueSequence = false;
+           // ValueSequence = ReadOnlySequence<byte>.Empty;
+        }
+
+
+        public BinaryReader(ReadOnlySpan<byte> binaryData, BinarySerializerOptions options = default)
+            : this(binaryData, isFinalBlock: true, new BinaryReaderState())
+        {
+        }
+
+        public bool ReadBytes(int len, out ReadOnlySpan<byte> output)
+        {
+            if((_consumed+len)>= _buffer.Length)
+            {
+                output = default;
+                return false;
+            }
+            output = _buffer.Slice(_consumed, len);
+            _consumed += len;
+            return true;
+        }
 
         
-        //public BinaryReader(ReadOnlySpan<byte> jsonData, BinarySerializerOptions options = default)
-        //    : this(jsonData, isFinalBlock: true, new BinaryReaderState())
-        //{
-        //}
     }
 }

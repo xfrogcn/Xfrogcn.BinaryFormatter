@@ -12,6 +12,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
         {
             typeInfo.Type = TypeEnum.Boolean;
+            typeInfo.SerializeType = ClassType.Value;
         }
 
         public override void Write(BinaryWriter writer, bool value, BinarySerializerOptions options)

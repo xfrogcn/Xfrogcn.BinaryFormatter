@@ -29,7 +29,8 @@ namespace Xfrogcn.BinaryFormatter
             {
                 TypeSeq = TypeSeq,
                 Seq = Seq,
-                Name = NameAsUtf8Bytes,
+                NameAsUtf8Bytes = NameAsUtf8Bytes,
+                NameAsString = NameAsString
             };
         }
 

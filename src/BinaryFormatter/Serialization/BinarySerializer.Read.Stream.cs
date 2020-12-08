@@ -101,33 +101,45 @@ namespace Xfrogcn.BinaryFormatter
             }
 
             stream.Seek(-(mapPosition+4), SeekOrigin.End);
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(options.DefaultBufferSize);
+
+            byte[] buffer = ArrayPool<byte>.Shared.Rent((int)mapPosition);
+            await stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+
+            ReadMetadata(new ReadOnlySpan<byte>(buffer), ref state);
+
+            buffer = ArrayPool<byte>.Shared.Rent(options.DefaultBufferSize);
             int bytesInBuffer = 0;
 
-            while (true)
-            {
-                while (true)
-                {
-                    int bytesRead = await stream.ReadAsync(buffer.AsMemory(bytesInBuffer), cancellationToken).ConfigureAwait(false);
-                    if (bytesRead == 0)
-                    {
-                        break;
-                    }
+            //while (true)
+            //{
+            //    while (true)
+            //    {
+            //        int bytesRead = await stream.ReadAsync(buffer.AsMemory(bytesInBuffer), cancellationToken).ConfigureAwait(false);
+            //        if (bytesRead == 0)
+            //        {
+            //            break;
+            //        }
 
-                    if(bytesInBuffer == buffer.Length)
-                    {
-                        break;
-                    }
-                }
+            //        if(bytesInBuffer == buffer.Length)
+            //        {
+            //            break;
+            //        }
+            //    }
 
-                // Read
+            //    // Read
 
 
 
-            }
+            //}
 
             return default;
 
+        }
+
+        internal static void ReadMetadata(ReadOnlySpan<byte> buffer, ref ReadStack state)
+        {
+            BinaryReader reader = new BinaryReader(buffer);
+            reader.ReadMetadata(ref state);
         }
 
     }

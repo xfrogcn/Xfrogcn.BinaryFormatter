@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Xfrogcn.BinaryFormatter
 {
@@ -186,7 +188,24 @@ namespace Xfrogcn.BinaryFormatter
             BytesPending += bytes.Length;
         }
 
-        internal void WriteTypeInfo(BinaryTypeInfo typeInfo)
+        internal void WriteTypeInfos(IList<BinaryTypeInfo> typeList, ushort primaryTypeSeq)
+        {
+            //元数据
+            Debug.Assert(typeList != null);
+            long startPosition = BytesCommitted + BytesPending;
+            WriteBytes(BitConverter.GetBytes((ushort)(typeList.Count)));
+            foreach(BinaryTypeInfo ti in typeList)
+            {
+                WriteTypeInfo(ti);
+            }
+
+            // 主类型
+            WriteUInt16Value(primaryTypeSeq);
+            long endPosition = BytesCommitted + BytesPending;
+            WriteUInt32Value((uint)(endPosition - startPosition));
+        }
+
+        private void WriteTypeInfo(BinaryTypeInfo typeInfo)
         {
             byte[] typeData = typeInfo.GetBytes();
             WriteBytes(typeData);

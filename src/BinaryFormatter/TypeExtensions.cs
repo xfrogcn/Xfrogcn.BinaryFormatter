@@ -80,39 +80,39 @@ namespace System
                 .ToArray();
         }
 
-        public static BinaryMemberInfo[] GetMemberInfos([NotNull]this Type type, [NotNull] MetadataGetterContext context)
-        {
-            // 公共可读属性 公共字段
-            ushort seq = 0;
-            List<BinaryMemberInfo> members = new List<BinaryMemberInfo>();
+        //public static BinaryMemberInfo[] GetMemberInfos([NotNull]this Type type, [NotNull] MetadataGetterContext context)
+        //{
+        //    // 公共可读属性 公共字段
+        //    ushort seq = 0;
+        //    List<BinaryMemberInfo> members = new List<BinaryMemberInfo>();
 
-            var pis = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            foreach (var p in pis)
-            {
-                members.Add(new BinaryMemberInfo()
-                {
-                    Seq = seq,
-                    IsField = false,
-                    TypeSeq = context.GetTypeSeq(p.PropertyType, context),
-                    Name = p.Name
-                });
+        //    var pis = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+        //    foreach (var p in pis)
+        //    {
+        //        members.Add(new BinaryMemberInfo()
+        //        {
+        //            Seq = seq,
+        //            IsField = false,
+        //            TypeSeq = context.GetTypeSeq(p.PropertyType, context),
+        //            Name = p.Name
+        //        });
                 
-                seq++;
-            }
-            var fis = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
-            foreach (var f in fis)
-            {
-                members.Add(new BinaryMemberInfo()
-                {
-                    Seq = seq,
-                    IsField = false,
-                    TypeSeq = context.GetTypeSeq(f.FieldType, context),
-                    Name = f.Name
-                });
-                seq++;
-            }
-            return members.ToArray();
-        }
+        //        seq++;
+        //    }
+        //    var fis = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+        //    foreach (var f in fis)
+        //    {
+        //        members.Add(new BinaryMemberInfo()
+        //        {
+        //            Seq = seq,
+        //            IsField = false,
+        //            TypeSeq = context.GetTypeSeq(f.FieldType, context),
+        //            Name = f.Name
+        //        });
+        //        seq++;
+        //    }
+        //    return members.ToArray();
+        //}
 
         /// <summary>
         /// Returns <see langword="true" /> when the given type is of type <see cref="Nullable{T}"/>.

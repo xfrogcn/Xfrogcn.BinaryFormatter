@@ -91,22 +91,8 @@ namespace Xfrogcn.BinaryFormatter
 
                     } while (!isFinalBlock);
 
-                    //元数据
-                    long startPosition = writer.BytesCommitted;
-
-
                     var typeList = state.GetTypeList();
-                    writer.WriteBytes(BitConverter.GetBytes((ushort)(typeList.Count)));
-                    typeList.ForEach(bi =>
-                    {
-                        writer.WriteTypeInfo(bi);
-                    });
-                    // 主类型
-                    writer.WriteBytes(BitConverter.GetBytes(state.PrimaryTypeSeq));
-                    // 类型元数据偏移
-                    long endPosition = writer.BytesCommitted + writer.BytesPending;
-
-                    writer.WriteBytes(BitConverter.GetBytes((uint)(endPosition - startPosition)));
+                    writer.WriteTypeInfos(typeList, state.PrimaryTypeSeq);
                     writer.Flush();
 
                     await bufferWriter.WriteToStreamAsync(stream, cancellationToken);
