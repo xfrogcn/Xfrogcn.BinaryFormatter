@@ -158,7 +158,7 @@ namespace Xfrogcn.BinaryFormatter
             return true;
         }
 
-        public bool ReadBytes(int len)
+        internal bool ReadBytes(int len)
         {
             if((_consumed + len) > _buffer.Length)
             {
@@ -169,6 +169,54 @@ namespace Xfrogcn.BinaryFormatter
             ValueSpan = _buffer.Slice(_consumed, len);
             _consumed += len;
 
+            return true;
+        }
+
+        /// <summary>
+        /// 读取包含长度信息的字节组
+        /// </summary>
+        /// <returns></returns>
+        public bool ReadBytes()
+        {
+            // 长度 16位或32位
+            if ((_consumed + 2) > _buffer.Length)
+            {
+                return false;
+            }
+
+            // 如果最高位是1，表示31位长度，否则表示15位长度
+            int len = default;
+            byte b1 = _buffer[_consumed];
+            int lenBytes = 4;
+            if((b1 & 0x80) == 0x80)
+            {
+                if ((_consumed + 4) > _buffer.Length)
+                {
+                    return false;
+                }
+
+                len = BitConverter.ToInt32(_buffer.Slice(_consumed, 4)) & (int)0x7FFFFFFF;
+                lenBytes = 4;
+            }
+            else
+            {
+                len = BitConverter.ToUInt16(_buffer.Slice(_consumed, 2));
+                lenBytes = 2;
+            }
+
+            if(len == 0)
+            {
+                ValueSpan = ReadOnlySpan<byte>.Empty;
+            }
+
+            if((_consumed + len + lenBytes) > _buffer.Length)
+            {
+                return false;
+            }
+
+            _consumed += lenBytes;
+            _tokenType = BinaryTokenType.Bytes;
+            ValueSpan = _buffer.Slice(_consumed, len);
             return true;
         }
 
