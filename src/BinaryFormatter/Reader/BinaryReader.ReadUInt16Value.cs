@@ -17,5 +17,12 @@ namespace Xfrogcn.BinaryFormatter
             throw new InvalidOperationException();
 
         }
+
+        public ushort GetUInt16()
+        {
+            Debug.Assert(ValueSpan.Length == 2);
+
+            return BitConverter.ToUInt16(ValueSpan);
+        }
     }
 }
