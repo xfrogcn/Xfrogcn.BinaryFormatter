@@ -205,6 +205,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 The converter &apos;{0}&apos; read too much or not enough. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationConverterRead {
+            get {
+                return ResourceManager.GetString("SerializationConverterRead", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The data extension property &apos;{0}.{1}&apos; does not match the required signature of IDictionary&lt;string, BinaryElement&gt; or IDictionary&lt;string, object&gt;. 的本地化字符串。
         /// </summary>
         internal static string SerializationDataExtensionPropertyInvalid {

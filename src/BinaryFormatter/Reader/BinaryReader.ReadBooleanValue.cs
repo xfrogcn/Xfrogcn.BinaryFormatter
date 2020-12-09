@@ -17,5 +17,14 @@ namespace Xfrogcn.BinaryFormatter
             throw new InvalidOperationException();
 
         }
+
+        public bool GetBoolean()
+        {
+            ReadOnlySpan<byte> span = ValueSpan;
+
+            Debug.Assert(span.Length == 1);
+            return span[0] == 0 ? false : true;
+
+        }
     }
 }

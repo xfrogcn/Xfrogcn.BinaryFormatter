@@ -109,11 +109,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         }
 
         // Provide a default implementation for value converters.
-        //internal virtual bool OnTryRead(ref Utf8BinaryReader reader, Type typeToConvert, BinarySerializerOptions options, ref ReadStack state, out T? value)
-        //{
-        //    value = Read(ref reader, typeToConvert, options);
-        //    return true;
-        //}
+        internal virtual bool OnTryRead(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options, ref ReadStack state, out T value)
+        {
+            value = Read(ref reader, typeToConvert, options);
+            return true;
+        }
 
         /// <summary>
         /// Read and convert the Binary to T.
@@ -129,76 +129,77 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         internal bool TryRead(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options, ref ReadStack state, out T value)
         {
+            if( reader.CurrentTypeInfo.SerializeType != ClassType)
+            {
+                // TODO 
+                throw new Exception();
+            }
+            if (ClassType == ClassType.Value)
+            {
+                // A value converter should never be within a continuation.
+                //Debug.Assert(!state.IsContinuation);
+
+                // For perf and converter simplicity, handle null here instead of forwarding to the converter.
+                if (reader.TokenType == BinaryTokenType.Null && !HandleNullOnRead)
+                {
+                    if (!CanBeNull)
+                    {
+                        ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(TypeToConvert);
+                    }
+
+                    value = default;
+                    return true;
+                }
+
+                // 读取指定数量的字节
+                if(FixBytesCount > 0)
+                {
+                    if(!reader.ReadBytes(FixBytesCount))
+                    {
+                        value = default;
+                        return false;
+                    }
+                }
+
+
+                // #if !DEBUG
+                // For performance, only perform validation on internal converters on debug builds.
+                if (IsInternalConverter)
+                {
+                    value = Read(ref reader, typeToConvert, options);
+                }
+                else
+                // #endif
+                {
+                    BinaryTokenType originalPropertyTokenType = reader.TokenType;
+                    int originalPropertyDepth = reader.CurrentDepth;
+                    long originalPropertyBytesConsumed = reader.BytesConsumed;
+                    value = Read(ref reader, typeToConvert, options);
+
+                    VerifyRead(
+                        originalPropertyTokenType,
+                        originalPropertyDepth,
+                        originalPropertyBytesConsumed,
+                        isValueConverter: true,
+                        ref reader);
+                }
+
+                //if (CanBePolymorphic && options.ReferenceHandler != null && value is BinaryElement element)
+                //{
+                //    // Edge case where we want to lookup for a reference when parsing into typeof(object)
+                //    // instead of return `value` as a BinaryElement.
+                //    Debug.Assert(TypeToConvert == typeof(object));
+
+                //    if (BinarySerializer.TryGetReferenceFromBinaryElement(ref state, element, out object? referenceValue))
+                //    {
+                //        value = (T?)referenceValue;
+                //    }
+                //}
+
+                return true;
+            }
             value = default;
-            return true;
-//            if (ClassType == ClassType.Value)
-//            {
-//                // A value converter should never be within a continuation.
-//                Debug.Assert(!state.IsContinuation);
-
-//                // For perf and converter simplicity, handle null here instead of forwarding to the converter.
-//                if (reader.TokenType == BinaryTokenType.Null && !HandleNullOnRead)
-//                {
-//                    if (!CanBeNull)
-//                    {
-//                        ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(TypeToConvert);
-//                    }
-
-//                    value = default;
-//                    return true;
-//                }
-
-//#if !DEBUG
-//                        // For performance, only perform validation on internal converters on debug builds.
-//                        if (IsInternalConverter)
-//                        {
-//                            if (state.Current.NumberHandling != null)
-//                            {
-//                                value = ReadNumberWithCustomHandling(ref reader, state.Current.NumberHandling.Value);
-//                            }
-//                            else
-//                            {
-//                                value = Read(ref reader, typeToConvert, options);
-//                            }
-//                        }
-//                        else
-//#endif
-//                {
-//                    BinaryTokenType originalPropertyTokenType = reader.TokenType;
-//                    int originalPropertyDepth = reader.CurrentDepth;
-//                    long originalPropertyBytesConsumed = reader.BytesConsumed;
-
-//                    if (state.Current.NumberHandling != null)
-//                    {
-//                        value = ReadNumberWithCustomHandling(ref reader, state.Current.NumberHandling.Value);
-//                    }
-//                    else
-//                    {
-//                        value = Read(ref reader, typeToConvert, options);
-//                    }
-
-//                    VerifyRead(
-//                        originalPropertyTokenType,
-//                        originalPropertyDepth,
-//                        originalPropertyBytesConsumed,
-//                        isValueConverter: true,
-//                        ref reader);
-//                }
-
-//                if (CanBePolymorphic && options.ReferenceHandler != null && value is BinaryElement element)
-//                {
-//                    // Edge case where we want to lookup for a reference when parsing into typeof(object)
-//                    // instead of return `value` as a BinaryElement.
-//                    Debug.Assert(TypeToConvert == typeof(object));
-
-//                    if (BinarySerializer.TryGetReferenceFromBinaryElement(ref state, element, out object? referenceValue))
-//                    {
-//                        value = (T?)referenceValue;
-//                    }
-//                }
-
-//                return true;
-//            }
+            return false;
 
 //            bool success;
 
@@ -421,48 +422,48 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         internal sealed override Type TypeToConvert => typeof(T);
 
-        //internal void VerifyRead(BinaryTokenType tokenType, int depth, long bytesConsumed, bool isValueConverter, ref Utf8BinaryReader reader)
-        //{
-        //    switch (tokenType)
-        //    {
-        //        case BinaryTokenType.StartArray:
-        //            if (reader.TokenType != BinaryTokenType.EndArray)
-        //            {
-        //                ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
-        //            }
-        //            else if (depth != reader.CurrentDepth)
-        //            {
-        //                ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
-        //            }
+        internal void VerifyRead(BinaryTokenType tokenType, int depth, long bytesConsumed, bool isValueConverter, ref BinaryReader reader)
+        {
+            switch (tokenType)
+            {
+                case BinaryTokenType.StartArray:
+                    if (reader.TokenType != BinaryTokenType.EndArray)
+                    {
+                        ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
+                    }
+                    else if (depth != reader.CurrentDepth)
+                    {
+                        ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
+                    }
 
-        //            break;
+                    break;
 
-        //        case BinaryTokenType.StartObject:
-        //            if (reader.TokenType != BinaryTokenType.EndObject)
-        //            {
-        //                ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
-        //            }
-        //            else if (depth != reader.CurrentDepth)
-        //            {
-        //                ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
-        //            }
+                case BinaryTokenType.StartObject:
+                    if (reader.TokenType != BinaryTokenType.EndObject)
+                    {
+                        ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
+                    }
+                    else if (depth != reader.CurrentDepth)
+                    {
+                        ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
+                    }
 
-        //            break;
+                    break;
 
-        //        default:
-        //            // A non-value converter (object or collection) should always have Start and End tokens.
-        //            // A value converter should not make any reads.
-        //            if (!isValueConverter || reader.BytesConsumed != bytesConsumed)
-        //            {
-        //                ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
-        //            }
+                default:
+                    // A non-value converter (object or collection) should always have Start and End tokens.
+                    // A value converter should not make any reads.
+                    if (!isValueConverter || reader.BytesConsumed != bytesConsumed)
+                    {
+                        ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
+                    }
 
-        //            // Should not be possible to change token type.
-        //            Debug.Assert(reader.TokenType == tokenType);
+                    // Should not be possible to change token type.
+                    Debug.Assert(reader.TokenType == tokenType);
 
-        //            break;
-        //    }
-        //}
+                    break;
+            }
+        }
 
         internal void VerifyWrite(int originalDepth, BinaryWriter writer)
         {

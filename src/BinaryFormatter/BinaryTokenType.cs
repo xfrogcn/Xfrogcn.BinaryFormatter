@@ -9,6 +9,7 @@
         EndArray,
         PropertyName,
         TypeSeq,
+        Bytes,
         Null
     }
 }

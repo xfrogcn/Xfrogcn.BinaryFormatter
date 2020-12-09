@@ -165,6 +165,9 @@
   <data name="SerializationConverterOnAttributeNotCompatible" xml:space="preserve">
     <value>The converter specified on '{0}' is not compatible with the type '{1}'.</value>
   </data>
+  <data name="SerializationConverterRead" xml:space="preserve">
+    <value>The converter '{0}' read too much or not enough.</value>
+  </data>
   <data name="SerializationDataExtensionPropertyInvalid" xml:space="preserve">
     <value>The data extension property '{0}.{1}' does not match the required signature of IDictionary&lt;string, BinaryElement&gt; or IDictionary&lt;string, object&gt;.</value>
   </data>

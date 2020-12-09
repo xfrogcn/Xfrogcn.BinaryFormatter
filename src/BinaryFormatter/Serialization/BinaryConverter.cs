@@ -18,6 +18,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         internal abstract ClassType ClassType { get; }
 
         /// <summary>
+        /// 默认的固定字节数
+        /// </summary>
+        public virtual int FixBytesCount { get; } = 0;
+
+        /// <summary>
         /// Can direct Read or Write methods be called (for performance).
         /// </summary>
         internal bool CanUseDirectReadOrWrite { get; set; }

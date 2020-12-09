@@ -340,5 +340,14 @@ namespace Xfrogcn.BinaryFormatter
         {
             throw new BinaryException(string.Format(Strings.SerializerCycleDetected, maxDepth));
         }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowBinaryException_SerializationConverterRead(BinaryConverter converter)
+        {
+            var ex = new BinaryException(string.Format(Strings.SerializationConverterRead, converter));
+            ex.AppendPathInformation = true;
+            throw ex;
+        }
     }
 }

@@ -24,6 +24,7 @@ namespace Xfrogcn.BinaryFormatter
         //private bool _isNotPrimitive;
         private BinaryTokenType _tokenType;
         private BinaryTokenType _previousTokenType;
+        private ushort _typeSeq;
       //  private BinarySerializerOptions _readerOptions;
         // private BitStack _bitStack;
 
@@ -49,6 +50,8 @@ namespace Xfrogcn.BinaryFormatter
         public bool IsFinalBlock => _isFinalBlock;
 
         public ReadOnlySpan<byte> ValueSpan { get; private set; }
+
+        public BinaryTypeInfo CurrentTypeInfo { get; private set; }
 
         /// <summary>
         /// Returns the total amount of bytes consumed by the <see cref="Utf8JsonReader"/> so far
@@ -93,6 +96,8 @@ namespace Xfrogcn.BinaryFormatter
             }
         }
 
+        private TypeMap _typeMap;
+
        // internal bool IsInArray => !_inObject;
 
         public BinaryReader(ReadOnlySpan<byte> binaryData, bool isFinalBlock, BinaryReaderState state)
@@ -101,6 +106,9 @@ namespace Xfrogcn.BinaryFormatter
 
             _isFinalBlock = isFinalBlock;
             _isInputSequence = false;
+            _typeSeq = default;
+            CurrentTypeInfo = null;
+            _typeMap = state._typeMap;
 
             //_lineNumber = state._lineNumber;
             //_bytePositionInLine = state._bytePositionInLine;
@@ -150,9 +158,26 @@ namespace Xfrogcn.BinaryFormatter
             return true;
         }
 
+        public bool ReadBytes(int len)
+        {
+            if((_consumed + len) > _buffer.Length)
+            {
+                return false;
+            }
+
+            _tokenType = BinaryTokenType.Bytes;
+            ValueSpan = _buffer.Slice(_consumed, len);
+            _consumed += len;
+
+            return true;
+        }
+
         public BinaryReaderState CurrentState => new BinaryReaderState
         {
-            _bytePosition = _consumed
+            _bytePosition = _consumed,
+            _tokenType = _tokenType,
+            _previousTokenType = _previousTokenType,
+            _typeMap = _typeMap
         };
 
         public bool Read()
@@ -252,15 +277,33 @@ namespace Xfrogcn.BinaryFormatter
 
         private bool ReadFirstToken()
         {
-            if((_consumed+2)>= _buffer.Length)
+            if((_consumed+2)> _buffer.Length)
+            {
+                return false;
+            }
+
+            return ReadTypeSeq();
+            
+        }
+
+        private bool ReadTypeSeq()
+        {
+            if ((_consumed + 2) >= _buffer.Length)
             {
                 return false;
             }
 
             _tokenType = BinaryTokenType.TypeSeq;
             ValueSpan = _buffer.Slice(_consumed, 2);
+            _typeSeq = BitConverter.ToUInt16(ValueSpan);
+            CurrentTypeInfo = _typeMap.GetTypeInfo(_typeSeq);
+            if (CurrentTypeInfo == null)
+            {
+                throw new Exception();
+            }
             _consumed += 2;
-            
+
+
             return true;
         }
 

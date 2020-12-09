@@ -4,10 +4,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
     internal sealed class BooleanConverter : BinaryConverter<bool>
     {
+        public override int FixBytesCount => 1;
+
         public override bool Read(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options)
         {
-            throw new NotImplementedException();
+            return reader.GetBoolean();
         }
+
+
 
         public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
         {

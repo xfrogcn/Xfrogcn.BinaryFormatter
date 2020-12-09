@@ -128,7 +128,7 @@ namespace Xfrogcn.BinaryFormatter
 
             BinaryConverter converter = state.Current.BinaryPropertyInfo.ConverterBase;
 
-            var readerState = new BinaryReaderState(options.GetReaderOptions());
+            var readerState = new BinaryReaderState(state.TypeMap, options.GetReaderOptions());
            
             buffer = ArrayPool<byte>.Shared.Rent(options.DefaultBufferSize);
             int bytesInBuffer = 0;
@@ -157,6 +157,9 @@ namespace Xfrogcn.BinaryFormatter
                     if( totalBytesRead>= dataLength)
                     {
                         isFinalBlock = true;
+                        bytesInBuffer -= (int)(totalBytesRead - dataLength);
+                        totalBytesRead = dataLength;
+
                         break;
                     }
 

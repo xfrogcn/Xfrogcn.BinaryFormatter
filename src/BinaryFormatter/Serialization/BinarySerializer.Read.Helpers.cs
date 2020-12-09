@@ -14,7 +14,7 @@ namespace Xfrogcn.BinaryFormatter
             }
 
             // The non-generic API was called or we have a polymorphic case where TValue is not equal to the T in BinaryConverter<T>.
-            object? value = binaryConverter.ReadCoreAsObject(ref reader, options, ref state);
+            object value = binaryConverter.ReadCoreAsObject(ref reader, options, ref state);
             Debug.Assert(value == null || value is TValue);
             return (TValue)value!;
         }
