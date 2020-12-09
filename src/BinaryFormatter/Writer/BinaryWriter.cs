@@ -188,6 +188,7 @@ namespace Xfrogcn.BinaryFormatter
             BytesPending += bytes.Length;
         }
 
+
         internal void WriteTypeInfos(IList<BinaryTypeInfo> typeList, ushort primaryTypeSeq)
         {
             //元数据

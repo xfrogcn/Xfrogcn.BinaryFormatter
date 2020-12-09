@@ -31,15 +31,19 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
         }
 
-
-        [Fact(DisplayName = "String_Buffer1")]
-        public async Task Test2()
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(512)]
+        [InlineData(1024)]
+        [InlineData(1024*10)]
+        [Theory(DisplayName = "String_Buffer1")]
+        public async Task Test2(int len)
         {
             BinarySerializerOptions options = new BinarySerializerOptions()
             {
                 DefaultBufferSize = 1
             };
-            string input = new string('A', 1024 * 1024);
+            string input = new string('A', 1024 * len);
             MemoryStream ms = new MemoryStream();
             await BinarySerializer.SerializeAsync(ms, input);
 

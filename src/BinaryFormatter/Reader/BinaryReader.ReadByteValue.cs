@@ -17,5 +17,15 @@ namespace Xfrogcn.BinaryFormatter
             throw new InvalidOperationException();
 
         }
+
+        public byte GetByte()
+        {
+            if(ValueSpan.Length != 1)
+            {
+                throw new Exception();
+            }
+
+            return ValueSpan[0];
+        }
     }
 }
