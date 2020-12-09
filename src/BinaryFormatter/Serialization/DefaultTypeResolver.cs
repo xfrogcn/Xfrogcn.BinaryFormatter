@@ -14,7 +14,7 @@ namespace Xfrogcn.BinaryFormatter
                 { TypeEnum.Int16, typeof(Int16)  },
                 { TypeEnum.Int32, typeof(Int32)  },
                 { TypeEnum.Int64, typeof(Int64)  },
-                { TypeEnum.SByte, typeof(Int64)  },
+                { TypeEnum.SByte, typeof(SByte)  },
                 { TypeEnum.UInt16, typeof(UInt16)  },
                 { TypeEnum.UInt32, typeof(UInt32)  },
                 { TypeEnum.UInt64, typeof(UInt64)  },

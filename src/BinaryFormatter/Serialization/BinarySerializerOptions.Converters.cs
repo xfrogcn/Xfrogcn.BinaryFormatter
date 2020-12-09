@@ -30,7 +30,7 @@ namespace Xfrogcn.BinaryFormatter
 
         private static Dictionary<Type, BinaryConverter> GetDefaultSimpleConverters()
         {
-            const int NumberOfSimpleConverters = 6;
+            const int NumberOfSimpleConverters = 7;
             var converters = new Dictionary<Type, BinaryConverter>(NumberOfSimpleConverters);
 
             // Use a dictionary for simple converters.
@@ -50,7 +50,7 @@ namespace Xfrogcn.BinaryFormatter
             //Add(new JsonElementConverter());
             //Add(new JsonDocumentConverter());
             //Add(new ObjectConverter());
-            //Add(new SByteConverter());
+            Add(new SByteConverter());
             //Add(new SingleConverter());
             Add(new StringConverter());
             //Add(new TypeConverter());
