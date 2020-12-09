@@ -160,6 +160,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Cannot get the value of a token type &apos;{0}&apos; as a {1}. 的本地化字符串。
+        /// </summary>
+        internal static string InvalidCast {
+            get {
+                return ResourceManager.GetString("InvalidCast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Max depth must be positive. 的本地化字符串。
         /// </summary>
         internal static string MaxDepthMustBePositive {

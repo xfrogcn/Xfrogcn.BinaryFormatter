@@ -129,7 +129,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         internal bool TryRead(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options, ref ReadStack state, out T value)
         {
-            if( reader.CurrentTypeInfo.SerializeType != ClassType)
+            if (reader.CurrentTypeInfo != null && reader.CurrentTypeInfo.SerializeType != ClassType)
             {
                 // TODO 
                 throw new Exception();
@@ -152,9 +152,17 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 }
 
                 // 读取指定数量的字节
-                if(FixBytesCount > 0)
+                if (FixBytesCount > 0)
                 {
-                    if(!reader.ReadBytes(FixBytesCount))
+                    if (!reader.ReadBytes(FixBytesCount))
+                    {
+                        value = default;
+                        return false;
+                    }
+                }
+                else if (FixBytesCount == 0)
+                {
+                    if (!reader.ReadBytes())
                     {
                         value = default;
                         return false;
@@ -293,8 +301,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
             
             ushort typeSeq = state.PushType(value==null? typeof(T) : value.GetType());
-            writer.WriteTypeSeq(typeSeq);
-
             if (CanBePolymorphic)
             {
                 if (value == null)
@@ -316,6 +322,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     return true;
                 }
 
+                writer.WriteTypeSeq(typeSeq);
                 Type type = value.GetType();
                 if (type == BinaryClassInfo.ObjectType)
                 {
@@ -344,6 +351,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 return true;
             }
 
+            writer.WriteTypeSeq(typeSeq);
             if (ClassType == ClassType.Value)
             {
                 Debug.Assert(!state.IsContinuation);

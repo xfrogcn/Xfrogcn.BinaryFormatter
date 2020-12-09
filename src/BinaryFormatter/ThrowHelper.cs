@@ -182,6 +182,17 @@ namespace Xfrogcn.BinaryFormatter
             return message;
         }
 
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static InvalidOperationException GetInvalidOperationException(string message, BinaryTokenType tokenType)
+        {
+            return GetInvalidOperationException(string.Format(Strings.InvalidCast, tokenType, message));
+        }
+
+        public static InvalidOperationException GetInvalidOperationException_ExpectedString(BinaryTokenType tokenType)
+        {
+            return GetInvalidOperationException("string", tokenType);
+        }
     }
 
     internal enum ExceptionResource

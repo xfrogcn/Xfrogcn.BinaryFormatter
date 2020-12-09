@@ -4,7 +4,7 @@
     {
         public void WriteNullValue()
         {
-            WriteBytes(new byte[] { 0 });
+            WriteTypeSeq(TypeMap.NullTypeSeq);
         }
     }
 }

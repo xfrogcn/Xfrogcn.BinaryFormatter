@@ -106,7 +106,7 @@ namespace Xfrogcn.BinaryFormatter
 
             _isFinalBlock = isFinalBlock;
             _isInputSequence = false;
-            _typeSeq = default;
+            _typeSeq = state._typeSeq;
             CurrentTypeInfo = null;
             _typeMap = state._typeMap;
 
@@ -188,19 +188,23 @@ namespace Xfrogcn.BinaryFormatter
             int len = default;
             byte b1 = _buffer[_consumed];
             int lenBytes = 4;
-            if((b1 & 0x80) == 0x80)
+            if ((b1 & 0x80) == 0x80)
             {
                 if ((_consumed + 4) > _buffer.Length)
                 {
                     return false;
                 }
 
-                len = BitConverter.ToInt32(_buffer.Slice(_consumed, 4)) & (int)0x7FFFFFFF;
+                len = ((_buffer[_consumed] & 0x7F) << 24) |
+                    (_buffer[_consumed + 1] << 16) |
+                    (_buffer[_consumed + 2] << 8) |
+                    _buffer[_consumed + 3];
+
                 lenBytes = 4;
             }
             else
             {
-                len = BitConverter.ToUInt16(_buffer.Slice(_consumed, 2));
+                len = _buffer[_consumed] << 8 | _buffer[_consumed + 1]; 
                 lenBytes = 2;
             }
 
@@ -217,6 +221,7 @@ namespace Xfrogcn.BinaryFormatter
             _consumed += lenBytes;
             _tokenType = BinaryTokenType.Bytes;
             ValueSpan = _buffer.Slice(_consumed, len);
+            _consumed += len;
             return true;
         }
 
@@ -225,7 +230,8 @@ namespace Xfrogcn.BinaryFormatter
             _bytePosition = _consumed,
             _tokenType = _tokenType,
             _previousTokenType = _previousTokenType,
-            _typeMap = _typeMap
+            _typeMap = _typeMap,
+            _typeSeq = _typeSeq
         };
 
         public bool Read()
@@ -307,6 +313,11 @@ namespace Xfrogcn.BinaryFormatter
                 //retVal = ConsumeValue(first);
                 goto Done;
             }
+            else if(_tokenType == BinaryTokenType.TypeSeq)
+            {
+                retVal = true;
+                goto Done;
+            }
             else
             {
                 //retVal = ConsumeNextTokenOrRollback(first);
@@ -344,8 +355,17 @@ namespace Xfrogcn.BinaryFormatter
             _tokenType = BinaryTokenType.TypeSeq;
             ValueSpan = _buffer.Slice(_consumed, 2);
             _typeSeq = BitConverter.ToUInt16(ValueSpan);
-            CurrentTypeInfo = _typeMap.GetTypeInfo(_typeSeq);
-            if (CurrentTypeInfo == null)
+            if(_typeSeq == TypeMap.NullTypeSeq)
+            {
+                _tokenType = BinaryTokenType.Null;
+                CurrentTypeInfo = null;
+            }
+            else
+            {
+                CurrentTypeInfo = _typeMap.GetTypeInfo(_typeSeq);
+            }
+           
+            if (CurrentTypeInfo == null && _tokenType != BinaryTokenType.Null)
             {
                 throw new Exception();
             }

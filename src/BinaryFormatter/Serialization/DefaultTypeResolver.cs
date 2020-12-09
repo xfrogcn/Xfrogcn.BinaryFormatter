@@ -57,6 +57,10 @@ namespace Xfrogcn.BinaryFormatter
         public override bool TryResolveType(TypeMap typeMap, BinaryTypeInfo typeInfo, out Type type)
         {
             type = null;
+            if( typeInfo.Type == TypeEnum.None)
+            {
+                return true;
+            }
             if(_internalTypeMaps.ContainsKey(typeInfo.Type))
             {
                 type = _internalTypeMaps[typeInfo.Type];

@@ -19,6 +19,8 @@ namespace Xfrogcn.BinaryFormatter
         private readonly Dictionary<Type, BinaryTypeInfo> _typeInfoMap;
         private readonly Dictionary<ushort, BinaryTypeInfo> _typeSeqToTypeInfoMap;
 
+        internal const ushort NullTypeSeq = 0xFFFF;
+
         public TypeMap()
         {
             _typeSeqMap = new ConcurrentDictionary<Type, ushort>();
@@ -40,7 +42,7 @@ namespace Xfrogcn.BinaryFormatter
             foreach (var kv in _typeSeqToTypeInfoMap)
             {
                 var ti = kv.Value;
-                if (resolver.TryResolveType(this, ti, out Type t))
+                if (resolver.TryResolveType(this, ti, out Type t) && t!=null)
                 {
                     _typeSeqMap.TryAdd(t, kv.Key);
                     _seqTypeMap.Add(kv.Key, t);

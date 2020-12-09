@@ -67,6 +67,9 @@ namespace Xfrogcn.BinaryFormatter
                     writer.WriteHeader();
                     if(value == null)
                     {
+                        writer.Flush();
+                        await bufferWriter.WriteToStreamAsync(stream, cancellationToken);
+                        bufferWriter.Clear();
                         return;
                     }
                     if (inputType == typeof(object) && value != null)
