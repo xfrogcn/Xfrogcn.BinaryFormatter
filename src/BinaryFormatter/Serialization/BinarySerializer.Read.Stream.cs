@@ -128,7 +128,7 @@ namespace Xfrogcn.BinaryFormatter
 
             BinaryConverter converter = state.Current.BinaryPropertyInfo.ConverterBase;
 
-            var readerState = new BinaryReaderState(state.TypeMap, options.GetReaderOptions());
+            var readerState = new BinaryReaderState(state.TypeMap, state.Version, options.GetReaderOptions());
            
             buffer = ArrayPool<byte>.Shared.Rent(options.DefaultBufferSize);
             int bytesInBuffer = 0;

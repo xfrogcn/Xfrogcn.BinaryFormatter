@@ -25,6 +25,7 @@ namespace Xfrogcn.BinaryFormatter
         private BinaryTokenType _tokenType;
         private BinaryTokenType _previousTokenType;
         private ushort _typeSeq;
+        private int _version;
       //  private BinarySerializerOptions _readerOptions;
         // private BitStack _bitStack;
 
@@ -52,6 +53,8 @@ namespace Xfrogcn.BinaryFormatter
         public ReadOnlySpan<byte> ValueSpan { get; private set; }
 
         public BinaryTypeInfo CurrentTypeInfo { get; private set; }
+
+        public int Version => _version;
 
         /// <summary>
         /// Returns the total amount of bytes consumed by the <see cref="Utf8JsonReader"/> so far
@@ -109,7 +112,7 @@ namespace Xfrogcn.BinaryFormatter
             _typeSeq = state._typeSeq;
             CurrentTypeInfo = null;
             _typeMap = state._typeMap;
-
+            _version = state._version;
             //_lineNumber = state._lineNumber;
             //_bytePositionInLine = state._bytePositionInLine;
             // _inObject = default; //state._inObject;
@@ -231,7 +234,8 @@ namespace Xfrogcn.BinaryFormatter
             _tokenType = _tokenType,
             _previousTokenType = _previousTokenType,
             _typeMap = _typeMap,
-            _typeSeq = _typeSeq
+            _typeSeq = _typeSeq,
+            _version = _version
         };
 
         public bool Read()
