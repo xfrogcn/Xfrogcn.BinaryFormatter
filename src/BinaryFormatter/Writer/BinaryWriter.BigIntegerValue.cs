@@ -8,6 +8,7 @@ namespace Xfrogcn.BinaryFormatter
         {
             byte[] values = value.ToByteArray() ;
             WriteBytesValue(values);
+            
         }
     }
 }
