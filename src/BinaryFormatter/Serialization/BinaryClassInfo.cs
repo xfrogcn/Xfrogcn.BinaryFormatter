@@ -89,7 +89,7 @@ namespace Xfrogcn.BinaryFormatter
             ClassType = converter.ClassType;
 
             PropertyInfoForClassInfo = CreatePropertyInfoForClassInfo(TypeMap, Type, runtimeType, converter, Options);
-            TypeSeq = converter.GetTypeSeq(typeMap);
+            TypeSeq = converter.GetTypeSeq(typeMap, options);
 
             switch (ClassType)
             {

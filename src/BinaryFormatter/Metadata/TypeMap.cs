@@ -139,7 +139,16 @@ namespace Xfrogcn.BinaryFormatter
         //        return GetTypeInfo(0);
         //    }
         //}
+        internal string GetTypeName(ushort seq)
+        {
+            BinaryTypeInfo ti = GetTypeInfo(seq);
+            if(ti == null)
+            {
+                return null;
+            }
 
+            return ti.GetFullName(this);
+        }
 
 
     }

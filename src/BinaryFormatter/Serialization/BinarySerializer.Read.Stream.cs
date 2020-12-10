@@ -97,7 +97,7 @@ namespace Xfrogcn.BinaryFormatter
             state.Version = headerBytes[3];
 
             // 空值
-            if (stream.Length <= 4 && (returnType == typeof(object) || returnType.IsClass))
+            if (stream.Length <= 4 && (returnType == typeof(object) || returnType.IsClass || returnType.IsNullableType()))
             {
                 return (TValue)(object)null;
             }

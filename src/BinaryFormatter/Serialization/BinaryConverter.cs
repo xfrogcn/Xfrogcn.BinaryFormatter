@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 
 namespace Xfrogcn.BinaryFormatter.Serialization
@@ -50,7 +51,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
 
 
-        internal ushort GetTypeSeq(TypeMap typeMap)
+        internal ushort GetTypeSeq(TypeMap typeMap, BinarySerializerOptions options)
         {
             Debug.Assert(RuntimeType != null);
             Debug.Assert(typeMap != null);
@@ -60,7 +61,16 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             {
                 ti.IsGeneric = RuntimeType.IsGenericType;
                 ti.GenericArgumentCount = RuntimeType.GetGenericArgumentCount();
-                ti.GenericArguments = RuntimeType.GetGenericTypeSeqs(typeMap);
+                if (ti.GenericArgumentCount > 0)
+                {
+                    ti.GenericArguments = RuntimeType.GetGenericArguments()
+                        .Select(t =>
+                        {
+                            var converter = options.GetConverter(t);
+                            Debug.Assert(converter != null);
+                            return converter.GetTypeSeq(typeMap, options);
+                        }).ToArray();
+                }
                 SetTypeMetadata(ti, typeMap);
             }
            

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Collections.Concurrent;
 using static System.TimeZoneInfo;
 
 namespace Xfrogcn.BinaryFormatter
@@ -54,6 +55,8 @@ namespace Xfrogcn.BinaryFormatter
                 { TypeEnum.Object, typeof(object)  },
             };
 
+        readonly ConcurrentDictionary<string, Type> _typeNameMaps =
+            new ConcurrentDictionary<string, Type>();
 
         public override bool TryResolveType(TypeMap typeMap, BinaryTypeInfo typeInfo, out Type type)
         {
@@ -67,13 +70,34 @@ namespace Xfrogcn.BinaryFormatter
                 type = _internalTypeMaps[typeInfo.Type];
             }
 
+            if (type == null || type.IsGenericType)
+            {
+                string typeName = typeInfo.GetFullName(typeMap);
+                Type tmp = type;
+                type = _typeNameMaps.GetOrAdd(typeName, (tn) =>
+                {
+                    // 从fullName获取Type
+                    Type t = tmp ?? ParseType(typeInfo.FullName);
+                    if (t != null)
+                    {
+                        t = CreateGenericType(typeMap, t, typeInfo);
+                    }
+                    return t;
+                });
+            }
+            
+
             if (type != null)
             {
-                type = CreateGenericType(typeMap, type, typeInfo);
                 return true;
             }
 
             return false;
+        }
+
+        private Type ParseType(string fullName)
+        {
+            return null;
         }
 
         private Type CreateGenericType(TypeMap typeMap, Type type, BinaryTypeInfo typeInfo)
@@ -82,6 +106,8 @@ namespace Xfrogcn.BinaryFormatter
             {
                 return type;
             }
+
+
 
             Type[] genericArguments = new Type[typeInfo.GenericArgumentCount];
             for (int i = 0; i < typeInfo.GenericArgumentCount; i++)

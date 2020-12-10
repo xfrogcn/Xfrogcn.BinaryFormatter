@@ -219,7 +219,7 @@ namespace Xfrogcn.BinaryFormatter
             MemberInfo = memberInfo;
             ConverterBase = converter;
             Options = options;
-            TypeSeq = converter.GetTypeSeq(typeMap);
+            TypeSeq = converter.GetTypeSeq(typeMap, options);
         }
 
         public bool IgnoreDefaultValuesOnRead { get; private set; }

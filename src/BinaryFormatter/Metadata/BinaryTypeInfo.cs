@@ -88,5 +88,52 @@ namespace Xfrogcn.BinaryFormatter
 
         }
 
+        public override string ToString()
+        {
+            if(string.IsNullOrEmpty(FullName))
+            {
+                return Type.ToString();
+            }
+            return FullName;
+        }
+
+        private string _fullName = null;
+        public string GetFullName(TypeMap typeMap)
+        {
+            if (!string.IsNullOrEmpty(_fullName))
+            {
+                return _fullName;
+            }
+
+            if(!IsGeneric)
+            {
+                _fullName = this.ToString();
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(this.ToString()).Append("<");
+                bool isFirst = true;
+                foreach(ushort s in GenericArguments)
+                {
+                    if (!isFirst)
+                    {
+                        sb.Append(",");
+                    }
+                    else
+                    {
+                        isFirst = false;
+                    }
+                    BinaryTypeInfo ti = typeMap.GetTypeInfo(s);
+                    sb.Append(ti.GetFullName(typeMap));
+                    
+                }
+                sb.Append(">");
+                _fullName = sb.ToString();
+            }
+
+            return _fullName;
+        }
+
     }
 }
