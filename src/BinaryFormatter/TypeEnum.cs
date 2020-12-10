@@ -29,6 +29,7 @@
         Quaternion = 21,
         IntPtr = 22,
         Guid = 23,
+        ByteArray = 24,
         DateTime = 30,
         DateTimeOffset = 31,
         TimeZoneInfo = 32,

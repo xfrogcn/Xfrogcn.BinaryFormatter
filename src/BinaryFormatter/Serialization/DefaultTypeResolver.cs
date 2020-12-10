@@ -35,6 +35,7 @@ namespace Xfrogcn.BinaryFormatter
                 { TypeEnum.IntPtr, typeof(IntPtr)  },
 
                 { TypeEnum.Guid, typeof(Guid)  },
+                { TypeEnum.ByteArray, typeof(byte[])  },
                 { TypeEnum.DateTime, typeof(DateTime)  },
                 { TypeEnum.DateTimeOffset, typeof(DateTimeOffset)  },
                 { TypeEnum.TimeZoneInfo, typeof(TimeZoneInfo)  },
