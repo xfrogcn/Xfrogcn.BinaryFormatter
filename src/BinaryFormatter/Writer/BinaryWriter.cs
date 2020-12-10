@@ -188,6 +188,19 @@ namespace Xfrogcn.BinaryFormatter
             BytesPending += bytes.Length;
         }
 
+        internal Span<byte> TryGetWriteSpan(int len)
+        {
+            Debug.Assert(len > 0);
+            if (_memory.Length - BytesPending < len)
+            {
+                Grow(len);
+            }
+
+            var output = _memory.Span.Slice(BytesPending);
+            BytesPending += len;
+            return output;
+        }
+
 
         internal void WriteTypeInfos(IList<BinaryTypeInfo> typeList, ushort primaryTypeSeq)
         {

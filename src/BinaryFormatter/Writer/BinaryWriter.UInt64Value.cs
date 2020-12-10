@@ -6,7 +6,7 @@ namespace Xfrogcn.BinaryFormatter
     {
         public void WriteUInt64Value(ulong value)
         {
-            WriteBytes(BitConverter.GetBytes(value));
+            BitConverter.TryWriteBytes(TryGetWriteSpan(8), value);
         }
     }
 }

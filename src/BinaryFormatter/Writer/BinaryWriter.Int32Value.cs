@@ -6,7 +6,7 @@ namespace Xfrogcn.BinaryFormatter
     {
         public void WriteInt32Value(int value)
         {
-            WriteBytes(BitConverter.GetBytes(value));
+            BitConverter.TryWriteBytes(TryGetWriteSpan(4), value);
         }
     }
 }

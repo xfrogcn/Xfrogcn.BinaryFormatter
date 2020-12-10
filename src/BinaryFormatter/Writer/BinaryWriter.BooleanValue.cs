@@ -6,17 +6,7 @@ namespace Xfrogcn.BinaryFormatter
     {
         public void WriteBooleanValue(bool value)
         {
-            Span<byte> bytes = stackalloc byte[1];
-            if (value)
-            {
-                bytes[0] = 1;
-            }
-            else
-            {
-                bytes[0] = 0;
-            }
-            WriteBytes(bytes);
-
+            WriteByteValue(value ? 1 : 0);
         }
     }
 }

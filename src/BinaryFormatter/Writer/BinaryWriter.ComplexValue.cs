@@ -11,7 +11,7 @@ namespace Xfrogcn.BinaryFormatter
 
             BitConverter.GetBytes(value.Real).CopyTo(data);
             BitConverter.GetBytes(value.Imaginary).CopyTo(data.Slice(8));
-
+            
             WriteBytesValue(data);
         }
     }

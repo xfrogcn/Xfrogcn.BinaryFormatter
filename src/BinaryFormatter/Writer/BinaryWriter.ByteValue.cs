@@ -10,7 +10,7 @@ namespace Xfrogcn.BinaryFormatter
             {
                 Grow(1);
             }
-
+            
             Span<byte> output = _memory.Span;
             output[BytesPending++] = value;
         }
