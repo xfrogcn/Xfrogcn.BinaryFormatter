@@ -22,5 +22,7 @@
         internal const int BytesCount_DBNull = 0;
         internal const int BytesCount_Auto = -1;
         internal const int BytesCount_Dynamic = 0;
+
+        public const int UnboxedParameterCountThreshold = 4;
     }
 }

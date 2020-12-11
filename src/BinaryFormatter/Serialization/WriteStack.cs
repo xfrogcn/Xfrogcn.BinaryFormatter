@@ -43,7 +43,7 @@ namespace Xfrogcn.BinaryFormatter
         
 
         // The bag of preservable references.
-        public ObjectReferenceResolver ReferenceResolver;
+        public ReferenceResolver ReferenceResolver;
 
         /// <summary>
         /// Internal flag to let us know that we need to read ahead in the inner read loop.
@@ -85,12 +85,17 @@ namespace Xfrogcn.BinaryFormatter
             PrimaryTypeSeq = binaryClassInfo.TypeSeq;
 
             Current.BinaryClassInfo = binaryClassInfo;
+            Current.BinaryTypeInfo = TypeMap.GetTypeInfo(binaryClassInfo.TypeSeq);
             Current.DeclaredBinaryPropertyInfo = binaryClassInfo.PropertyInfoForClassInfo;
-           
-            //if (options.ReferenceHandler != null)
-            //{
-            //    ReferenceResolver = options.ReferenceHandler!.CreateResolver(writing: true);
-            //}
+
+            if (options.ReferenceHandler != null)
+            {
+                ReferenceResolver = options.ReferenceHandler!.CreateResolver(writing: true);
+            }
+            else
+            {
+                ReferenceResolver = new ObjectReferenceResolver();
+            }
 
             SupportContinuation = supportContinuation;
 
@@ -137,6 +142,7 @@ namespace Xfrogcn.BinaryFormatter
                     Current.Reset();
 
                     Current.BinaryClassInfo = binaryClassInfo;
+                    Current.BinaryTypeInfo = TypeMap.GetTypeInfo(binaryClassInfo.TypeSeq);
                     Current.DeclaredBinaryPropertyInfo = binaryClassInfo.PropertyInfoForClassInfo;
                 }
             }

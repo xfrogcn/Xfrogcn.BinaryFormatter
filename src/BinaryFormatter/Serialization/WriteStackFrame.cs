@@ -34,6 +34,8 @@ namespace Xfrogcn.BinaryFormatter
         /// </summary>
         public BinaryClassInfo BinaryClassInfo;
 
+        public BinaryTypeInfo BinaryTypeInfo;
+
         /// <summary>
         /// Validation state for a class.
         /// </summary>
@@ -97,6 +99,7 @@ namespace Xfrogcn.BinaryFormatter
         public BinaryConverter InitializeReEntry(Type type, BinarySerializerOptions options, string propertyName = null)
         {
             BinaryClassInfo classInfo = options.GetOrAddClass(type);
+            
 
             // Set for exception handling calculation of JsonPath.
             BinaryPropertyNameAsString = propertyName;

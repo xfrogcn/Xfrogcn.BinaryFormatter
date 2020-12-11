@@ -106,8 +106,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         internal bool ShouldFlush(BinaryWriter writer, ref WriteStack state)
         {
             // If surpassed flush threshold then return false which will flush stream.
-            // return (state.FlushThreshold > 0 && writer.BytesPending > state.FlushThreshold);
-            return true;
+            return (state.FlushThreshold > 0 && writer.BytesPending > state.FlushThreshold);
         }
 
         // This is used internally to quickly determine the type being converted for BinaryConverter<T>.

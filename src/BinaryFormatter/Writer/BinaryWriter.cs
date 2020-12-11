@@ -219,6 +219,29 @@ namespace Xfrogcn.BinaryFormatter
             WriteUInt32Value((uint)(endPosition - startPosition));
         }
 
+        internal void WritePropertyStringSeq()
+        {
+            WriteByteValue((byte)80);
+        }
+
+        internal void WritePropertySeq(ushort seq)
+        {
+            // 写属性索引
+            if (seq > (ushort)0x7FFF)
+            {
+                ThrowHelper.ThrowBinaryException();
+            }
+            // 反位写
+            if (_memory.Length - BytesPending < 2)
+            {
+                Grow(2);
+            }
+
+            var output = _memory.Span;
+            output[BytesPending++] = (byte)(seq >> 8);
+            output[BytesPending++] = (byte)(seq & 0xFF);
+        }
+
         private void WriteTypeInfo(BinaryTypeInfo typeInfo)
         {
             byte[] typeData = typeInfo.GetBytes();

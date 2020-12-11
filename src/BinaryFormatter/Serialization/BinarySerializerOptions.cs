@@ -24,6 +24,7 @@ namespace Xfrogcn.BinaryFormatter
         private bool _haveTypesBeenCreated;
 
         private int _maxDepth;
+        private ReferenceHandler _referenceHandler;
 
         private bool _ignoreNullValues;
         private bool _ignoreReadOnlyProperties;
@@ -175,6 +176,18 @@ namespace Xfrogcn.BinaryFormatter
         //    return new BinarySerializationContext(typeMap, MetadataProvider);
         //}
 
+        /// <summary>
+        /// Configures how object references are handled when reading and writing Binary.
+        /// </summary>
+        public ReferenceHandler ReferenceHandler
+        {
+            get => _referenceHandler;
+            set
+            {
+                VerifyMutable();
+                _referenceHandler = value;
+            }
+        }
 
         internal void VerifyMutable()
         {

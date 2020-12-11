@@ -368,5 +368,21 @@ namespace Xfrogcn.BinaryFormatter
             throw ex;
         }
 
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_SerializationDuplicateTypeAttribute<TAttribute>(Type classType)
+        {
+            throw new InvalidOperationException(string.Format(Strings.SerializationDuplicateTypeAttribute, classType, typeof(Attribute)));
+        }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowBinaryException_SerializationConverterWrite(BinaryConverter converter)
+        {
+            var ex = new BinaryException(string.Format(Strings.SerializationConverterWrite, converter));
+            ex.AppendPathInformation = true;
+            throw ex;
+        }
+
     }
 }

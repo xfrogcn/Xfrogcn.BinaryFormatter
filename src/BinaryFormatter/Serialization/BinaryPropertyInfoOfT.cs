@@ -118,57 +118,58 @@ namespace Xfrogcn.BinaryFormatter
 
         public override bool GetMemberAndWriteBinary(object obj, ref WriteStack state, BinaryWriter writer)
         {
-            //T value = Get!(obj);
+            T value = Get!(obj);
 
-            //// Since devirtualization only works in non-shared generics,
-            //// the default comparer is used only for value types for now.
-            //// For reference types there is a quick check for null.
-            //if (IgnoreDefaultValuesOnWrite && (
-            //    default(T) == null ? value == null : EqualityComparer<T>.Default.Equals(default, value)))
-            //{
-            //    return true;
-            //}
+            // Since devirtualization only works in non-shared generics,
+            // the default comparer is used only for value types for now.
+            // For reference types there is a quick check for null.
+            if (IgnoreDefaultValuesOnWrite && (
+                default(T) == null ? value == null : EqualityComparer<T>.Default.Equals(default, value)))
+            {
+                return true;
+            }
 
-            //if (value == null)
-            //{
-            //    Debug.Assert(Converter.CanBeNull);
 
-            //    if (Converter.HandleNullOnWrite)
-            //    {
-            //        // No object, collection, or re-entrancy converter handles null.
-            //        Debug.Assert(Converter.ClassType == ClassType.Value);
+            if (value == null)
+            {
+                Debug.Assert(Converter.CanBeNull);
 
-            //        if (state.Current.PropertyState < StackFramePropertyState.Name)
-            //        {
-            //            state.Current.PropertyState = StackFramePropertyState.Name;
-            //            writer.WritePropertyNameSection(EscapedNameSection);
-            //        }
+                if (Converter.HandleNullOnWrite)
+                {
+                    // No object, collection, or re-entrancy converter handles null.
+                    Debug.Assert(Converter.ClassType == ClassType.Value);
 
-            //        int originalDepth = writer.CurrentDepth;
-            //        Converter.Write(writer, value, Options);
-            //        if (originalDepth != writer.CurrentDepth)
-            //        {
-            //            ThrowHelper.ThrowJsonException_SerializationConverterWrite(Converter);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        writer.WriteNullSection(EscapedNameSection);
-            //    }
+                    if (state.Current.PropertyState < StackFramePropertyState.Name)
+                    {
+                        state.Current.PropertyState = StackFramePropertyState.Name;
+                        writer.WritePropertySeq(Seq);
+                    }
 
-            //    return true;
-            //}
-            //else
-            //{
-            //    if (state.Current.PropertyState < StackFramePropertyState.Name)
-            //    {
-            //        state.Current.PropertyState = StackFramePropertyState.Name;
-            //        writer.WritePropertyNameSection(EscapedNameSection);
-            //    }
+                    int originalDepth = writer.CurrentDepth;
+                    Converter.Write(writer, value, Options);
+                    if (originalDepth != writer.CurrentDepth)
+                    {
+                        ThrowHelper.ThrowBinaryException_SerializationConverterWrite(Converter);
+                    }
+                }
+                else
+                {
+                    writer.WritePropertySeq(Seq);
+                    writer.WriteNullValue();
+                }
 
-            //    return Converter.TryWrite(writer, value, Options, ref state);
-            //}
-            throw new NotImplementedException();
+                return true;
+            }
+            else
+            {
+                if (state.Current.PropertyState < StackFramePropertyState.Name)
+                {
+                    state.Current.PropertyState = StackFramePropertyState.Name;
+                    writer.WritePropertySeq(Seq);
+                }
+
+                return Converter.TryWrite(writer, value, Options, ref state);
+            }
         }
 
         public override bool GetMemberAndWriteBinaryExtensionData(object obj, ref WriteStack state, BinaryWriter writer)

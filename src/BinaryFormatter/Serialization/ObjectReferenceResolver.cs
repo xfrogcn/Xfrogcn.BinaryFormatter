@@ -1,35 +1,74 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
-namespace Xfrogcn.BinaryFormatter
+namespace Xfrogcn.BinaryFormatter.Serialization
 {
-    public class ObjectReferenceResolver
+    public class ObjectReferenceResolver : ReferenceResolver
     {
-        private int _referenceCount;
+        private uint _referenceCount;
 
-        private readonly Dictionary<int, object> _referenceIdToObjectMap;
-        private readonly Dictionary<object, int> _objectToReferenceIdMap;
+        class RefItem
+        {
+            public object Value { get; set; }
+
+            public int RefCount { get; set; }
+
+            public ulong Offset { get; set; }
+
+            public uint Seq { get; set; }
+        }
+
+      //  private readonly Dictionary<uint, RefItem> _referenceIdToObjectMap;
+        private readonly Dictionary<object, RefItem> _objectToReferenceIdMap;
+
+        
 
         public ObjectReferenceResolver()
         {
-            _referenceIdToObjectMap = new Dictionary<int, object>();
-            _objectToReferenceIdMap = new Dictionary<object, int>();
+        //    _referenceIdToObjectMap = new Dictionary<uint, RefItem>();
+            _objectToReferenceIdMap = new Dictionary<object, RefItem>();
         }
 
-        public virtual int AddReference(object value)
+        public override uint GetReference(object value, ulong offset, out bool alreadyExists)
         {
             if (_objectToReferenceIdMap.ContainsKey(value))
             {
-                return _objectToReferenceIdMap[value];
+                alreadyExists = true;
+                RefItem item = _objectToReferenceIdMap[value];
+                item.RefCount++;
+                if (item.Seq == 0)
+                {
+                    item.Seq = _referenceCount;
+                    _referenceCount++;
+                }
+                return item.Seq;
             }
             else
             {
-                int seq = _referenceCount;
-                _referenceIdToObjectMap.Add(seq, value);
-                _objectToReferenceIdMap.Add(value, seq);
-                _referenceCount++;
-                return seq;
+              
+                RefItem item = new RefItem()
+                {
+                    RefCount = 0,
+                    Value = value,
+                    Seq = 0,
+                    Offset = offset
+                };
+               // _referenceIdToObjectMap.Add(seq, item);
+                _objectToReferenceIdMap.Add(value, item);
+                alreadyExists = false;
+                return 0;
             }
             
+        }
+
+        public override void AddReference(uint seq, ulong offset)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Dictionary<uint, ulong> GetReferenceOffsetMap()
+        {
+            return new Dictionary<uint, ulong>(_objectToReferenceIdMap.Where(kv => kv.Value.RefCount > 1).Select(kv => new KeyValuePair<uint, ulong>(kv.Value.Seq, kv.Value.Offset)));
         }
     }
 }
