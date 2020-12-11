@@ -122,6 +122,16 @@ namespace Xfrogcn.BinaryFormatter
             return result;
         }
 
+        /// <summary>
+        /// 获取类型的名称
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public string GetTypeFullName(Type type)
+        {
+            return (TypeHandler?.CreateResolver() ?? TypeHandler.DefaultTypeResolver).TryGetTypeFullName(type);
+        }
+
         internal bool TypeIsCached(Type type)
         {
             return _classes.ContainsKey(type);

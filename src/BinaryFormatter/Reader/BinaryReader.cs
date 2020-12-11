@@ -252,6 +252,7 @@ namespace Xfrogcn.BinaryFormatter
             return retVal;
         }
 
+
         private bool ReadSingleSegment()
         {
             bool retVal = false;

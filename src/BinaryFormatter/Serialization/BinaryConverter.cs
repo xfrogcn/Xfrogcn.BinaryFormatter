@@ -19,9 +19,12 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         internal abstract ClassType ClassType { get; }
 
         /// <summary>
-        /// 默认的固定字节数
+        /// 默认的固定字节数, 返回0的数，表示固定字节，返回0，表示自带长度格式，返回小于0，表示不定，reader将根据当前TypeEnum类型自动尝试读取
         /// </summary>
-        public virtual int FixBytesCount { get; } = 0;
+        public virtual int GetBytesCount(ref BinaryReader reader,BinarySerializerOptions options)
+        {
+            return BinarySerializerConstants.BytesCount_Dynamic ;
+        }
 
         /// <summary>
         /// Can direct Read or Write methods be called (for performance).
@@ -47,7 +50,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         /// <param name="typeInfo">类型元数据</param>
         /// <param name="typeMap">当前序列化的TypeMap</param>
         /// <returns></returns>
-        public abstract void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap);
+        public abstract void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options);
 
 
 
@@ -71,7 +74,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                             return converter.GetTypeSeq(typeMap, options);
                         }).ToArray();
                 }
-                SetTypeMetadata(ti, typeMap);
+                SetTypeMetadata(ti, typeMap, options);
             }
            
             return ti.Seq;

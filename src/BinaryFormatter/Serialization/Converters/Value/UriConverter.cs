@@ -9,7 +9,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             return new Uri(reader.GetString());
         }
 
-        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             typeInfo.Type = TypeEnum.Uri;
             typeInfo.SerializeType = ClassType.Value;

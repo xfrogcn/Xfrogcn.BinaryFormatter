@@ -4,7 +4,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
     internal sealed class BooleanConverter : BinaryConverter<bool>
     {
-        public override int FixBytesCount => 1;
+        public override int GetBytesCount(ref BinaryReader reader, BinarySerializerOptions options)
+        {
+            return BinarySerializerConstants.BytesCount_Boolean;
+        }
 
         public override bool Read(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options)
         {
@@ -13,7 +16,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
 
 
-        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             typeInfo.Type = TypeEnum.Boolean;
             typeInfo.SerializeType = ClassType.Value;

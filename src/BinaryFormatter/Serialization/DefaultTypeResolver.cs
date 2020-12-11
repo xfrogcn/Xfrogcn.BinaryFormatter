@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Collections.Concurrent;
 using static System.TimeZoneInfo;
+using System.Reflection;
 
 namespace Xfrogcn.BinaryFormatter
 {
-    internal sealed class DefaultTypeResolver : TypeResolver
+    public class DefaultTypeResolver : TypeResolver
     {
         readonly Dictionary<TypeEnum, Type> _internalTypeMaps =
             new Dictionary<TypeEnum, Type>()
@@ -65,12 +66,12 @@ namespace Xfrogcn.BinaryFormatter
             {
                 return true;
             }
-            if(_internalTypeMaps.ContainsKey(typeInfo.Type))
+            if(string.IsNullOrEmpty(typeInfo.FullName) && _internalTypeMaps.ContainsKey(typeInfo.Type))
             {
                 type = _internalTypeMaps[typeInfo.Type];
             }
 
-            if (type == null || type.IsGenericType)
+            if (type == null || type.IsGenericType )
             {
                 string typeName = typeInfo.GetFullName(typeMap);
                 Type tmp = type;
@@ -92,13 +93,48 @@ namespace Xfrogcn.BinaryFormatter
                 return true;
             }
 
+
             return false;
         }
 
-        private Type ParseType(string fullName)
+        public virtual Type ParseType(string fullName)
         {
-            return null;
+            return Type.GetType(fullName, AssemblyResolver, TypeResolver, false);
         }
+
+        protected virtual Assembly AssemblyResolver(AssemblyName assemblyName)
+        {
+            var assembly = Assembly.GetEntryAssembly(); 
+            if(assembly.GetName() == assemblyName)
+            {
+                return assembly;
+            }
+            
+
+            assembly = Assembly.GetCallingAssembly();
+            if (assembly.GetName() == assemblyName)
+            {
+                return assembly;
+            }
+
+            assembly = Assembly.GetExecutingAssembly();
+            if (assembly.GetName() == assemblyName)
+            {
+                return assembly;
+            }
+
+            return Assembly.Load(assemblyName);
+        }
+
+        protected virtual Type TypeResolver(Assembly assembly, string typeName, bool ignoreCase)
+        {
+            Type t =  assembly.GetType(typeName,false,true);
+            if(t == null)
+            {
+                t = assembly.GetType(typeName, false, false);
+            }
+            return t;
+        } 
 
         private Type CreateGenericType(TypeMap typeMap, Type type, BinaryTypeInfo typeInfo)
         {
@@ -129,6 +165,11 @@ namespace Xfrogcn.BinaryFormatter
 
             return type.MakeGenericType(genericArguments);
 
+        }
+
+        public override string TryGetTypeFullName(Type type)
+        {
+            return type.AssemblyQualifiedName;
         }
     }
 }

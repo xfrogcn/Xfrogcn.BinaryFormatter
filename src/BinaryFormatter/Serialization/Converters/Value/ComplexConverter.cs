@@ -5,14 +5,13 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
     internal sealed class ComplexConverter : BinaryConverter<Complex>
     {
-        public override int FixBytesCount => 0;
 
         public override Complex Read(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options)
         {
             return reader.GetComplex();
         }
 
-        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             typeInfo.Type = TypeEnum.Complex;
             typeInfo.SerializeType = ClassType.Value;

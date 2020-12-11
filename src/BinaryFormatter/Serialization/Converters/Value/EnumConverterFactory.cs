@@ -24,7 +24,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             return converter;
         }
 
-        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             typeInfo.Type = TypeEnum.Enum;
         }

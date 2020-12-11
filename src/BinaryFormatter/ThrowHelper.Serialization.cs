@@ -349,5 +349,24 @@ namespace Xfrogcn.BinaryFormatter
             ex.AppendPathInformation = true;
             throw ex;
         }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowBinaryException(string message = null)
+        {
+            BinaryException ex;
+            if (string.IsNullOrEmpty(message))
+            {
+                ex = new BinaryException();
+            }
+            else
+            {
+                ex = new BinaryException(message);
+                ex.AppendPathInformation = true;
+            }
+
+            throw ex;
+        }
+
     }
 }

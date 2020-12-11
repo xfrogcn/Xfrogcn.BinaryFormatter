@@ -4,14 +4,13 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
     internal sealed class ByteArrayConverter : BinaryConverter<byte[]>
     {
-        public override int FixBytesCount => 0;
 
         public override byte[] Read(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options)
         {
             return reader.ValueSpan.ToArray();
         }
 
-        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             typeInfo.Type = TypeEnum.ByteArray;
             typeInfo.SerializeType = ClassType.Value;

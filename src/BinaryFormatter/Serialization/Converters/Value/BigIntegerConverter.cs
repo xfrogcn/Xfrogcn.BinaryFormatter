@@ -5,14 +5,13 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
     internal sealed class BigIntegerConverter : BinaryConverter<BigInteger>
     {
-        public override int FixBytesCount => 0;
 
         public override BigInteger Read(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options)
         {
             return reader.GetBigInteger();
         }
 
-        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             typeInfo.Type = TypeEnum.BigInteger;
             typeInfo.SerializeType = ClassType.Value;

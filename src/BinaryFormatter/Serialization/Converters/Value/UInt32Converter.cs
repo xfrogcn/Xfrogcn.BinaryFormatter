@@ -4,14 +4,17 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
     internal sealed class UInt32Converter : BinaryConverter<uint>
     {
-        public override int FixBytesCount => 4;
+        public override int GetBytesCount(ref BinaryReader reader, BinarySerializerOptions options)
+        {
+            return BinarySerializerConstants.BytesCount_UInt32;
+        }
 
         public override uint Read(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options)
         {
             return reader.GetUInt32();
         }
 
-        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             typeInfo.Type = TypeEnum.UInt32;
             typeInfo.SerializeType = ClassType.Value;

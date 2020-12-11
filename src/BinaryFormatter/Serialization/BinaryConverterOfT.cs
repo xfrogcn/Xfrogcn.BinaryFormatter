@@ -151,18 +151,33 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     return true;
                 }
 
+                int readCount = GetBytesCount(ref reader, options);
                 // 读取指定数量的字节
-                if (FixBytesCount > 0)
+                if (readCount > 0)
                 {
-                    if (!reader.ReadBytes(FixBytesCount))
+                    if (!reader.ReadBytes(readCount))
                     {
                         value = default;
                         return false;
                     }
                 }
-                else if (FixBytesCount == 0)
+                else if (readCount == BinarySerializerConstants.BytesCount_Dynamic)
                 {
                     if (!reader.ReadBytes())
+                    {
+                        value = default;
+                        return false;
+                    }
+                }
+                else if (readCount == BinarySerializerConstants.BytesCount_Auto)
+                {
+                    // 自动
+                    bool isContinue = !reader.TryReadValue(out bool success);
+                    if (!success)
+                    {
+                        ThrowHelper.ThrowBinaryException();
+                    }
+                    else if (isContinue)
                     {
                         value = default;
                         return false;

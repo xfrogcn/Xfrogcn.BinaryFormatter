@@ -6,7 +6,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
     {
         private readonly BinaryConverter<T> _converter;
 
-        public override int FixBytesCount => _converter.FixBytesCount;
+        public override int GetBytesCount(ref BinaryReader reader, BinarySerializerOptions options)
+        {
+            return _converter.GetBytesCount(ref reader, options);
+        }
 
         public NullableConverter(BinaryConverter<T> converter)
         {
@@ -23,9 +26,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             return value;
         }
 
-        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
-            _converter.SetTypeMetadata(typeInfo, typeMap);
+            _converter.SetTypeMetadata(typeInfo, typeMap, options);
             typeInfo.Type = TypeEnum.Nullable;
         }
 

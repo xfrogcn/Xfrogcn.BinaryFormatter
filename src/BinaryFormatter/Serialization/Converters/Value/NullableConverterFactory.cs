@@ -42,7 +42,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 culture: null)!;
         }
 
-        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             typeInfo.Type = TypeEnum.Nullable;
         }

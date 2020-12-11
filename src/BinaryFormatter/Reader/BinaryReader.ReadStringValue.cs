@@ -17,5 +17,22 @@ namespace Xfrogcn.BinaryFormatter
             throw new InvalidOperationException();
 
         }
+
+        public string GetString()
+        {
+            if (_tokenType == BinaryTokenType.Null)
+            {
+                return null;
+            }
+
+            if (TokenType != BinaryTokenType.Bytes)
+            {
+                throw ThrowHelper.GetInvalidOperationException_ExpectedString(TokenType);
+            }
+
+            ReadOnlySpan<byte> span = ValueSpan;
+
+            return BinaryReaderHelper.TranscodeHelper(span);
+        }
     }
 }

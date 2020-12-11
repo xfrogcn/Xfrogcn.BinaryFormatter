@@ -19,7 +19,7 @@ namespace Xfrogcn.BinaryFormatter
         {
             // Nullable converter should always be first since it forwards to any nullable type.
             new NullableConverterFactory(),
-            //new EnumConverterFactory(),
+            new EnumConverterFactory(),
             //// IEnumerable should always be second to last since they can convert any IEnumerable.
             //new IEnumerableConverterFactory(),
             //// Object should always be last since it converts any type.

@@ -13,5 +13,6 @@ namespace Xfrogcn.BinaryFormatter
 
             return BitConverter.ToSingle(ValueSpan);
         }
+
     }
 }

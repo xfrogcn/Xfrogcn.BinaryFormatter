@@ -5,7 +5,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
     internal sealed class DBNullConverter : BinaryConverter<DBNull>
     {
-        public override int FixBytesCount => 0;
 
         public override DBNull Read(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options)
         {
@@ -13,7 +12,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             return DBNull.Value;
         }
 
-        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap)
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             typeInfo.Type = TypeEnum.DBNull;
             typeInfo.SerializeType = ClassType.Value;
