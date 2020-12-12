@@ -24,9 +24,10 @@ namespace Xfrogcn.BinaryFormatter
         public BinaryTokenType OriginalTokenType;
 
         // Current object (POCO or IEnumerable).
-        public object? ReturnValue; // The current return value used for re-entry.
+        public object ReturnValue; // The current return value used for re-entry.
         public BinaryClassInfo BinaryClassInfo;
-       // public StackFrameObjectState ObjectState; // State tracking the current object.
+        public BinaryTypeInfo BinaryTypeInfo;
+        public StackFrameObjectState ObjectState; // State tracking the current object.
 
         // Validate EndObject token on array with preserve semantics.
         public bool ValidateEndTokenOnArray;
@@ -37,7 +38,12 @@ namespace Xfrogcn.BinaryFormatter
 
         // Holds relevant state when deserializing objects with parameterized constructors.
         public int CtorArgumentStateIndex;
-    //    public ArgumentState? CtorArgumentState;
+        //    public ArgumentState? CtorArgumentState;
+
+        // 记录跳转引用前位置
+        public ulong OriginPosition;
+
+        
 
 
         public void EndConstructorParameter()
@@ -87,11 +93,12 @@ namespace Xfrogcn.BinaryFormatter
             CtorArgumentStateIndex = 0;
            // CtorArgumentState = null;
             BinaryClassInfo = null!;
-          //  ObjectState = StackFrameObjectState.None;
+            BinaryTypeInfo = null;
+            ObjectState = StackFrameObjectState.None;
             OriginalDepth = 0;
          //   OriginalTokenType = JsonTokenType.None;
             PropertyIndex = 0;
-        //    PropertyRefCache = null;
+            //PropertyRefCache = null;
             ReturnValue = null;
 
             EndProperty();

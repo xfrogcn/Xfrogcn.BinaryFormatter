@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Collections.Concurrent;
 using static System.TimeZoneInfo;
 using System.Reflection;
+using System.Linq;
 
 namespace Xfrogcn.BinaryFormatter
 {
@@ -99,7 +100,33 @@ namespace Xfrogcn.BinaryFormatter
 
         public virtual Type ParseType(string fullName)
         {
-            return Type.GetType(fullName, AssemblyResolver, TypeResolver, false);
+            var type = Type.GetType(fullName, AssemblyResolver, TypeResolver, false);
+            //if(type!=null && fullName.Contains("+"))
+            //{
+                
+            //    var nestNames = fullName.Split(',')[0].Split('+');
+            //    bool isOk = true;
+            //    for(int i =1;i<nestNames.Length;i++)
+            //    {
+            //        string name = nestNames[i];
+            //        type = type.GetNestedType(name);
+            //        if(type == null)
+            //        {
+            //            isOk = false;
+            //            break;
+            //        }
+            //    }
+            //    if (isOk)
+            //    {
+            //        return type;
+            //    }
+            //    else
+            //    {
+            //        return null;
+            //    }
+            //}
+
+            return type;
         }
 
         protected virtual Assembly AssemblyResolver(AssemblyName assemblyName)
@@ -132,6 +159,12 @@ namespace Xfrogcn.BinaryFormatter
             if(t == null)
             {
                 t = assembly.GetType(typeName, false, false);
+            }
+
+            if (t == null)
+            {
+                t = assembly.GetTypes()
+                    .FirstOrDefault(t => t.FullName == typeName);
             }
             return t;
         } 

@@ -247,7 +247,7 @@ namespace Xfrogcn.BinaryFormatter
         protected BinarySerializerOptions Options { get; set; } = null!; // initialized in Init method
 
 
-        //public abstract bool ReadBinaryAndSetMember(object obj, ref ReadStack state, ref BinaryReader reader);
+        public abstract bool ReadBinaryAndSetMember(object obj, ref ReadStack state, ref BinaryReader reader);
 
         //public abstract bool ReadBinaryAsObject(ref ReadStack state, ref BinaryReader reader, out object value);
 

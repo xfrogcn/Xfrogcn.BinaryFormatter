@@ -73,13 +73,14 @@ namespace Xfrogcn.BinaryFormatter
 
         }
 
-        internal BinaryMemberInfo[] ReadMembers()
+        internal Dictionary<ushort, BinaryMemberInfo> ReadMembers()
         {
             ushort memberCount = ReadUInt16Value();
-            BinaryMemberInfo[] members = new BinaryMemberInfo[memberCount];
+            Dictionary<ushort, BinaryMemberInfo> members = new Dictionary<ushort, BinaryMemberInfo>();
             for(ushort i = 0; i < memberCount; i++)
             {
-                members[i] = ReadMemberInfo();
+                var mi = ReadMemberInfo();
+                members.Add(mi.Seq, mi);
             }
             return members;
         }

@@ -159,6 +159,11 @@ namespace Xfrogcn.BinaryFormatter
             output[BytesPending++] = typeBytes[1];
         }
 
+        public void WriteEndObject()
+        {
+            WritePropertySeq(0x7FFF);
+        }
+
         internal void WriteTypeSeqAndBytes(ushort typeSeq, ReadOnlySpan<byte> bytes)
         {
             int maxRequired = 2 + bytes.Length;
@@ -246,13 +251,13 @@ namespace Xfrogcn.BinaryFormatter
         {
             byte[] typeData = typeInfo.GetBytes();
             WriteBytes(typeData);
-            ushort memberCount = (ushort)(typeInfo.MemberInfos == null ? 0 : typeInfo.MemberInfos.Length);
+            ushort memberCount = (ushort)(typeInfo.MemberInfos == null ? 0 : typeInfo.MemberInfos.Count);
             WriteUInt16Value(memberCount);
             if (memberCount > 0)
             {
-                foreach(BinaryMemberInfo mi in typeInfo.MemberInfos)
+                foreach(var kv in typeInfo.MemberInfos)
                 {
-                    byte[] memberData = mi.GetBytes();
+                    byte[] memberData = kv.Value.GetBytes();
                     WriteBytes(memberData);
                 }
             }

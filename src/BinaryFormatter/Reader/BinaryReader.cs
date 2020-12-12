@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -53,6 +54,8 @@ namespace Xfrogcn.BinaryFormatter
         public ReadOnlySpan<byte> ValueSpan { get; private set; }
 
         public BinaryTypeInfo CurrentTypeInfo { get; private set; }
+
+        public ushort  CurrentPropertySeq { get; set; }
 
         public int Version => _version;
 
@@ -111,6 +114,7 @@ namespace Xfrogcn.BinaryFormatter
             _isInputSequence = false;
             _typeSeq = state._typeSeq;
             CurrentTypeInfo = null;
+            CurrentPropertySeq = default;
             _typeMap = state._typeMap;
             _version = state._version;
             //_lineNumber = state._lineNumber;
@@ -182,7 +186,7 @@ namespace Xfrogcn.BinaryFormatter
         public bool ReadBytes()
         {
             // 长度 16位或32位
-            if ((_consumed + 2) > _buffer.Length)
+            if (!RequestData(2))
             {
                 return false;
             }
@@ -193,7 +197,7 @@ namespace Xfrogcn.BinaryFormatter
             int lenBytes = 4;
             if ((b1 & 0x80) == 0x80)
             {
-                if ((_consumed + 4) > _buffer.Length)
+                if ( !RequestData(4))
                 {
                     return false;
                 }
@@ -216,7 +220,7 @@ namespace Xfrogcn.BinaryFormatter
                 ValueSpan = ReadOnlySpan<byte>.Empty;
             }
 
-            if((_consumed + len + lenBytes) > _buffer.Length)
+            if( !RequestData(len+lenBytes) )
             {
                 return false;
             }
@@ -341,7 +345,7 @@ namespace Xfrogcn.BinaryFormatter
 
         private bool ReadFirstToken()
         {
-            if((_consumed+2)> _buffer.Length)
+            if( !RequestData(2) )
             {
                 return false;
             }
@@ -350,9 +354,9 @@ namespace Xfrogcn.BinaryFormatter
             
         }
 
-        private bool ReadTypeSeq()
+        internal bool ReadTypeSeq()
         {
-            if ((_consumed + 2) >= _buffer.Length)
+            if (!RequestData(2))
             {
                 return false;
             }
@@ -380,6 +384,88 @@ namespace Xfrogcn.BinaryFormatter
             return true;
         }
 
+        internal bool ReadStartToken()
+        {
+            if (!RequestData(1))
+            {
+                return false;
+            }
+
+            byte objType = _buffer[_consumed];
+            if (objType == 0x00)
+            {
+                //正常
+                _tokenType = BinaryTokenType.StartObject;
+                _consumed++;
+                return true;
+            }
+            else if (objType == 0xFF)
+            {
+                // 引用
+                if(!RequestData(5))
+                {
+                    return false;
+                }
+
+                _tokenType = BinaryTokenType.ObjectRef;
+                ValueSpan = _buffer.Slice(_consumed + 1, 4);
+                _consumed += 5;
+                return true;
+            }
+            else
+            {
+                ThrowHelper.ThrowBinaryReaderException(ref this, ExceptionResource.ExpectedBinaryTokens);
+            }
+            return false;
+        }
+
+        internal bool ReadPropertyName()
+        {
+            if (!RequestData(1))
+            {
+                return false;
+            }
+
+            byte b = _buffer[_consumed];
+            if ((b & 0x80) == 0x80)
+            {
+                // 键值对方式
+            }
+            else
+            {
+                if (!RequestData(2))
+                {
+                    return false;
+                }
+
+                ValueSpan = _buffer.Slice(_consumed, 2);
+                ushort seq = (ushort)((ValueSpan[0] << 8) | ValueSpan[1]);
+                if(seq == 0x7FFF)
+                {
+                    // 对象结束
+                    _tokenType = BinaryTokenType.EndObject;
+                    CurrentPropertySeq = default;
+                }
+                else
+                {
+                    _tokenType = BinaryTokenType.PropertyName;
+                    CurrentPropertySeq = seq;
+                }
+               
+                _consumed += 2;
+                
+                return true;
+            }
+            
+            return false;
+        }
+
+        public void Rollback(int len)
+        {
+            _consumed -= len;
+            Debug.Assert(_consumed >= 0);
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool HasMoreData()
         {
@@ -387,6 +473,16 @@ namespace Xfrogcn.BinaryFormatter
             {
                 return false;
             }
+            return true;
+        }
+
+        private bool RequestData(int len)
+        {
+            if ((_consumed + len) > _buffer.Length)
+            {
+                return false;
+            }
+
             return true;
         }
 

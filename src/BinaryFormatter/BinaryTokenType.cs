@@ -4,6 +4,7 @@
     {
         None,
         StartObject,
+        ObjectRef,
         EndObject,
         StartArray,
         EndArray,

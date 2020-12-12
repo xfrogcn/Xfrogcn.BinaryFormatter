@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Xfrogcn.BinaryFormatter
 {
@@ -19,7 +20,9 @@ namespace Xfrogcn.BinaryFormatter
 
         internal ushort[] GenericArguments { get; set; }
 
-        internal BinaryMemberInfo[] MemberInfos { get; set; }
+       // internal BinaryMemberInfo[] MemberInfos { get; set; }
+
+        internal Dictionary<ushort, BinaryMemberInfo> MemberInfos { get; set; }
 
 
         private byte[] _bytes = null;

@@ -172,8 +172,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 else if (readCount == BinarySerializerConstants.BytesCount_Auto)
                 {
                     // 自动
-                    bool isContinue = !reader.TryReadValue(out bool success);
-                    if (!success)
+                    bool isContinue = !reader.TryReadValue(out bool isOk);
+                    if (!isOk)
                     {
                         ThrowHelper.ThrowBinaryException();
                     }
@@ -221,83 +221,79 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
                 return true;
             }
-            value = default;
-            return false;
 
-//            bool success;
+            bool success;
 
-//            // Remember if we were a continuation here since Push() may affect IsContinuation.
-//            bool wasContinuation = state.IsContinuation;
+            // Remember if we were a continuation here since Push() may affect IsContinuation.
+            bool wasContinuation = state.IsContinuation;
 
-//            state.Push();
+            state.Push(reader.CurrentTypeInfo);
 
-//#if !DEBUG
-//                    // For performance, only perform validation on internal converters on debug builds.
-//                    if (IsInternalConverter)
-//                    {
-//                        if (reader.TokenType == BinaryTokenType.Null && !HandleNullOnRead && !wasContinuation)
-//                        {
-//                            if (!CanBeNull)
-//                            {
-//                                ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(TypeToConvert);
-//                            }
+            // For performance, only perform validation on internal converters on debug builds.
+            if (IsInternalConverter)
+            {
+                if (reader.TokenType == BinaryTokenType.Null && !HandleNullOnRead && !wasContinuation)
+                {
+                    if (!CanBeNull)
+                    {
+                        ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(TypeToConvert);
+                    }
 
-//                            // For perf and converter simplicity, handle null here instead of forwarding to the converter.
-//                            value = default;
-//                            success = true;
-//                        }
-//                        else
-//                        {
-//                            success = OnTryRead(ref reader, typeToConvert, options, ref state, out value);
-//                        }
-//                    }
-//                    else
-//#endif
-//            {
-//                if (!wasContinuation)
-//                {
-//                    // For perf and converter simplicity, handle null here instead of forwarding to the converter.
-//                    if (reader.TokenType == BinaryTokenType.Null && !HandleNullOnRead)
-//                    {
-//                        if (!CanBeNull)
-//                        {
-//                            ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(TypeToConvert);
-//                        }
+                    // For perf and converter simplicity, handle null here instead of forwarding to the converter.
+                    value = default;
+                    success = true;
+                }
+                else
+                {
+                    success = OnTryRead(ref reader, typeToConvert, options, ref state, out value);
+                }
+            }
+            else
+            {
+                if (!wasContinuation)
+                {
+                    // For perf and converter simplicity, handle null here instead of forwarding to the converter.
+                    if (reader.TokenType == BinaryTokenType.Null && !HandleNullOnRead)
+                    {
+                        if (!CanBeNull)
+                        {
+                            ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(TypeToConvert);
+                        }
 
-//                        value = default;
-//                        state.Pop(true);
-//                        return true;
-//                    }
+                        value = default;
+                        state.Pop(true);
+                        return true;
+                    }
 
-//                    Debug.Assert(state.Current.OriginalTokenType == BinaryTokenType.None);
-//                    state.Current.OriginalTokenType = reader.TokenType;
+                    Debug.Assert(state.Current.OriginalTokenType == BinaryTokenType.None);
+                    state.Current.OriginalTokenType = reader.TokenType;
 
-//                    Debug.Assert(state.Current.OriginalDepth == 0);
-//                    state.Current.OriginalDepth = reader.CurrentDepth;
-//                }
+                    Debug.Assert(state.Current.OriginalDepth == 0);
+                    state.Current.OriginalDepth = reader.CurrentDepth;
+                }
 
-//                success = OnTryRead(ref reader, typeToConvert, options, ref state, out value);
-//                if (success)
-//                {
-//                    if (state.IsContinuation)
-//                    {
-//                        // The resumable converter did not forward to the next converter that previously returned false.
-//                        ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
-//                    }
+                success = OnTryRead(ref reader, typeToConvert, options, ref state, out value);
+                if (success)
+                {
+                    if (state.IsContinuation)
+                    {
+                        // The resumable converter did not forward to the next converter that previously returned false.
+                        ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
+                    }
 
-//                    VerifyRead(
-//                        state.Current.OriginalTokenType,
-//                        state.Current.OriginalDepth,
-//                        bytesConsumed: 0,
-//                        isValueConverter: false,
-//                        ref reader);
+                    VerifyRead(
+                        state.Current.OriginalTokenType,
+                        state.Current.OriginalDepth,
+                        bytesConsumed: 0,
+                        isValueConverter: false,
+                        ref reader);
 
-//                    // No need to clear state.Current.* since a stack pop will occur.
-//                }
-//            }
+                    // No need to clear state.Current.* since a stack pop will occur.
+                }
+            }
 
-//            state.Pop(success);
-//            return success;
+            state.Pop(success);
+            return success;
         }
 
         internal override sealed bool TryReadAsObject(ref BinaryReader reader, BinarySerializerOptions options, ref ReadStack state, out object value)
@@ -365,10 +361,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 writer.WriteNullValue();
                 return true;
             }
-
-            writer.WriteTypeSeq(typeSeq);
+            
+            
             if (ClassType == ClassType.Value)
             {
+                writer.WriteTypeSeq(typeSeq);
                 Debug.Assert(!state.IsContinuation);
 
                 int originalPropertyDepth = writer.CurrentDepth;
@@ -380,6 +377,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             bool isContinuation = state.IsContinuation;
 
             state.Push();
+            if (!state.Current.ProcessedStartToken)
+            {
+                writer.WriteTypeSeq(typeSeq);
+            }
 
             if (!isContinuation)
             {

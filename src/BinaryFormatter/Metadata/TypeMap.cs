@@ -126,7 +126,8 @@ namespace Xfrogcn.BinaryFormatter
             BinaryTypeInfo ti = GetTypeInfo(seq);
             if(ti !=null && ti.MemberInfos == null)
             {
-                ti.MemberInfos = getMemberInfos();
+                var mis = getMemberInfos();
+                ti.MemberInfos = new Dictionary<ushort, BinaryMemberInfo>(mis?.Select(mi=> new KeyValuePair<ushort, BinaryMemberInfo>(mi.Seq, mi)));
                 return true;
             }
             return false;

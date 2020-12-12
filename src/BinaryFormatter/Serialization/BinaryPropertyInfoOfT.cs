@@ -116,6 +116,95 @@ namespace Xfrogcn.BinaryFormatter
             return Get!(obj);
         }
 
+       
+
+
+        public override bool ReadBinaryAndSetMember(object obj, ref ReadStack state, ref BinaryReader reader)
+        {
+            bool success;
+
+            if(!reader.ReadTypeSeq())
+            {
+                return false;
+            }
+            success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out T value);
+            if (!success)
+            {
+                if(Converter.ClassType == ClassType.Value)
+                {
+                    reader.Rollback(2);
+                }
+                return false;
+            }
+
+            Set(obj, value);
+
+//            bool isNullToken = reader.TokenType == BinaryTokenType.Null;
+//            if (isNullToken && !Converter.HandleNullOnRead && !state.IsContinuation)
+//            {
+//                if (!PropertyTypeCanBeNull)
+//                {
+//                    ThrowHelper.ThrowJsonException_DeserializeUnableToConvertValue(Converter.TypeToConvert);
+//                }
+
+//                Debug.Assert(default(T) == null);
+
+//                if (!IgnoreDefaultValuesOnRead)
+//                {
+//                    T? value = default;
+//                    Set!(obj, value!);
+//                }
+
+//                success = true;
+//            }
+//            else if (Converter.CanUseDirectReadOrWrite)
+//            {
+//                // CanUseDirectReadOrWrite == false when using streams
+//                Debug.Assert(!state.IsContinuation);
+
+//                if (!isNullToken || !IgnoreDefaultValuesOnRead || !PropertyTypeCanBeNull)
+//                {
+//                    // Optimize for internal converters by avoiding the extra call to TryRead.
+//                    T? fastValue = Converter.Read(ref reader, RuntimePropertyType!, Options);
+//                    Set!(obj, fastValue!);
+//                }
+
+//                success = true;
+//            }
+//            else
+//            {
+//                success = true;
+//                if (!isNullToken || !IgnoreDefaultValuesOnRead || !PropertyTypeCanBeNull || state.IsContinuation)
+//                {
+//                    success = Converter.TryRead(ref reader, RuntimePropertyType!, Options, ref state, out T? value);
+//                    if (success)
+//                    {
+//#if !DEBUG
+//                        if (_converterIsExternalAndPolymorphic)
+//#endif
+//                        {
+//                            if (value != null)
+//                            {
+//                                Type typeOfValue = value.GetType();
+//                                if (!DeclaredPropertyType.IsAssignableFrom(typeOfValue))
+//                                {
+//                                    ThrowHelper.ThrowInvalidCastException_DeserializeUnableToAssignValue(typeOfValue, DeclaredPropertyType);
+//                                }
+//                            }
+//                            else if (!PropertyTypeCanBeNull)
+//                            {
+//                                ThrowHelper.ThrowInvalidOperationException_DeserializeUnableToAssignNull(DeclaredPropertyType);
+//                            }
+//                        }
+
+//                        Set!(obj, value!);
+//                    }
+//                }
+//            }
+
+            return success;
+        }
+
         public override bool GetMemberAndWriteBinary(object obj, ref WriteStack state, BinaryWriter writer)
         {
             T value = Get!(obj);
