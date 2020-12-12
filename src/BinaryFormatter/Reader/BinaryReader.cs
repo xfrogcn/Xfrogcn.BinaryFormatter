@@ -113,8 +113,8 @@ namespace Xfrogcn.BinaryFormatter
             _isFinalBlock = isFinalBlock;
             _isInputSequence = false;
             _typeSeq = state._typeSeq;
-            CurrentTypeInfo = null;
-            CurrentPropertySeq = default;
+            CurrentTypeInfo = state._typeInfo;
+            CurrentPropertySeq = state._propertySeq;
             _typeMap = state._typeMap;
             _version = state._version;
             //_lineNumber = state._lineNumber;
@@ -239,7 +239,9 @@ namespace Xfrogcn.BinaryFormatter
             _previousTokenType = _previousTokenType,
             _typeMap = _typeMap,
             _typeSeq = _typeSeq,
-            _version = _version
+            _version = _version,
+            _typeInfo = CurrentTypeInfo,
+            _propertySeq = CurrentPropertySeq
         };
 
         public bool Read()

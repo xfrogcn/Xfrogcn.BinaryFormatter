@@ -123,20 +123,21 @@ namespace Xfrogcn.BinaryFormatter
         {
             bool success;
 
-            if(!reader.ReadTypeSeq())
+            if( state.Current.PropertyState < StackFramePropertyState.TryReadTypeSeq)
             {
-                return false;
+                if (!reader.ReadTypeSeq())
+                {
+                    return false;
+                }
+                state.Current.PropertyState = StackFramePropertyState.TryReadTypeSeq;
             }
+            
             success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out T value);
             if (!success)
             {
-                if(Converter.ClassType == ClassType.Value)
-                {
-                    reader.Rollback(2);
-                }
                 return false;
             }
-
+            state.Current.PropertyState = StackFramePropertyState.TryRead;
             Set(obj, value);
 
 //            bool isNullToken = reader.TokenType == BinaryTokenType.Null;

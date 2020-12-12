@@ -129,11 +129,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         internal bool TryRead(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options, ref ReadStack state, out T value)
         {
-            if (reader.CurrentTypeInfo != null && reader.CurrentTypeInfo.SerializeType != ClassType)
-            {
-                // TODO 
-                throw new Exception();
-            }
+            //if (state.Current.BinaryPropertyInfo != null && state.Current.BinaryPropertyInfo.ClassType != ClassType)
+            //{
+            //    // TODO 
+            //    throw new Exception();
+            //}else if(state.Current.BinaryPropertyInfo == null && state.Current.BinaryClassInfo!=null && state.Current.BinaryClassInfo.ClassType != ClassType)
+            //{
+            //    throw new Exception();
+            //}
             if (ClassType == ClassType.Value)
             {
                 // A value converter should never be within a continuation.

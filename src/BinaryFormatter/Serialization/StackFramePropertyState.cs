@@ -12,6 +12,8 @@ namespace Xfrogcn.BinaryFormatter
         Name,   // Verify or process the name.
         ReadValue,  // Read the value of the property.
         ReadValueIsEnd, // Determine if we are done reading.
+        TryReadTypeSeq,
         TryRead,    // Perform the actual call to the converter's TryRead().
+        
     }
 }

@@ -10,8 +10,10 @@ namespace Xfrogcn.BinaryFormatter
         internal BinaryTokenType _tokenType;
         internal BinaryTokenType _previousTokenType;
         internal BinaryReaderOptions _readerOptions;
-        internal TypeMap _typeMap;
+        internal BinaryTypeInfo _typeInfo;
         internal ushort _typeSeq;
+        internal ushort _propertySeq;
+        internal TypeMap _typeMap;
         //internal BitStack _bitStack;
 
 
@@ -26,6 +28,8 @@ namespace Xfrogcn.BinaryFormatter
             _typeMap = typeMap;
             _typeSeq = default;
             _version = version;
+            _typeInfo = default;
+            _propertySeq = default;
 
             // Only allocate if the user reads a JSON payload beyond the depth that the _allocationFreeContainer can handle.
             // This way we avoid allocations in the common, default cases, and allocate lazily.
