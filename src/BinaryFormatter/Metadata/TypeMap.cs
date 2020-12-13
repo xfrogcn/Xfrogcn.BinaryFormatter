@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
-using System.Collections.Concurrent;
 
 namespace Xfrogcn.BinaryFormatter
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
+    [DebuggerTypeProxy(typeof(DebuggerDisplayView))]
     public class TypeMap
     {
         public static readonly Type ObjectType = typeof(object);
@@ -51,6 +53,42 @@ namespace Xfrogcn.BinaryFormatter
             }
         }
 
+        public IReadOnlyList<ushort> GetGenericTypeSeqs(ushort seq)
+        {
+            List<ushort> seqList = new List<ushort>();
+            BinaryTypeInfo ti = GetTypeInfo(seq);
+            if(ti == null || !ti.IsGeneric)
+            {
+                return seqList;
+            }
+
+            GetGenericTypeSeqs(seq, seqList);
+
+            return seqList;
+        }
+
+        private void GetGenericTypeSeqs(ushort seq, List<ushort> seqList)
+        {
+            
+            BinaryTypeInfo ti = GetTypeInfo(seq);
+            if (ti == null || !ti.IsGeneric)
+            {
+                return;
+            }
+
+            foreach(ushort s in ti.GenericArguments)
+            {
+                if (seqList.Contains(s))
+                {
+                    continue;
+                }
+                seqList.Add(s);
+                GetGenericTypeSeqs(s, seqList);
+            }
+
+
+        }
+
         public bool HasType([NotNull]Type type) => _typeSeqMap.ContainsKey(type);
 
         public bool TryAdd(Type type, out BinaryTypeInfo typeInfo )
@@ -68,8 +106,6 @@ namespace Xfrogcn.BinaryFormatter
                     typeInfo = _typeInfoMap[type];
                     return false;
                 }
-
-                int s = System.Threading.Interlocked.Increment(ref _currentSeq);
                 
                 ushort cur = (ushort)_currentSeq;
                 if (cur >= 0xFF)
@@ -152,5 +188,36 @@ namespace Xfrogcn.BinaryFormatter
         }
 
 
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"count: {_typeSeqToTypeInfoMap.Count}");
+            foreach(var kv in _typeSeqToTypeInfoMap)
+            {
+                sb.AppendLine($"\tSeq: {kv.Key}, TypeInfo: {kv.Value}");
+            }
+            return sb.ToString();
+        }
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private string DebuggerDisplay => $"count: {this._typeSeqToTypeInfoMap.Count}";
+
+        private class DebuggerDisplayView
+        {
+            readonly TypeMap _typeMap;
+            public DebuggerDisplayView(TypeMap typeMap)
+            {
+                _typeMap = typeMap;
+            }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public Dictionary<ushort, BinaryTypeInfo> Info
+            {
+                get
+                {
+                    return _typeMap._typeSeqToTypeInfoMap;
+                }
+            }
+        }
     }
 }

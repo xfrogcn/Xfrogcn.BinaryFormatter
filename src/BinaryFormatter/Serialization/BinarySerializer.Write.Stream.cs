@@ -95,7 +95,7 @@ namespace Xfrogcn.BinaryFormatter
                     } while (!isFinalBlock);
 
                     var typeList = state.GetTypeList();
-                    writer.WriteTypeInfos(typeList, state.PrimaryTypeSeq);
+                    writer.WriteTypeInfos(typeList, state.TypeMap.GetTypeSeq(value.GetType()));
                     writer.Flush();
 
                     await bufferWriter.WriteToStreamAsync(stream, cancellationToken);

@@ -349,12 +349,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         return true;
                     }
                 }
-                
 
-                BinaryPropertyInfo dataExtensionProperty = state.Current.BinaryClassInfo.DataExtensionProperty;
+                var binaryClassInfo = state.Current.PolymorphicBinaryClassInfo ?? state.Current.BinaryClassInfo;
+                Debug.Assert(binaryClassInfo != null);
+
+                BinaryPropertyInfo dataExtensionProperty = binaryClassInfo.DataExtensionProperty;
 
                 int propertyCount = 0;
-                BinaryPropertyInfo[] propertyCacheArray = state.Current.BinaryClassInfo.PropertyCacheArray;
+                BinaryPropertyInfo[] propertyCacheArray = binaryClassInfo.PropertyCacheArray;
                 if (propertyCacheArray != null)
                 {
                     propertyCount = propertyCacheArray.Length;

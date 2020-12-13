@@ -13,7 +13,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         {
             // Today only typeof(object) can have polymorphic writes.
             // In the future, this will be check for !IsSealed (and excluding value types).
-            CanBePolymorphic = TypeToConvert == BinaryClassInfo.ObjectType;
+            CanBePolymorphic = TypeToConvert.IsClass && !TypeToConvert.IsSealed;
             IsValueType = TypeToConvert.IsValueType;
             CanBeNull = !IsValueType || TypeToConvert.IsNullableOfT();
             IsInternalConverter = GetType().Assembly == typeof(BinaryConverter).Assembly;
@@ -314,7 +314,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             }
 
             
-            ushort typeSeq = state.PushType(value==null? typeof(T) : value.GetType());
+            ushort typeSeq = state.PushType(typeof(T));
             if (CanBePolymorphic)
             {
                 if (value == null)
@@ -336,12 +336,24 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     return true;
                 }
 
-                writer.WriteTypeSeq(typeSeq);
+                
                 Type type = value.GetType();
+                
+                // 空object对象
                 if (type == BinaryClassInfo.ObjectType)
                 {
+                    if (type != typeof(T))
+                    {
+                        typeSeq = state.PushType(type);
+                    }
+                    writer.WriteTypeSeq(typeSeq);
+                    if(BinarySerializer.WriteReferenceForObject(this, value, ref state, writer))
+                    {
+                        return true;
+                    }
+                    
                     //writer.WriteStartObject();
-                    //writer.WriteEndObject();
+                    writer.WriteEndObject();
                     return true;
                 }
 

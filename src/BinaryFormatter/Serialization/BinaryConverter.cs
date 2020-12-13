@@ -60,7 +60,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             Debug.Assert(typeMap != null);
 
             bool isAdd = typeMap.TryAdd(RuntimeType, out BinaryTypeInfo ti);
-            if (isAdd)
+            if (isAdd || ti.Type == TypeEnum.None)
             {
                 ti.IsGeneric = RuntimeType.IsGenericType;
                 ti.GenericArgumentCount = RuntimeType.GetGenericArgumentCount();

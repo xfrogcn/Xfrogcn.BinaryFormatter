@@ -36,6 +36,10 @@ namespace Xfrogcn.BinaryFormatter
 
         public BinaryTypeInfo BinaryTypeInfo;
 
+        public BinaryClassInfo PolymorphicBinaryClassInfo;
+
+        public BinaryTypeInfo PolymorphicBinaryTypeInfo;
+
         /// <summary>
         /// Validation state for a class.
         /// </summary>
@@ -105,6 +109,8 @@ namespace Xfrogcn.BinaryFormatter
             BinaryPropertyNameAsString = propertyName;
 
             PolymorphicBinaryPropertyInfo = classInfo.PropertyInfoForClassInfo;
+            PolymorphicBinaryClassInfo = classInfo;
+            PolymorphicBinaryTypeInfo = classInfo.TypeMap.GetTypeInfo(classInfo.TypeSeq);
             return PolymorphicBinaryPropertyInfo.ConverterBase;
         }
 

@@ -35,7 +35,7 @@ namespace Xfrogcn.BinaryFormatter
 
         public TypeMap TypeMap { get; set; }
 
-        public ushort PrimaryTypeSeq;
+        //public ushort PrimaryTypeSeq;
 
 
         private List<ushort> _typeSeqList;
@@ -82,7 +82,7 @@ namespace Xfrogcn.BinaryFormatter
 
             TypeMap = options.TypeMap;
             AddTypeSeq(binaryClassInfo.TypeSeq);
-            PrimaryTypeSeq = binaryClassInfo.TypeSeq;
+            //PrimaryTypeSeq = binaryClassInfo.TypeSeq;
 
             Current.BinaryClassInfo = binaryClassInfo;
             Current.BinaryTypeInfo = TypeMap.GetTypeInfo(binaryClassInfo.TypeSeq);
@@ -108,6 +108,14 @@ namespace Xfrogcn.BinaryFormatter
             if (!_typeSeqList.Contains(typeSeq))
             {
                 _typeSeqList.Add(typeSeq);
+                var list = TypeMap.GetGenericTypeSeqs(typeSeq);
+                if (list.Count > 0)
+                {
+                    foreach(var s in list)
+                    {
+                        AddTypeSeq(s);
+                    }
+                }
             }
         }
 

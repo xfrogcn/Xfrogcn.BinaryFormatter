@@ -13,7 +13,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
         public async Task Test<T>(T input, Action<T> check, BinarySerializerOptions options = null)
         {
             MemoryStream ms = new MemoryStream();
-            await BinarySerializer.SerializeAsync(ms, input);
+            await BinarySerializer.SerializeAsync<T>(ms, input);
 
             ms.Position = 0;
 
@@ -31,6 +31,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
             public uint A { get; set; }
 
             public string B { get; set; }
+            
         }
 
         class ObjTestB : ObjTestA
@@ -39,13 +40,14 @@ namespace Xfrogcn.BinaryFormatter.Tests
             public ObjTestB C { get; set; }
 
             public ObjTestA D { get; set; }
+
+            public int? E { get; set; }
         }
 
         [Fact(DisplayName = "Object-Simple")]
         public async Task Test_SimpleObj()
         {
-            Type type = typeof(ObjTestA);
-
+            
             ObjTestA a = new ObjTestA()
             {
                 A = 1,
@@ -103,7 +105,8 @@ namespace Xfrogcn.BinaryFormatter.Tests
             {
                 A = 1,
                 B = null,
-                C = null
+                C = null,
+                E = null
             };
 
             await Test<ObjTestB>(null, (obj) => Assert.Null(obj));
@@ -155,31 +158,13 @@ namespace Xfrogcn.BinaryFormatter.Tests
                 {
                     A = 1,
                     B = new string('B', len)
-                }
+                },
+                E = null
             };
 
-           
-            Action<ObjTestB> check = b =>
-            {
-                Assert.Equal(a.A, b.A);
-                Assert.Equal(a.B, b.B);
-                if (a.C == null)
-                {
-                    Assert.Equal(a.C, b.C);
-                }
 
-                ObjTestB c1 = a.C;
-                ObjTestB c2 = b.C;
-                while (c1 != null )
-                {
-                    Assert.Equal(c1.A, c2.A);
-                    Assert.Equal(c1.B, c2.B);
-                    c1 = c1.C;
-                    c2 = c2.C;
-                }
+            Action<ObjTestB> check = checkProc(a);
 
-               
-            };
             await Test(a, check);
 
             a.C.C = new ObjTestB()
@@ -193,13 +178,136 @@ namespace Xfrogcn.BinaryFormatter.Tests
                     C = new ObjTestB()
                     {
                         A = 4,
-                        B = new string('E', len)
-                    }
-                }
+                        B = new string('E', len),
+                        E = 2,
+                        C = new ObjTestB()
+                        {
+                            A = 5,
+                            B = null,
+                            E = null,
+                            D = new ObjTestA()
+                            {
+                                A = 1,
+                                B = new string('A', len)
+                            }
+                        }
+                    },
+                    E = 1
+                },
+                E = null
             };
 
             await Test(a, check);
 
         }
+
+        [Fact(DisplayName = "Object-Polymorphic")]
+        public async Task Test_Polymorphic()
+        {
+
+            ObjTestA a = new ObjTestB()
+            {
+                A = 1,
+                B = null,
+                E = 2
+            };
+
+
+           
+            Action<ObjTestA> check = b =>
+            {
+                Assert.Equal(a.A, b.A);
+                Assert.Equal(a.B, b.B);
+            };
+            await Test<ObjTestA>(a, check);
+
+            object c = new ObjTestB()
+            {
+                A = 1
+            };
+            await Test<object>(c, b=>
+            {
+                Assert.IsType<ObjTestB>(b);
+                ObjTestB x = b as ObjTestB;
+                Assert.Equal((uint)1, x.A);
+            });
+
+            c = new object();
+            await Test<object>(c, b =>
+            {
+                Assert.True(b.GetType() == typeof(object));
+            });
+
+
+            ObjTestB n1 = new ObjTestB()
+            {
+                A = 1,
+                B = "A",
+                C = new ObjTestB()
+                {
+                    A = 2,
+                    D = new ObjTestB()
+                    {
+                        B = "C1",
+                        E = 1
+                    }
+                },
+                D = new ObjTestB()
+                {
+                    B = "D1",
+                    D = new ObjTestA()
+                    {
+                        B = "A1"
+                    },
+                    E = 1
+                },
+                E = null
+            };
+            await Test(n1, checkProc(n1));
+        }
+
+        private Action<ObjTestB> checkProc(ObjTestB a)
+        {
+            Action<ObjTestB> check = b =>
+            {
+                Assert.Equal(a.A, b.A);
+                Assert.Equal(a.B, b.B);
+                if (a.C == null)
+                {
+                    Assert.Equal(a.C, b.C);
+                }
+                if(a.D == null)
+                {
+                    Assert.Equal(a.D, b.D);
+                }
+                else
+                {
+                    Assert.Equal(a.D.GetType(), b.D.GetType());
+                    Assert.Equal(a.D.A, b.D.A);
+                    Assert.Equal(a.D.B, b.D.B);
+
+                    if(a.D is ObjTestB)
+                    {
+                        var subCheck = checkProc(a.D as ObjTestB);
+                        subCheck(b.D as ObjTestB);
+                    }
+                }
+
+                ObjTestB c1 = a.C;
+                ObjTestB c2 = b.C;
+                while (c1 != null)
+                {
+                    var subCheck = checkProc(c1);
+                    subCheck(c2);
+                    c1 = c1.C;
+                    c2 = c2.C;
+                }
+
+
+            };
+
+            return check;
+        }
+        
     }
 }
