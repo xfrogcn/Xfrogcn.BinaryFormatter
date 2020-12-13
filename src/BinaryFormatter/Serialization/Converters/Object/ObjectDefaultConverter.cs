@@ -127,8 +127,21 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     {
                        // ThrowHelper.ThrowNotSupportedException_DeserializeNoConstructor(state.Current.BinaryClassInfo.Type, ref reader, ref state);
                     }
+                    if( state.TypeMap.GetType( state.Current.BinaryTypeInfo.Seq) == state.Current.BinaryPropertyInfo.ConverterBase.TypeToConvert)
+                    {
+                        obj = state.Current.BinaryPropertyInfo.RuntimeClassInfo.CreateObject();
+                    }
+                    else if(state.Current.PolymorphicBinaryClassInfo!= null )
+                    {
+                        obj = state.Current.PolymorphicBinaryClassInfo.CreateObject();
+                    }
+                    else
+                    {
+                        obj = null;
+                        ThrowHelper.ThrowBinaryException();
+                    }
 
-                    obj = state.Current.BinaryClassInfo.CreateObject!()!;
+
 
                     state.Current.ReturnValue = obj;
                     state.Current.ObjectState = StackFrameObjectState.CreatedObject;

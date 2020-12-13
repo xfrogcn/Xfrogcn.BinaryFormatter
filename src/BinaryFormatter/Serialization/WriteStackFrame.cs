@@ -120,6 +120,8 @@ namespace Xfrogcn.BinaryFormatter
             EnumeratorIndex = 0;
             IgnoreDictionaryKeyPolicy = false;
             BinaryClassInfo = null!;
+            PolymorphicBinaryClassInfo = null;
+            PolymorphicBinaryPropertyInfo = null;
             OriginalDepth = 0;
             ProcessedStartToken = false;
             ProcessedEndToken = false;

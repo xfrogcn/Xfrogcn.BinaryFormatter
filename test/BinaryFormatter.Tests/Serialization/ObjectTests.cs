@@ -239,29 +239,45 @@ namespace Xfrogcn.BinaryFormatter.Tests
             });
 
 
-            ObjTestB n1 = new ObjTestB()
+           
+        }
+
+        [Fact(DisplayName = "Object-Polymorphic-Nest")]
+        public async Task Test_Polymorphic_Nest()
+        {
+            //ObjTestB n1 = new ObjTestB()
+            //{
+            //    D = new ObjTestB()
+            //    {
+            //        B = "D1"
+            //    }
+            //};
+            //await Test(n1, checkProc(n1));
+
+
+            var n1 = new ObjTestB()
             {
-                A = 1,
-                B = "A",
-                C = new ObjTestB()
-                {
-                    A = 2,
-                    D = new ObjTestB()
-                    {
-                        B = "C1",
-                        E = 1
-                    }
-                },
+                //A = 1,
+                //B = "A",
+                //C = new ObjTestB()
+                //{
+                //    A = 2,
+                //    D = new ObjTestB()
+                //    {
+                //        B = "C1",
+                //        E = 1
+                //    }
+                //},
                 D = new ObjTestB()
                 {
-                    B = "D1",
+                   // B = "D1",
                     D = new ObjTestA()
                     {
                         B = "A1"
                     },
-                    E = 1
+                  //  E = 1
                 },
-                E = null
+              //  E = null
             };
             await Test(n1, checkProc(n1));
         }

@@ -157,6 +157,15 @@ namespace Xfrogcn.BinaryFormatter
             return _typeSeqToTypeInfoMap[seq];
         }
 
+        public BinaryTypeInfo GetTypeInfo(Type type)
+        {
+            if (_typeInfoMap.ContainsKey(type))
+            {
+                return _typeInfoMap[type];
+            }
+            return null;
+        }
+
         internal bool TrySetTypeMemberInfos(ushort seq, Func<BinaryMemberInfo[]> getMemberInfos)
         {
             BinaryTypeInfo ti = GetTypeInfo(seq);

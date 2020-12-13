@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using Xfrogcn.BinaryFormatter.Serialization;
 
 namespace Xfrogcn.BinaryFormatter
 {
@@ -27,6 +28,10 @@ namespace Xfrogcn.BinaryFormatter
         public object ReturnValue; // The current return value used for re-entry.
         public BinaryClassInfo BinaryClassInfo;
         public BinaryTypeInfo BinaryTypeInfo;
+
+        public BinaryClassInfo PolymorphicBinaryClassInfo;
+        public BinaryTypeInfo PolymorphicBinaryTypeInfo;
+
         public StackFrameObjectState ObjectState; // State tracking the current object.
 
         // Validate EndObject token on array with preserve semantics.
@@ -88,11 +93,26 @@ namespace Xfrogcn.BinaryFormatter
             return (BinaryClassInfo.ClassType & ClassType.Enumerable) != 0;
         }
 
+        public BinaryConverter InitializeReEntry(Type type, BinarySerializerOptions options, string propertyName = null)
+        {
+            BinaryClassInfo classInfo = options.GetOrAddClass(type);
+
+
+            // Set for exception handling calculation of JsonPath.
+            BinaryPropertyNameAsString = propertyName;
+
+            PolymorphicBinaryClassInfo = classInfo;
+            PolymorphicBinaryTypeInfo = classInfo.TypeMap.GetTypeInfo(classInfo.TypeSeq);
+            return classInfo.PropertyInfoForClassInfo.ConverterBase;
+        }
+
         public void Reset()
         {
             CtorArgumentStateIndex = 0;
            // CtorArgumentState = null;
             BinaryClassInfo = null!;
+            PolymorphicBinaryClassInfo = null;
+            PolymorphicBinaryTypeInfo = null;
             BinaryTypeInfo = null;
             ObjectState = StackFrameObjectState.None;
             OriginalDepth = 0;

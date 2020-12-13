@@ -130,13 +130,43 @@ namespace Xfrogcn.BinaryFormatter
                     return false;
                 }
                 state.Current.PropertyState = StackFramePropertyState.TryReadTypeSeq;
+                //if (reader.CurrentTypeInfo != null && Converter.ClassType != ClassType.Value)
+                //{
+                //    state.Current.BinaryTypeInfo = reader.CurrentTypeInfo;
+                //}
             }
-            
-            success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out T value);
+
+            T value = default;
+            if (Converter.CanBePolymorphic && reader.CurrentTypeInfo!=null)
+            {
+                var type = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
+                if( type != Converter.TypeToConvert)
+                {
+                    BinaryConverter binaryConverter = state.Current.InitializeReEntry(type, Options, NameAsString);
+                    success = binaryConverter.TryReadAsObject(ref reader, Options, ref state, out object tmpValue);
+                    if (success)
+                    {
+                        value = (T)tmpValue;
+                    }
+                }
+                else
+                {
+                    state.Current.PolymorphicBinaryClassInfo = null;
+                    state.Current.PolymorphicBinaryTypeInfo = null;
+                    success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out  value);
+                    
+                }
+            }
+            else
+            {
+                success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out value);
+            }
+
             if (!success)
             {
                 return false;
             }
+
             state.Current.PropertyState = StackFramePropertyState.TryRead;
             Set(obj, value);
 

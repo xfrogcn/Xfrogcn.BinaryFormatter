@@ -72,8 +72,8 @@ namespace Xfrogcn.BinaryFormatter
 
             // The initial JsonPropertyInfo will be used to obtain the converter.
             Current.BinaryPropertyInfo = binaryClassInfo.PropertyInfoForClassInfo;
-           
-           
+
+            Current.BinaryTypeInfo = TypeMap.GetTypeInfo(type);
 
             //bool preserveReferences = options.ReferenceHandler != null;
             //if (preserveReferences)
@@ -88,9 +88,10 @@ namespace Xfrogcn.BinaryFormatter
 
         internal BinaryPropertyInfo LookupProperty(string propertyName)
         {
-            if (Current.BinaryClassInfo.PropertyCache.ContainsKey(propertyName))
+            var binaryClassInfo = Current.PolymorphicBinaryClassInfo ?? Current.BinaryClassInfo;
+            if (binaryClassInfo.PropertyCache.ContainsKey(propertyName))
             {
-                return Current.BinaryClassInfo.PropertyCache[propertyName];
+                return binaryClassInfo.PropertyCache[propertyName];
             }
             return null;
         }
@@ -139,12 +140,16 @@ namespace Xfrogcn.BinaryFormatter
                 else
                 {
                     BinaryClassInfo binaryClassInfo = null;
+                    BinaryClassInfo polymorphicBinaryClassInfo = null;
+                    BinaryTypeInfo polymorphicTypeInfo = null;
                    
                     if (Current.BinaryClassInfo.ClassType == ClassType.Object)
                     {
                         if (Current.BinaryPropertyInfo != null)
                         {
                             binaryClassInfo = Current.BinaryPropertyInfo.RuntimeClassInfo;
+                            polymorphicBinaryClassInfo = Current.PolymorphicBinaryClassInfo;
+                            polymorphicTypeInfo = Current.PolymorphicBinaryTypeInfo;
                         }
                         else
                         {
@@ -166,6 +171,8 @@ namespace Xfrogcn.BinaryFormatter
                     Current.Reset();
 
                     Current.BinaryClassInfo = binaryClassInfo;
+                    Current.PolymorphicBinaryClassInfo = polymorphicBinaryClassInfo;
+                    Current.PolymorphicBinaryTypeInfo = polymorphicTypeInfo;
                     Current.BinaryPropertyInfo = binaryClassInfo.PropertyInfoForClassInfo;
                     Current.BinaryTypeInfo = typeInfo;
                 }
@@ -175,6 +182,7 @@ namespace Xfrogcn.BinaryFormatter
                 // No need for a push since there is only one stack frame.
                 Debug.Assert(_count == 1);
                 _continuationCount = 0;
+
             }
             else
             {

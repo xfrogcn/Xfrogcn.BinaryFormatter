@@ -137,6 +137,40 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             //{
             //    throw new Exception();
             //}
+            //if (CanBePolymorphic)
+            //{
+            //    if(reader.TokenType == BinaryTokenType.Null)
+            //    {
+            //        value = default;
+            //        return true;
+            //    }
+
+            //    Type type = state.TypeMap.GetType(state.Current.BinaryTypeInfo.Seq);
+            //    if(type != TypeToConvert)
+            //    {
+            //        // state.Current
+            //        var binaryConverter = state.Current.InitializeReEntry(type, options);
+            //        if (binaryConverter != this)
+            //        {
+            //            // We found a different converter; forward to that.
+            //            if( binaryConverter.TryReadAsObject(ref reader, options, ref state, out object tmpValue))
+            //            {
+            //                value = (T)tmpValue;
+            //                return true;
+            //            }
+            //            else
+            //            {
+            //                value = default;
+            //                return false;
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+
+            //    }
+            //}
+
             if (ClassType == ClassType.Value)
             {
                 // A value converter should never be within a continuation.
@@ -230,6 +264,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             // Remember if we were a continuation here since Push() may affect IsContinuation.
             bool wasContinuation = state.IsContinuation;
 
+            Console.WriteLine(reader.CurrentTypeInfo);
             state.Push(reader.CurrentTypeInfo);
 
             // For performance, only perform validation on internal converters on debug builds.
