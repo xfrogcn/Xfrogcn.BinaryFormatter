@@ -494,5 +494,8 @@ namespace Xfrogcn.BinaryFormatter
             return true;
         }
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private string DebuggerDisplay => $"TokenType = {_tokenType} (TokenStartIndex = {TokenStartIndex}) Consumed = {BytesConsumed}";
+
     }
 }

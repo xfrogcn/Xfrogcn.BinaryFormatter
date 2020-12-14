@@ -384,5 +384,11 @@ namespace Xfrogcn.BinaryFormatter
             throw ex;
         }
 
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_ConstructorParameterIncompleteBinding(ConstructorInfo constructorInfo, Type parentType)
+        {
+            throw new InvalidOperationException(string.Format(Strings.ConstructorParamIncompleteBinding, constructorInfo, parentType));
+        }
     }
 }

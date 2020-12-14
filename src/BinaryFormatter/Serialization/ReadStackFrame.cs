@@ -40,11 +40,11 @@ namespace Xfrogcn.BinaryFormatter
 
         // For performance, we order the properties by the first deserialize and PropertyIndex helps find the right slot quicker.
         public int PropertyIndex;
-      //  public List<PropertyRef>? PropertyRefCache;
+        public List<PropertyRef> PropertyRefCache;
 
         // Holds relevant state when deserializing objects with parameterized constructors.
         public int CtorArgumentStateIndex;
-        //    public ArgumentState? CtorArgumentState;
+        public ArgumentState CtorArgumentState;
 
         // 记录跳转引用前位置
         public ulong OriginPosition;
@@ -54,7 +54,7 @@ namespace Xfrogcn.BinaryFormatter
 
         public void EndConstructorParameter()
         {
-        //    CtorArgumentState!.JsonParameterInfo = null;
+            CtorArgumentState.BinaryParameterInfo = null;
             BinaryPropertyName = null;
             PropertyState = StackFramePropertyState.None;
         }
@@ -111,7 +111,7 @@ namespace Xfrogcn.BinaryFormatter
         public void Reset()
         {
             CtorArgumentStateIndex = 0;
-           // CtorArgumentState = null;
+            CtorArgumentState = null;
             BinaryClassInfo = null!;
             PolymorphicBinaryClassInfo = null;
             PolymorphicBinaryTypeInfo = null;
@@ -121,7 +121,7 @@ namespace Xfrogcn.BinaryFormatter
             OriginalDepth = 0;
          //   OriginalTokenType = JsonTokenType.None;
             PropertyIndex = 0;
-            //PropertyRefCache = null;
+            PropertyRefCache = null;
             ReturnValue = null;
 
             EndProperty();

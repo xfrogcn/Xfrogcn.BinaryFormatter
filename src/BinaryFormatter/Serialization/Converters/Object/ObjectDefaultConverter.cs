@@ -191,7 +191,15 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         BinaryMemberInfo mi = state.GetMemberInfo(propertySeq);
                         Debug.Assert(mi != null);
 
-                        binaryPropertyInfo = state.LookupProperty(mi.NameAsString);
+                        binaryPropertyInfo = BinarySerializer.LookupProperty(
+                            obj,
+                            mi.NameAsUtf8Bytes,
+                            ref state,
+                            out bool useExtensionProperty);
+
+                        state.Current.UseExtensionProperty = useExtensionProperty;
+
+                       // binaryPropertyInfo = state.LookupProperty(mi.NameAsString);
                         state.Current.BinaryPropertyInfo = binaryPropertyInfo;
                         state.Current.PropertyPolymorphicConverter = null;
                         if (binaryPropertyInfo == null)
@@ -335,10 +343,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             }
 
             // Check if we are trying to build the sorted cache.
-            //if (state.Current.PropertyRefCache != null)
-            //{
-            //    state.Current.BinaryClassInfo.UpdateSortedPropertyCache(ref state.Current);
-            //}
+            if (state.Current.PropertyRefCache != null)
+            {
+                state.Current.BinaryClassInfo.UpdateSortedPropertyCache(ref state.Current);
+            }
 
             value = (T)obj;
 
@@ -359,8 +367,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 if(!state.Current.ProcessedStartToken)
                 {
                     state.Current.ProcessedStartToken = true;
+                    writer.WriteStartObject();
                     if (BinarySerializer.WriteReferenceForObject(this, objectValue, ref state, writer))
                     {
+                        writer.WriteEndObject();
                         return true;
                     }
                 }

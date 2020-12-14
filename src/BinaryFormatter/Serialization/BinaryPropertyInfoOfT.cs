@@ -326,7 +326,64 @@ namespace Xfrogcn.BinaryFormatter
             throw new NotImplementedException();
         }
 
-        
+        public override bool ReadBinaryAsObject(ref ReadStack state, ref BinaryReader reader, out object value)
+        {
+            bool success;
+            value = default;
+            if (state.Current.PropertyState < StackFramePropertyState.TryReadTypeSeq)
+            {
+                if (!reader.ReadTypeSeq())
+                {
+                    return false;
+                }
+                state.Current.PropertyState = StackFramePropertyState.TryReadTypeSeq;
+
+                bool isNullToken = reader.TokenType == BinaryTokenType.Null;
+                if (isNullToken && !Converter.HandleNullOnRead && !state.IsContinuation)
+                {
+                    if (!Converter.CanBeNull)
+                    {
+                        ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(Converter.TypeToConvert);
+                    }
+                    state.Current.PropertyState = StackFramePropertyState.TryRead;
+                    value = default(T);
+                    success = true;
+                }
+
+
+                if (state.Current.PropertyPolymorphicConverter == null && reader.CurrentTypeInfo != null && Converter.CanBePolymorphic)
+                {
+                    var type = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
+                    if (type != Converter.TypeToConvert)
+                    {
+                        state.Current.PropertyPolymorphicConverter = state.Current.InitializeReEntry(type, Options, NameAsString);
+                    }
+                }
+            }
+
+            
+            if (state.Current.PropertyPolymorphicConverter != null)
+            {
+                success = state.Current.PropertyPolymorphicConverter.TryReadAsObject(ref reader, Options, ref state, out object tmpValue);
+                value = (T)tmpValue;
+            }
+            else
+            {
+                success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out T typedValue);
+                value = typedValue;
+            }
+
+            if (!success)
+            {
+                return false;
+            }
+
+            state.Current.PropertyState = StackFramePropertyState.TryRead;
+
+
+            return success;
+        }
+
 
         public override void SetExtensionDictionaryAsObject(object obj, object extensionDict)
         {

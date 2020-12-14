@@ -162,6 +162,10 @@ namespace Xfrogcn.BinaryFormatter
         public void WriteEndObject()
         {
             WritePropertySeq(0x7FFF);
+            if (CurrentDepth != 0)
+            {
+                _currentDepth--;
+            }
         }
 
         internal void WriteTypeSeqAndBytes(ushort typeSeq, ReadOnlySpan<byte> bytes)
@@ -205,7 +209,10 @@ namespace Xfrogcn.BinaryFormatter
             BytesPending += len;
             return output;
         }
-
+        public void WriteStartObject()
+        {
+            _currentDepth++;
+        }
 
         internal void WriteTypeInfos(IList<BinaryTypeInfo> typeList, ushort primaryTypeSeq)
         {

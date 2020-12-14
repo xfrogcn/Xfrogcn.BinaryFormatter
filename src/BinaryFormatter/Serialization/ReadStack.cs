@@ -35,6 +35,8 @@ namespace Xfrogcn.BinaryFormatter
 
         private List<ReadStackFrame> _previous;
 
+        private List<ArgumentState> _ctorArgStateCache;
+
         /// <summary>
         /// Whether we need to read ahead in the inner read loop.
         /// </summary>
@@ -75,6 +77,7 @@ namespace Xfrogcn.BinaryFormatter
 
             Current.BinaryTypeInfo = TypeMap.GetTypeInfo(type);
             Current.TypeMap = TypeMap;
+            
             //bool preserveReferences = options.ReferenceHandler != null;
             //if (preserveReferences)
             //{
@@ -82,7 +85,7 @@ namespace Xfrogcn.BinaryFormatter
             //}
 
             SupportContinuation = supportContinuation;
-           //UseFastPath = !supportContinuation && !preserveReferences;
+            //UseFastPath = !supportContinuation && !preserveReferences;
         }
 
 
@@ -151,7 +154,7 @@ namespace Xfrogcn.BinaryFormatter
                         }
                         else
                         {
-                            // binaryClassInfo = Current.CtorArgumentState!.BinaryParameterInfo!.RuntimeClassInfo;
+                            binaryClassInfo = Current.CtorArgumentState!.BinaryParameterInfo!.RuntimeClassInfo;
                         }
                     }
                     else if (((ClassType.Value | ClassType.NewValue) & Current.BinaryClassInfo.ClassType) != 0)
@@ -368,26 +371,26 @@ namespace Xfrogcn.BinaryFormatter
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetConstructorArgumentState()
         {
-            //if (Current.BinaryClassInfo.ParameterCount > 0)
-            //{
-            //    // A zero index indicates a new stack frame.
-            //    if (Current.CtorArgumentStateIndex == 0)
-            //    {
-            //        if (_ctorArgStateCache == null)
-            //        {
-            //            _ctorArgStateCache = new List<ArgumentState>();
-            //        }
+            if (Current.BinaryClassInfo.ParameterCount > 0)
+            {
+                // A zero index indicates a new stack frame.
+                if (Current.CtorArgumentStateIndex == 0)
+                {
+                    if (_ctorArgStateCache == null)
+                    {
+                        _ctorArgStateCache = new List<ArgumentState>();
+                    }
 
-            //        var newState = new ArgumentState();
-            //        _ctorArgStateCache.Add(newState);
+                    var newState = new ArgumentState();
+                    _ctorArgStateCache.Add(newState);
 
-            //        (Current.CtorArgumentStateIndex, Current.CtorArgumentState) = (_ctorArgStateCache.Count, newState);
-            //    }
-            //    else
-            //    {
-            //        Current.CtorArgumentState = _ctorArgStateCache![Current.CtorArgumentStateIndex - 1];
-            //    }
-            //}
+                    (Current.CtorArgumentStateIndex, Current.CtorArgumentState) = (_ctorArgStateCache.Count, newState);
+                }
+                else
+                {
+                    Current.CtorArgumentState = _ctorArgStateCache![Current.CtorArgumentStateIndex - 1];
+                }
+            }
         }
     }
 }

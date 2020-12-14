@@ -56,7 +56,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         }
                     }
 
-                   // converterType = typeof(SmallObjectWithParameterizedConstructorConverter<,,,,>).MakeGenericType(typeArguments);
+                    converterType = typeof(SmallObjectWithParameterizedConstructorConverter<,,,,>).MakeGenericType(typeArguments);
                 }
                 else
                 {

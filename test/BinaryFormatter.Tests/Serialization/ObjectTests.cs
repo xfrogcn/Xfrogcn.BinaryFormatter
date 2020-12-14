@@ -6,7 +6,7 @@ using Xunit;
 namespace Xfrogcn.BinaryFormatter.Tests
 {
     [Trait("", "Object")]
-    public class ObjectTests
+    public partial class ObjectTests
     {
         
        

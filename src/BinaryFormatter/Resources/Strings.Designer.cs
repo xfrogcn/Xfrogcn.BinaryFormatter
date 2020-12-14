@@ -88,6 +88,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Each parameter in constructor &apos;{0}&apos; on type &apos;{1}&apos; must bind to an object property or field on deserialization. Each parameter name must match with a property or field on the object. The match can be case-insensitive. 的本地化字符串。
+        /// </summary>
+        internal static string ConstructorParamIncompleteBinding {
+            get {
+                return ResourceManager.GetString("ConstructorParamIncompleteBinding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The converter &apos;{0}&apos; handles type &apos;{1}&apos; but is being asked to convert type &apos;{2}&apos;. Either create a separate converter for type &apos;{2}&apos; or change the converter&apos;s &apos;CanConvert&apos; method to only return &apos;true&apos; for a single type. 的本地化字符串。
         /// </summary>
         internal static string ConverterCanConvertNullableRedundant {
