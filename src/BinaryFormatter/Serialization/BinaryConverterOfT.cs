@@ -137,39 +137,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             //{
             //    throw new Exception();
             //}
-            //if (CanBePolymorphic)
-            //{
-            //    if(reader.TokenType == BinaryTokenType.Null)
-            //    {
-            //        value = default;
-            //        return true;
-            //    }
-
-            //    Type type = state.TypeMap.GetType(state.Current.BinaryTypeInfo.Seq);
-            //    if(type != TypeToConvert)
-            //    {
-            //        // state.Current
-            //        var binaryConverter = state.Current.InitializeReEntry(type, options);
-            //        if (binaryConverter != this)
-            //        {
-            //            // We found a different converter; forward to that.
-            //            if( binaryConverter.TryReadAsObject(ref reader, options, ref state, out object tmpValue))
-            //            {
-            //                value = (T)tmpValue;
-            //                return true;
-            //            }
-            //            else
-            //            {
-            //                value = default;
-            //                return false;
-            //            }
-            //        }
-            //    }
-            //    else
-            //    {
-
-            //    }
-            //}
+           
 
             if (ClassType == ClassType.Value)
             {
@@ -260,12 +228,50 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             }
 
             bool success;
-
-            // Remember if we were a continuation here since Push() may affect IsContinuation.
             bool wasContinuation = state.IsContinuation;
 
-            Console.WriteLine(reader.CurrentTypeInfo);
-            state.Push(reader.CurrentTypeInfo);
+            if (!wasContinuation && reader.TokenType == BinaryTokenType.Null && state.Current.ObjectState < StackFrameObjectState.CreatedObject)
+            {
+                value = default;
+                return true;
+            }
+
+            // Remember if we were a continuation here since Push() may affect IsContinuation.
+           
+
+           // Console.WriteLine(reader.CurrentTypeInfo);
+          //  if (!isPolymorphic)
+           // {
+                state.Push(reader.CurrentTypeInfo);
+          //  }
+
+            //if (CanBePolymorphic)
+            //{
+            //    Type type = state.TypeMap.GetType((state.Current.PolymorphicBinaryTypeInfo?? state.Current.BinaryTypeInfo).Seq);
+            //    if (type != TypeToConvert)
+            //    {
+            //        // state.Current
+            //        var binaryConverter = state.Current.InitializeReEntry(type, options);
+            //        if (binaryConverter != this)
+            //        {
+            //            // We found a different converter; forward to that.
+            //            if (binaryConverter.TryReadAsObject(ref reader, options, ref state, out object tmpValue))
+            //            {
+            //                value = (T)tmpValue;
+            //                return true;
+            //            }
+            //            else
+            //            {
+            //                value = default;
+            //                return false;
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+
+            //    }
+            //}
 
             // For performance, only perform validation on internal converters on debug builds.
             if (IsInternalConverter)
@@ -329,8 +335,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     // No need to clear state.Current.* since a stack pop will occur.
                 }
             }
-
-            state.Pop(success);
+          //  if (!isPolymorphic)
+         //   {
+                state.Pop(success);
+          //  }
+           
             return success;
         }
 

@@ -74,7 +74,7 @@ namespace Xfrogcn.BinaryFormatter
             Current.BinaryPropertyInfo = binaryClassInfo.PropertyInfoForClassInfo;
 
             Current.BinaryTypeInfo = TypeMap.GetTypeInfo(type);
-
+            Current.TypeMap = TypeMap;
             //bool preserveReferences = options.ReferenceHandler != null;
             //if (preserveReferences)
             //{
@@ -88,7 +88,7 @@ namespace Xfrogcn.BinaryFormatter
 
         internal BinaryPropertyInfo LookupProperty(string propertyName)
         {
-            var binaryClassInfo = Current.PolymorphicBinaryClassInfo ?? Current.BinaryClassInfo;
+            var binaryClassInfo = Current.BinaryClassInfo;
             if (binaryClassInfo.PropertyCache.ContainsKey(propertyName))
             {
                 return binaryClassInfo.PropertyCache[propertyName];
@@ -135,21 +135,19 @@ namespace Xfrogcn.BinaryFormatter
                 {
                     // The first stack frame is held in Current.
                     Current.BinaryTypeInfo = typeInfo;
+                    Current.TypeMap = TypeMap;
                     _count = 1;
                 }
                 else
                 {
                     BinaryClassInfo binaryClassInfo = null;
-                    BinaryClassInfo polymorphicBinaryClassInfo = null;
-                    BinaryTypeInfo polymorphicTypeInfo = null;
+                    
                    
                     if (Current.BinaryClassInfo.ClassType == ClassType.Object)
                     {
                         if (Current.BinaryPropertyInfo != null)
                         {
-                            binaryClassInfo = Current.BinaryPropertyInfo.RuntimeClassInfo;
-                            polymorphicBinaryClassInfo = Current.PolymorphicBinaryClassInfo;
-                            polymorphicTypeInfo = Current.PolymorphicBinaryTypeInfo;
+                            binaryClassInfo = Current.PolymorphicBinaryClassInfo?? Current.BinaryPropertyInfo.RuntimeClassInfo;
                         }
                         else
                         {
@@ -171,10 +169,9 @@ namespace Xfrogcn.BinaryFormatter
                     Current.Reset();
 
                     Current.BinaryClassInfo = binaryClassInfo;
-                    Current.PolymorphicBinaryClassInfo = polymorphicBinaryClassInfo;
-                    Current.PolymorphicBinaryTypeInfo = polymorphicTypeInfo;
                     Current.BinaryPropertyInfo = binaryClassInfo.PropertyInfoForClassInfo;
                     Current.BinaryTypeInfo = typeInfo;
+                    Current.TypeMap = TypeMap;
                 }
             }
             else if (_continuationCount == 1)

@@ -123,7 +123,7 @@ namespace Xfrogcn.BinaryFormatter
         {
             bool success;
 
-            if( state.Current.PropertyState < StackFramePropertyState.TryReadTypeSeq)
+            if (state.Current.PropertyState < StackFramePropertyState.TryReadTypeSeq)
             {
                 if (!reader.ReadTypeSeq())
                 {
@@ -134,28 +134,44 @@ namespace Xfrogcn.BinaryFormatter
                 //{
                 //    state.Current.BinaryTypeInfo = reader.CurrentTypeInfo;
                 //}
+                if (state.Current.PropertyPolymorphicConverter == null && reader.CurrentTypeInfo!=null  && Converter.CanBePolymorphic )
+                {
+                    var type = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
+                    if (type != Converter.TypeToConvert)
+                    {
+                        state.Current.PropertyPolymorphicConverter = state.Current.InitializeReEntry(type, Options, NameAsString);
+                    }
+                }
             }
 
             T value = default;
-            if (Converter.CanBePolymorphic && reader.CurrentTypeInfo!=null)
+            if (state.Current.PropertyPolymorphicConverter != null)
             {
-                var type = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
-                if( type != Converter.TypeToConvert)
+                success = state.Current.PropertyPolymorphicConverter.TryReadAsObject(ref reader, Options, ref state, out object tmpValue);
+                if (success)
                 {
-                    BinaryConverter binaryConverter = state.Current.InitializeReEntry(type, Options, NameAsString);
-                    success = binaryConverter.TryReadAsObject(ref reader, Options, ref state, out object tmpValue);
-                    if (success)
-                    {
-                        value = (T)tmpValue;
-                    }
+                    value = (T)tmpValue;
                 }
-                else
-                {
-                    state.Current.PolymorphicBinaryClassInfo = null;
-                    state.Current.PolymorphicBinaryTypeInfo = null;
-                    success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out  value);
-                    
-                }
+
+                //if (reader.CurrentTypeInfo.Seq != state.Current.BinaryTypeInfo.Seq)
+                //{
+
+                //}
+                //var type = state.Current.BinaryPropertyInfo.ConverterBase.TypeToConvert;
+                //if (type != Converter.TypeToConvert)
+                //{
+                //    BinaryConverter binaryConverter = state.Current.InitializeReEntry(type, Options, NameAsString);
+                //    success = binaryConverter.TryReadAsObject(ref reader, Options, ref state, out object tmpValue);
+                //    if (success)
+                //    {
+                //        value = (T)tmpValue;
+                //    }
+                //}
+                //else
+                //{
+                //    success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out value);
+
+                //}
             }
             else
             {

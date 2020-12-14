@@ -127,19 +127,20 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     {
                        // ThrowHelper.ThrowNotSupportedException_DeserializeNoConstructor(state.Current.BinaryClassInfo.Type, ref reader, ref state);
                     }
-                    if( state.TypeMap.GetType( state.Current.BinaryTypeInfo.Seq) == state.Current.BinaryPropertyInfo.ConverterBase.TypeToConvert)
-                    {
-                        obj = state.Current.BinaryPropertyInfo.RuntimeClassInfo.CreateObject();
-                    }
-                    else if(state.Current.PolymorphicBinaryClassInfo!= null )
-                    {
-                        obj = state.Current.PolymorphicBinaryClassInfo.CreateObject();
-                    }
-                    else
-                    {
-                        obj = null;
-                        ThrowHelper.ThrowBinaryException();
-                    }
+                    obj = state.Current.BinaryClassInfo.CreateObject();
+                    //if( state.TypeMap.GetType( state.Current.BinaryTypeInfo.Seq) == state.Current.BinaryPropertyInfo.ConverterBase.TypeToConvert)
+                    //{
+                    //    obj = state.Current.BinaryPropertyInfo.RuntimeClassInfo.CreateObject();
+                    //}
+                    //else if(state.Current.PolymorphicBinaryClassInfo!= null )
+                    //{
+                    //    obj = state.Current.PolymorphicBinaryClassInfo.CreateObject();
+                    //}
+                    //else
+                    //{
+                    //    obj = null;
+                    //    ThrowHelper.ThrowBinaryException();
+                    //}
 
 
 
@@ -192,6 +193,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                         binaryPropertyInfo = state.LookupProperty(mi.NameAsString);
                         state.Current.BinaryPropertyInfo = binaryPropertyInfo;
+                        state.Current.PropertyPolymorphicConverter = null;
                         if (binaryPropertyInfo == null)
                         {
                             state.Current.EndProperty();

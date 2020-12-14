@@ -31,6 +31,7 @@ namespace Xfrogcn.BinaryFormatter
 
         public BinaryClassInfo PolymorphicBinaryClassInfo;
         public BinaryTypeInfo PolymorphicBinaryTypeInfo;
+        public BinaryConverter PropertyPolymorphicConverter;
 
         public StackFrameObjectState ObjectState; // State tracking the current object.
 
@@ -48,7 +49,7 @@ namespace Xfrogcn.BinaryFormatter
         // 记录跳转引用前位置
         public ulong OriginPosition;
 
-        
+        internal TypeMap TypeMap { get; set; }
 
 
         public void EndConstructorParameter()
@@ -65,7 +66,7 @@ namespace Xfrogcn.BinaryFormatter
             BinaryPropertyNameAsString = null;
             PropertyState = StackFramePropertyState.None;
             ValidateEndTokenOnArray = false;
-
+            PropertyPolymorphicConverter = null;
             // No need to clear these since they are overwritten each time:
             //  NumberHandling
             //  UseExtensionProperty
@@ -102,7 +103,8 @@ namespace Xfrogcn.BinaryFormatter
             BinaryPropertyNameAsString = propertyName;
 
             PolymorphicBinaryClassInfo = classInfo;
-            PolymorphicBinaryTypeInfo = classInfo.TypeMap.GetTypeInfo(classInfo.TypeSeq);
+            PolymorphicBinaryTypeInfo = TypeMap.GetTypeInfo(classInfo.TypeSeq);
+            
             return classInfo.PropertyInfoForClassInfo.ConverterBase;
         }
 
@@ -114,6 +116,7 @@ namespace Xfrogcn.BinaryFormatter
             PolymorphicBinaryClassInfo = null;
             PolymorphicBinaryTypeInfo = null;
             BinaryTypeInfo = null;
+            PropertyPolymorphicConverter = null;
             ObjectState = StackFrameObjectState.None;
             OriginalDepth = 0;
          //   OriginalTokenType = JsonTokenType.None;

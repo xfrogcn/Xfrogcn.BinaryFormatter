@@ -261,88 +261,94 @@ namespace Xfrogcn.BinaryFormatter
 
         private bool ReadSingleSegment()
         {
-            bool retVal = false;
-            ValueSpan = default;
-
-            if (!HasMoreData())
+            if(_tokenType == BinaryTokenType.None)
             {
-                goto Done;
+                return ReadFirstToken();
             }
+            return true;
+        //    bool retVal = false;
+        //    ValueSpan = default;
 
-            byte first = _buffer[_consumed];
+        //    if (!HasMoreData())
+        //    {
+        //        goto Done;
+        //    }
 
-            TokenStartIndex = _consumed;
+        //    byte first = _buffer[_consumed];
 
-            if (_tokenType == BinaryTokenType.None)
-            {
-                goto ReadFirstToken;
-            }
+        //    TokenStartIndex = _consumed;
+
+        //    if (_tokenType == BinaryTokenType.None)
+        //    {
+        //        goto ReadFirstToken;
+        //    }
 
 
-            if (_tokenType == BinaryTokenType.StartObject)
-            {
-                //if (first == JsonConstants.CloseBrace)
-                //{
-                //    EndObject();
-                //}
-                //else
-                //{
-                //    if (first != JsonConstants.Quote)
-                //    {
-                //        ThrowHelper.ThrowJsonReaderException(ref this, ExceptionResource.ExpectedStartOfPropertyNotFound, first);
-                //    }
+        //    if (_tokenType == BinaryTokenType.StartObject)
+        //    {
+        //        //if (first == JsonConstants.CloseBrace)
+        //        //{
+        //        //    EndObject();
+        //        //}
+        //        //else
+        //        //{
+        //        //    if (first != JsonConstants.Quote)
+        //        //    {
+        //        //        ThrowHelper.ThrowJsonReaderException(ref this, ExceptionResource.ExpectedStartOfPropertyNotFound, first);
+        //        //    }
 
-                //    int prevConsumed = _consumed;
-                //    long prevPosition = _bytePositionInLine;
-                //    long prevLineNumber = _lineNumber;
-                //    retVal = ConsumePropertyName();
-                //    if (!retVal)
-                //    {
-                //        // roll back potential changes
-                //        _consumed = prevConsumed;
-                //        _tokenType = JsonTokenType.StartObject;
-                //        _bytePositionInLine = prevPosition;
-                //        _lineNumber = prevLineNumber;
-                //    }
-                //    goto Done;
-                //}
-            }
-            else if (_tokenType == BinaryTokenType.StartArray)
-            {
-                //if (first == JsonConstants.CloseBracket)
-                //{
-                //    EndArray();
-                //}
-                //else
-                //{
-                //    retVal = ConsumeValue(first);
-                //    goto Done;
-                //}
-            }
-            else if (_tokenType == BinaryTokenType.PropertyName)
-            {
-                //retVal = ConsumeValue(first);
-                goto Done;
-            }
-            else if(_tokenType == BinaryTokenType.TypeSeq)
-            {
-                retVal = true;
-                goto Done;
-            }
-            else
-            {
-                //retVal = ConsumeNextTokenOrRollback(first);
-                goto Done;
-            }
+        //        //    int prevConsumed = _consumed;
+        //        //    long prevPosition = _bytePositionInLine;
+        //        //    long prevLineNumber = _lineNumber;
+        //        //    retVal = ConsumePropertyName();
+        //        //    if (!retVal)
+        //        //    {
+        //        //        // roll back potential changes
+        //        //        _consumed = prevConsumed;
+        //        //        _tokenType = JsonTokenType.StartObject;
+        //        //        _bytePositionInLine = prevPosition;
+        //        //        _lineNumber = prevLineNumber;
+        //        //    }
+        //        //    goto Done;
+        //        //}
+        //    }
+        //    else if (_tokenType == BinaryTokenType.StartArray)
+        //    {
+        //        //if (first == JsonConstants.CloseBracket)
+        //        //{
+        //        //    EndArray();
+        //        //}
+        //        //else
+        //        //{
+        //        //    retVal = ConsumeValue(first);
+        //        //    goto Done;
+        //        //}
+        //    }
+        //    else if (_tokenType == BinaryTokenType.PropertyName)
+        //    {
+        //        //retVal = ConsumeValue(first);
+        //        goto Done;
+        //    }
+        //    else if(_tokenType == BinaryTokenType.TypeSeq)
+        //    {
+        //        retVal = true;
+        //        goto Done;
+        //    }
+        //    else
+        //    {
+        //        retVal = true;
+        //        //retVal = ConsumeNextTokenOrRollback(first);
+        //        goto Done;
+        //    }
 
-            retVal = true;
+        //    retVal = true;
 
-        Done:
-            return retVal;
+        //Done:
+        //    return retVal;
 
-        ReadFirstToken:
-            retVal = ReadFirstToken();
-            goto Done;
+        //ReadFirstToken:
+        //    retVal = ReadFirstToken();
+        //    goto Done;
         }
 
         private bool ReadFirstToken()

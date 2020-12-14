@@ -165,7 +165,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
             Action<ObjTestB> check = checkProc(a);
 
-            await Test(a, check);
+            await Test(a, check, options);
 
             a.C.C = new ObjTestB()
             {
@@ -197,7 +197,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
                 E = null
             };
 
-            await Test(a, check);
+            await Test(a, check, options);
 
         }
 
@@ -245,41 +245,107 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [Fact(DisplayName = "Object-Polymorphic-Nest")]
         public async Task Test_Polymorphic_Nest()
         {
-            //ObjTestB n1 = new ObjTestB()
-            //{
-            //    D = new ObjTestB()
-            //    {
-            //        B = "D1"
-            //    }
-            //};
-            //await Test(n1, checkProc(n1));
-
-
-            var n1 = new ObjTestB()
+            ObjTestB n1 = new ObjTestB()
             {
-                //A = 1,
-                //B = "A",
-                //C = new ObjTestB()
-                //{
-                //    A = 2,
-                //    D = new ObjTestB()
-                //    {
-                //        B = "C1",
-                //        E = 1
-                //    }
-                //},
                 D = new ObjTestB()
                 {
-                   // B = "D1",
-                    D = new ObjTestA()
-                    {
-                        B = "A1"
-                    },
-                  //  E = 1
-                },
-              //  E = null
+                    B = "D1"
+                }
             };
             await Test(n1, checkProc(n1));
+
+
+            n1 = new ObjTestB()
+            {
+                A = 1,
+                B = "A",
+                C = new ObjTestB()
+                {
+                    A = 2,
+                    D = new ObjTestB()
+                    {
+                        B = "C1",
+                        E = 1,
+                        C = new ObjTestB()
+                        {
+
+                        },
+                        D = new ObjTestA()
+                        {
+                            A = 3,
+                            B = "C2"
+                        }
+                    }
+                },
+                D = new ObjTestB()
+                {
+                    B = "D1",
+                    D = new ObjTestA()
+                    {
+                        B = "A1",
+                        A = 1
+                    },
+                    E = 1
+                },
+                E = null
+            };
+            await Test(n1, checkProc(n1));
+        }
+
+        [InlineData(1024 * 10)]
+        [InlineData(1024 * 512)]
+        [InlineData(1024 * 1024)]
+        [Theory(DisplayName = "Object-Polymorphic-Nest-Buffer")]
+        public async Task Test_Polymorphic_Nest_Buffer(int len)
+        {
+            BinarySerializerOptions options = new BinarySerializerOptions() { DefaultBufferSize = 1 };
+
+
+            ObjTestB n1 = new ObjTestB()
+            {
+                D = new ObjTestB()
+                {
+                    B = new string('A', len)
+                }
+            };
+            await Test(n1, checkProc(n1), options);
+
+            options = new BinarySerializerOptions() { DefaultBufferSize = 30 };
+            n1 = new ObjTestB()
+            {
+                A = 1,
+                B = new string('A', len),
+                C = new ObjTestB()
+                {
+                    A = 2,
+                    D = new ObjTestB()
+                    {
+                        B = new string('C', len),
+                        E = 1,
+                        C = new ObjTestB()
+                        {
+
+                        },
+                        D = new ObjTestA()
+                        {
+                            A = 3,
+                            B = new string('D', len)
+                        }
+                    }
+                },
+                D = new ObjTestB()
+                {
+                    B = new string('E', len),
+                    D = new ObjTestA()
+                    {
+                        B = new string('F', len),
+                        A = 1
+                    },
+                    E = 1
+                },
+                E = null
+            };
+            await Test(n1, checkProc(n1), options);
         }
 
         private Action<ObjTestB> checkProc(ObjTestB a)
