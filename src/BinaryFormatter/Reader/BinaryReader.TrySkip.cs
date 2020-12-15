@@ -61,6 +61,10 @@ namespace Xfrogcn.BinaryFormatter
                 {
                     offset += _binaryTypeToBytesLen[typeInfo.Type];
                 }
+                else if (typeInfo.Type == TypeEnum.Nullable)
+                {
+                    return TryForwardRead(_typeMap.GetTypeInfo(typeInfo.GenericArguments[0]), ref offset);
+                }
                 else
                 {
                     if (!TrySkipBytes(ref offset))

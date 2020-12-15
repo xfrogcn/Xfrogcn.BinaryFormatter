@@ -74,9 +74,9 @@ namespace Xfrogcn.BinaryFormatter.Tests
             };
             TrySkipA a = new TrySkipA(createComplexCtorC(len))
             {
-                A = "A",
+                A = new string('A', len),
                 B = 1,
-                C = "C"
+                C = new string('C', len)
             };
             a.TestB = createComplexCtorC(len);
             a.TestC = createComplexCtorC(len);
