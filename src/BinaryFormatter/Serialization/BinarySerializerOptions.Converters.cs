@@ -32,7 +32,7 @@ namespace Xfrogcn.BinaryFormatter
 
         private static Dictionary<Type, BinaryConverter> GetDefaultSimpleConverters()
         {
-            const int NumberOfSimpleConverters = 29;
+            const int NumberOfSimpleConverters = 30;
             var converters = new Dictionary<Type, BinaryConverter>(NumberOfSimpleConverters);
 
             // Use a dictionary for simple converters.
@@ -70,6 +70,7 @@ namespace Xfrogcn.BinaryFormatter
             Add(new Matrix3x2Converter());
             Add(new Matrix4x4Converter());
             Add(new PlaneConverter());
+            Add(new QuaternionConverter());
 
             Debug.Assert(NumberOfSimpleConverters == converters.Count);
 
