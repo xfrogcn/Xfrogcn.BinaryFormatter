@@ -30,15 +30,24 @@ namespace Xfrogcn.BinaryFormatter
 
                 if(typeSeq == TypeMap.NullTypeSeq)
                 {
+                    _consumed = offset;
                     return true;
                 }
 
-                return TryForwardRead(_typeMap.GetTypeInfo(typeSeq), ref offset);
+                if( TryForwardRead(_typeMap.GetTypeInfo(typeSeq), ref offset))
+                {
+                    _consumed = offset;
+                    return true;
+                }
             }
             else if (_tokenType == BinaryTokenType.TypeSeq)
             {
                 int offset = _consumed;
-                return TryForwardRead(CurrentTypeInfo, ref offset);
+                if( TryForwardRead(CurrentTypeInfo, ref offset))
+                {
+                    _consumed = offset;
+                    return true;
+                }
             }
 
             return false;
@@ -115,7 +124,7 @@ namespace Xfrogcn.BinaryFormatter
             {
                 ThrowHelper.ThrowBinaryException();
             }
-            _consumed = offset;
+           
             return true;
 
         }
@@ -172,16 +181,16 @@ namespace Xfrogcn.BinaryFormatter
                     return false;
                 }
 
-                len = ((_buffer[_consumed] & 0x7F) << 24) |
-                    (_buffer[_consumed + 1] << 16) |
-                    (_buffer[_consumed + 2] << 8) |
-                    _buffer[_consumed + 3];
+                len = ((_buffer[offset] & 0x7F) << 24) |
+                    (_buffer[offset + 1] << 16) |
+                    (_buffer[offset + 2] << 8) |
+                    _buffer[offset + 3];
 
                 lenBytes = 4;
             }
             else
             {
-                len = _buffer[_consumed] << 8 | _buffer[_consumed + 1];
+                len = _buffer[offset] << 8 | _buffer[offset + 1];
                 lenBytes = 2;
             }
 
@@ -215,7 +224,7 @@ namespace Xfrogcn.BinaryFormatter
             }
 
 
-            typeSeq = BitConverter.ToUInt16(_buffer.Slice(_consumed, 2));
+            typeSeq = BitConverter.ToUInt16(_buffer.Slice(offset, 2));
             offset += 2;
             return true;
         }
