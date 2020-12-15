@@ -10,7 +10,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
     /// 当有参数构造的构造参数数量大于UnboxedParameterCountThreshold设定值时(默认为4)，使用此转换器
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal sealed class LargeObjectWithParameterizedConstructorConverter<T> : ObjectWithParameterizedConstructorConverter<T> where T : notnull
+    internal class LargeObjectWithParameterizedConstructorConverter<T> : ObjectWithParameterizedConstructorConverter<T> where T : notnull
     {
         protected override bool ReadAndCacheConstructorArgument(ref ReadStack state, ref BinaryReader reader, BinaryParameterInfo binaryParameterInfo)
         {

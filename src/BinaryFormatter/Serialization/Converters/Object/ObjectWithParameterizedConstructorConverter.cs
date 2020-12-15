@@ -343,10 +343,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             {
                 if (!binaryParameterInfo.ShouldDeserialize)
                 {
-                    //if (!reader.TrySkip())
-                    //{
-                    //    return false;
-                    //}
+                    if (!reader.TrySkip(state.Options))
+                    {
+                        return false;
+                    }
 
                     state.Current.EndConstructorParameter();
                     return true;
@@ -380,10 +380,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             {
                 if (!binaryPropertyInfo.ShouldDeserialize)
                 {
-                    //if (!reader.TrySkip())
-                    //{
-                    //    return false;
-                    //}
+                    if (!reader.TrySkip(state.Options))
+                    {
+                        return false;
+                    }
 
                     state.Current.EndProperty();
                     return true;

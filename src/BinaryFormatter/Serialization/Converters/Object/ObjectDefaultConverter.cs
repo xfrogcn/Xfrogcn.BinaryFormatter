@@ -218,12 +218,12 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     {
                         if (!binaryPropertyInfo.ShouldDeserialize)
                         {
-                            //if (!reader.TrySkip())
-                            //{
-                            //    state.Current.ReturnValue = obj;
-                            //    value = default;
-                            //    return false;
-                            //}
+                            if (!reader.TrySkip(options))
+                            {
+                                state.Current.ReturnValue = obj;
+                                value = default;
+                                return false;
+                            }
 
                             state.Current.EndProperty();
                             continue;
