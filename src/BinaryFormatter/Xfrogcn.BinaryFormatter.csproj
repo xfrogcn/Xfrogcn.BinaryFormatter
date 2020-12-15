@@ -33,4 +33,7 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Serialization\Converters\Collection\" />
+  </ItemGroup>
 </Project>
