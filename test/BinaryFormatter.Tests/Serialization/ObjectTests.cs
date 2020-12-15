@@ -391,5 +391,37 @@ namespace Xfrogcn.BinaryFormatter.Tests
             return check;
         }
         
+
+        private Action<ObjTestA> checkTestAProc(ObjTestA a)
+        {
+            return (b) =>
+            {
+                Assert.Equal(a.GetType(), b.GetType());
+                Assert.Equal(a.A, b.A);
+                Assert.Equal(a.B, b.B);
+
+                if( a is ObjTestB ab)
+                {
+                    ObjTestB bb = b as ObjTestB;
+                    Assert.Equal(ab.E, bb.E);
+                    if( ab.D == null)
+                    {
+                        Assert.Null(bb.D);
+                    }
+                    else
+                    {
+                        checkTestAProc(ab.D)(bb.D);
+                    }
+                    if(ab.C == null)
+                    {
+                        Assert.Null(bb.C);
+                    }
+                    else
+                    {
+                        checkTestAProc(ab.C)(bb.C);
+                    }
+                }
+            };
+        }
     }
 }

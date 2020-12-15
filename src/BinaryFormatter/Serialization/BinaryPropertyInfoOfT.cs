@@ -139,7 +139,7 @@ namespace Xfrogcn.BinaryFormatter
                     var type = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
                     if (type != Converter.TypeToConvert)
                     {
-                        state.Current.PropertyPolymorphicConverter = state.Current.InitializeReEntry(type, Options, NameAsString);
+                        state.Current.PropertyPolymorphicConverter = state.Current.InitializeReEntry(type, Options);
                     }
                 }
             }
@@ -356,7 +356,7 @@ namespace Xfrogcn.BinaryFormatter
                     var type = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
                     if (type != Converter.TypeToConvert)
                     {
-                        state.Current.PropertyPolymorphicConverter = state.Current.InitializeReEntry(type, Options, NameAsString);
+                        state.Current.PropertyPolymorphicConverter = state.Current.InitializeReEntry(type, Options);
                     }
                 }
             }

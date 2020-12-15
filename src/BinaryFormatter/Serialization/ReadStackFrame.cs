@@ -94,13 +94,13 @@ namespace Xfrogcn.BinaryFormatter
             return (BinaryClassInfo.ClassType & ClassType.Enumerable) != 0;
         }
 
-        public BinaryConverter InitializeReEntry(Type type, BinarySerializerOptions options, string propertyName = null)
+        public BinaryConverter InitializeReEntry(Type type, BinarySerializerOptions options)
         {
             BinaryClassInfo classInfo = options.GetOrAddClass(type);
 
 
-            // Set for exception handling calculation of JsonPath.
-            BinaryPropertyNameAsString = propertyName;
+            // Set for exception handling calculation of BinaryPath.
+            // BinaryPropertyNameAsString = propertyName;
 
             PolymorphicBinaryClassInfo = classInfo;
             PolymorphicBinaryTypeInfo = TypeMap.GetTypeInfo(classInfo.TypeSeq);

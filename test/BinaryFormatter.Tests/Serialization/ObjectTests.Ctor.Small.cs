@@ -34,7 +34,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
             };
         }
 
-        [Fact(DisplayName = "Test_Simple_Ctor")]
+        [Fact(DisplayName = "Object_Simple_Ctor")]
         public async Task Test_Simple_Ctor()
         {
             TestCtorA a = new TestCtorA("A", 0);
@@ -47,7 +47,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [InlineData(1024 * 10)]
         [InlineData(1024 * 512)]
         [InlineData(1024 * 1024)]
-        [Theory(DisplayName = "Test_Simple_Ctor_Buffer")]
+        [Theory(DisplayName = "Object_Simple_Ctor_Buffer")]
         public async Task Test_Simple_Ctor_Buffer(int len)
         {
             BinarySerializerOptions options = new BinarySerializerOptions()
@@ -67,9 +67,11 @@ namespace Xfrogcn.BinaryFormatter.Tests
             {
 
             }
+
+            public ObjTestA TestA { get; set; }
         }
 
-        [Fact(DisplayName = "Test_Simple_Inherit_Ctor")]
+        [Fact(DisplayName = "Object_Simple_Inherit_Ctor")]
         public async Task Test_Simple_Inherit_Ctor()
         {
             TestCtorB a = new TestCtorB("A", 0);
@@ -82,9 +84,10 @@ namespace Xfrogcn.BinaryFormatter.Tests
         class TestCtorC : TestCtorB
         {
             [BinaryFormatter.Serialization.BinaryConstructor]
-            public TestCtorC(TestCtorB parent, TestCtorA tmp) : base(parent.A,parent.B)
+            public TestCtorC(TestCtorB parent, TestCtorA temp) : base(parent.A,parent.B)
             {
-                Temp = tmp;
+                Temp = temp;
+                Parent = parent;
             }
 
             public TestCtorB Parent { get; set; }
@@ -102,9 +105,18 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
                 if (a is TestCtorB cb)
                 {
-                    Assert.Equal(cb.C, (b as TestCtorB).C);
+                    TestCtorB cb2 = b as TestCtorB;
+                    Assert.Equal(cb.C, cb2.C);
+                    if(cb.TestA == null)
+                    {
+                        Assert.Null(cb2.TestA);
+                    }
+                    else
+                    {
+                        checkTestAProc(cb.TestA)(cb2.TestA);
+                    }
                 }
-                else if (a is TestCtorC cc)
+                if (a is TestCtorC cc)
                 {
                     TestCtorB p1 = cc.Parent;
                     TestCtorB p2 = (b as TestCtorC).Parent;
@@ -138,7 +150,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
         }
 
 
-        [Fact(DisplayName = "Test_Simple_Object_Ctor")]
+        [Fact(DisplayName = "Object_Simple_Object_Ctor")]
         public async Task Test_Simple_Object_Ctor()
         {
             TestCtorB b = new TestCtorB("B", 1);
@@ -147,9 +159,57 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
             TestCtorC c = new TestCtorC(b, a);
 
-            await Test(c, checkCtorCProc(c));
-            
+            await Test<TestCtorC>(c, checkCtorCProc(c));
+
+            b.TestA = new ObjTestB()
+            {
+                A = 1,
+                D = new ObjTestB()
+                {
+                   A = 1,
+                   B = "B",
+                   D = new ObjTestA()
+                   {
+                       A = 2
+                   }
+                },
+                E = 1,
+                C = new ObjTestB()
+                {
+                    A = 1,
+                    B = "B"
+                }
+            };
+
+            await Test<TestCtorC>(c, checkCtorCProc(c));
+
         }
 
+        [InlineData(1024 * 10)]
+        [InlineData(1024 * 512)]
+        [InlineData(1024 * 1024)]
+        [Theory(DisplayName = "Object_Simple_Object_Ctor_Buffer")]
+        public async Task Test_Simple_Object_Ctor_Buffer(int len)
+        {
+            BinarySerializerOptions options = new BinarySerializerOptions() { DefaultBufferSize = 1 };
+            
+            TestCtorB b = new TestCtorB(new string('B',len), 1);
+            b.C = new string('C',len) ;
+            TestCtorA a = new TestCtorA(new string('A',len), 1);
+
+            TestCtorC c = new TestCtorC(b, a);
+
+            await Test<TestCtorC>(c, checkCtorCProc(c), options);
+
+            b.TestA = new ObjTestB()
+            {
+                D = new ObjTestB(),
+                E = 1,
+                C = new ObjTestB()
+            };
+
+            await Test<TestCtorC>(c, checkCtorCProc(c), options);
+
+        }
     }
 }
