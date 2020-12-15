@@ -148,7 +148,7 @@ namespace Xfrogcn.BinaryFormatter
 
                                 if (fieldInfo.IsPublic)
                                 {
-                                    if (hasBinaryInclude || Options.IncludeFields)
+                                    if (hasBinaryInclude || Options.IncludeFields || converter.IncludeFields)
                                     {
                                         CacheMember(currentType, fieldInfo.FieldType, fieldInfo, cache, ref ignoredMembers);
                                     }

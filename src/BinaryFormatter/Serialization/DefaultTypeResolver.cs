@@ -26,6 +26,7 @@ namespace Xfrogcn.BinaryFormatter
                 { TypeEnum.Decimal, typeof(Decimal)  },
                 { TypeEnum.BigInteger, typeof(BigInteger)  },
                 { TypeEnum.Complex, typeof(Complex)  },
+
                 { TypeEnum.Vector2, typeof(Vector2)  },
                 { TypeEnum.Vector3, typeof(Vector3)  },
                 { TypeEnum.Vector4, typeof(Vector4)  },

@@ -36,6 +36,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         /// </summary>
         internal virtual bool CanHaveIdMetadata => true;
 
+        internal virtual bool IncludeFields => false;
+
         internal bool CanBePolymorphic { get; set; }
 
         internal abstract BinaryPropertyInfo CreateBinaryPropertyInfo();
