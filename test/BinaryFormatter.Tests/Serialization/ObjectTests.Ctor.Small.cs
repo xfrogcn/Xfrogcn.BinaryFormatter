@@ -229,16 +229,8 @@ namespace Xfrogcn.BinaryFormatter.Tests
         }
 
 
-
-
-        [InlineData(1024 * 10)]
-        [InlineData(1024 * 512)]
-        [InlineData(1024 * 1024)]
-        [Theory(DisplayName = "Test_Simple_Object_Ctor_With_Polymorphic_Buffer")]
-        public async Task Test_Simple_Object_Ctor_With_Polymorphic_Buffer(int len)
+        private TestCtorC createComplexCtorC(int len)
         {
-            BinarySerializerOptions options = new BinarySerializerOptions() { DefaultBufferSize = 1 };
-
             TestCtorB b = new TestCtorB(new string('B', len), 1);
             b.C = new string('C', len);
             TestCtorA a = new TestCtorC(new TestCtorC(
@@ -260,16 +252,28 @@ namespace Xfrogcn.BinaryFormatter.Tests
                 },
                 C = new string('C', len)
             });
-           
+
 
             TestCtorC c = new TestCtorC(b, a);
 
-            await Test<TestCtorA>(a, checkCtorCProc(a), options);
+            return c;
+        }
+
+
+        [InlineData(1024 * 10)]
+        [InlineData(1024 * 512)]
+        [InlineData(1024 * 1024)]
+        [Theory(DisplayName = "Test_Simple_Object_Ctor_With_Polymorphic_Buffer")]
+        public async Task Test_Simple_Object_Ctor_With_Polymorphic_Buffer(int len)
+        {
+            BinarySerializerOptions options = new BinarySerializerOptions() { DefaultBufferSize = 1 };
+
+            TestCtorC c = createComplexCtorC(len);
 
             await Test<TestCtorA>(c, checkCtorCProc(c), options);
 
 
-            b.TestA = new ObjTestB()
+            c.Parent.TestA = new ObjTestB()
             {
                 A = 1,
                 D = new ObjTestB()

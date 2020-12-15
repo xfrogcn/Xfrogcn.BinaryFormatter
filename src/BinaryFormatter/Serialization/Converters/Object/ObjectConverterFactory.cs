@@ -91,16 +91,16 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             Type keyType = type.GetGenericArguments()[0];
             Type valueType = type.GetGenericArguments()[1];
 
-            //BinaryConverter converter = (BinaryConverter)Activator.CreateInstance(
-            //    typeof(KeyValuePairConverter<,>).MakeGenericType(new Type[] { keyType, valueType }),
-            //    BindingFlags.Instance | BindingFlags.Public,
-            //    binder: null,
-            //    args: null,
-            //    culture: null)!;
+            BinaryConverter converter = (BinaryConverter)Activator.CreateInstance(
+                typeof(KeyValuePairConverter<,>).MakeGenericType(new Type[] { keyType, valueType }),
+                BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: null,
+                culture: null)!;
 
-            //converter.Initialize(options);
+            converter.Initialize(options);
 
-            return default;
+            return converter;
         }
 
         private ConstructorInfo GetDeserializationConstructor(Type type)

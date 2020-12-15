@@ -53,6 +53,8 @@ namespace Xfrogcn.BinaryFormatter
                 { TypeEnum.Version, typeof(Version)  },
                 { TypeEnum.DBNull, typeof(DBNull)  },
 
+                { TypeEnum.KeyValuePair, typeof(KeyValuePair<,>) },
+
                 { TypeEnum.Nullable, typeof(Nullable<>)  },
                 { TypeEnum.Object, typeof(object)  },
             };
@@ -101,31 +103,6 @@ namespace Xfrogcn.BinaryFormatter
         public virtual Type ParseType(string fullName)
         {
             var type = Type.GetType(fullName, AssemblyResolver, TypeResolver, false);
-            //if(type!=null && fullName.Contains("+"))
-            //{
-                
-            //    var nestNames = fullName.Split(',')[0].Split('+');
-            //    bool isOk = true;
-            //    for(int i =1;i<nestNames.Length;i++)
-            //    {
-            //        string name = nestNames[i];
-            //        type = type.GetNestedType(name);
-            //        if(type == null)
-            //        {
-            //            isOk = false;
-            //            break;
-            //        }
-            //    }
-            //    if (isOk)
-            //    {
-            //        return type;
-            //    }
-            //    else
-            //    {
-            //        return null;
-            //    }
-            //}
-
             return type;
         }
 

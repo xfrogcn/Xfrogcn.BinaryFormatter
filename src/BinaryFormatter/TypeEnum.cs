@@ -59,7 +59,8 @@
 
         Array = 100,
         List = 101,
-        Dictionary = 102,
+        KeyValuePair = 102,
+        Dictionary = 103,
 
         Object = 126,
         Class = 127
