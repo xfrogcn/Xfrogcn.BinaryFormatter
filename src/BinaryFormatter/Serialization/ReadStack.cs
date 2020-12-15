@@ -154,7 +154,7 @@ namespace Xfrogcn.BinaryFormatter
                         }
                         else
                         {
-                            binaryClassInfo = Current.CtorArgumentState!.BinaryParameterInfo!.RuntimeClassInfo;
+                            binaryClassInfo = Current.PolymorphicBinaryClassInfo ?? Current.CtorArgumentState!.BinaryParameterInfo!.RuntimeClassInfo;
                         }
                     }
                     else if (((ClassType.Value | ClassType.NewValue) & Current.BinaryClassInfo.ClassType) != 0)

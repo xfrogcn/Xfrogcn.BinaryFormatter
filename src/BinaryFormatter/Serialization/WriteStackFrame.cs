@@ -36,9 +36,9 @@ namespace Xfrogcn.BinaryFormatter
 
         public BinaryTypeInfo BinaryTypeInfo;
 
-        public BinaryClassInfo PolymorphicBinaryClassInfo;
+        //public BinaryClassInfo PolymorphicBinaryClassInfo;
 
-        public BinaryTypeInfo PolymorphicBinaryTypeInfo;
+        //public BinaryTypeInfo PolymorphicBinaryTypeInfo;
 
         /// <summary>
         /// Validation state for a class.
@@ -109,8 +109,8 @@ namespace Xfrogcn.BinaryFormatter
             BinaryPropertyNameAsString = propertyName;
 
             PolymorphicBinaryPropertyInfo = classInfo.PropertyInfoForClassInfo;
-            PolymorphicBinaryClassInfo = classInfo;
-            PolymorphicBinaryTypeInfo = classInfo.TypeMap.GetTypeInfo(classInfo.TypeSeq);
+            //PolymorphicBinaryClassInfo = classInfo;
+            //PolymorphicBinaryTypeInfo = classInfo.TypeMap.GetTypeInfo(classInfo.TypeSeq);
             return PolymorphicBinaryPropertyInfo.ConverterBase;
         }
 
@@ -120,7 +120,7 @@ namespace Xfrogcn.BinaryFormatter
             EnumeratorIndex = 0;
             IgnoreDictionaryKeyPolicy = false;
             BinaryClassInfo = null!;
-            PolymorphicBinaryClassInfo = null;
+            //PolymorphicBinaryClassInfo = null;
             PolymorphicBinaryPropertyInfo = null;
             OriginalDepth = 0;
             ProcessedStartToken = false;

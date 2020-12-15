@@ -221,22 +221,22 @@ namespace Xfrogcn.BinaryFormatter.Tests
             };
             await Test<ObjTestA>(a, check);
 
-            object c = new ObjTestB()
-            {
-                A = 1
-            };
-            await Test<object>(c, b=>
-            {
-                Assert.IsType<ObjTestB>(b);
-                ObjTestB x = b as ObjTestB;
-                Assert.Equal((uint)1, x.A);
-            });
+            //object c = new ObjTestB()
+            //{
+            //    A = 1
+            //};
+            //await Test<object>(c, b=>
+            //{
+            //    Assert.IsType<ObjTestB>(b);
+            //    ObjTestB x = b as ObjTestB;
+            //    Assert.Equal((uint)1, x.A);
+            //});
 
-            c = new object();
-            await Test<object>(c, b =>
-            {
-                Assert.True(b.GetType() == typeof(object));
-            });
+            //c = new object();
+            //await Test<object>(c, b =>
+            //{
+            //    Assert.True(b.GetType() == typeof(object));
+            //});
 
 
            

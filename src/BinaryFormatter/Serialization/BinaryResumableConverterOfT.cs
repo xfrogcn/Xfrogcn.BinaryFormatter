@@ -27,7 +27,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             }
 
             WriteStack state = default;
-            state.Initialize(typeof(T), options, supportContinuation: false);
+            Type inputType = value == null ? typeof(T) : value.GetType();
+            state.Initialize(inputType, options, supportContinuation: false);
             TryWrite(writer, value, options, ref state);
         }
 

@@ -375,7 +375,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     }
                 }
 
-                var binaryClassInfo = state.Current.PolymorphicBinaryClassInfo ?? state.Current.BinaryClassInfo;
+                var binaryClassInfo = state.Current.BinaryClassInfo;
                 Debug.Assert(binaryClassInfo != null);
 
                 BinaryPropertyInfo dataExtensionProperty = binaryClassInfo.DataExtensionProperty;

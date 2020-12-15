@@ -57,6 +57,7 @@ namespace Xfrogcn.BinaryFormatter
             CtorArgumentState.BinaryParameterInfo = null;
             BinaryPropertyName = null;
             PropertyState = StackFramePropertyState.None;
+            PropertyPolymorphicConverter = null;
         }
 
         public void EndProperty()

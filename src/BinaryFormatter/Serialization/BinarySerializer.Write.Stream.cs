@@ -72,7 +72,7 @@ namespace Xfrogcn.BinaryFormatter
                         bufferWriter.Clear();
                         return;
                     }
-                    if (inputType == typeof(object) && value != null)
+                    if ( value != null)
                     {
                         inputType = value!.GetType();
                     }

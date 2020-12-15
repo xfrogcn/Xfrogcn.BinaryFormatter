@@ -201,14 +201,96 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
             await Test<TestCtorC>(c, checkCtorCProc(c), options);
 
+
+
             b.TestA = new ObjTestB()
             {
-                D = new ObjTestB(),
+                A = 1,
+                D = new ObjTestB()
+                {
+                    A = 1,
+                    B = new string('B', len),
+                    D = new ObjTestA()
+                    {
+                        A = 2
+                    }
+                },
                 E = 1,
                 C = new ObjTestB()
+                {
+                    A = 1,
+                    B = new string('B', len)
+                }
             };
 
+            options = new BinarySerializerOptions() { DefaultBufferSize = 32 };
             await Test<TestCtorC>(c, checkCtorCProc(c), options);
+
+        }
+
+
+
+
+        [InlineData(1024 * 10)]
+        [InlineData(1024 * 512)]
+        [InlineData(1024 * 1024)]
+        [Theory(DisplayName = "Test_Simple_Object_Ctor_With_Polymorphic_Buffer")]
+        public async Task Test_Simple_Object_Ctor_With_Polymorphic_Buffer(int len)
+        {
+            BinarySerializerOptions options = new BinarySerializerOptions() { DefaultBufferSize = 1 };
+
+            TestCtorB b = new TestCtorB(new string('B', len), 1);
+            b.C = new string('C', len);
+            TestCtorA a = new TestCtorC(new TestCtorC(
+                new TestCtorB(new string('B', len), 1),
+                new TestCtorB(new string('B', len), 1))
+            {
+                TestA = new ObjTestB()
+                {
+                    E = 1,
+                    B = new string('B', len)
+                }
+            },
+            new TestCtorB(new string('A', len), 1)
+            {
+                TestA = new ObjTestA()
+                {
+                    B = new string('B', len),
+                    A = 1
+                },
+                C = new string('C', len)
+            });
+           
+
+            TestCtorC c = new TestCtorC(b, a);
+
+            await Test<TestCtorA>(a, checkCtorCProc(a), options);
+
+            await Test<TestCtorA>(c, checkCtorCProc(c), options);
+
+
+            b.TestA = new ObjTestB()
+            {
+                A = 1,
+                D = new ObjTestB()
+                {
+                    A = 1,
+                    B = new string('B', len),
+                    D = new ObjTestA()
+                    {
+                        A = 2
+                    }
+                },
+                E = 1,
+                C = new ObjTestB()
+                {
+                    A = 1,
+                    B = new string('B', len)
+                }
+            };
+
+            options = new BinarySerializerOptions() { DefaultBufferSize = 32 };
+            await Test<TestCtorA>(c, checkCtorCProc(c), options);
 
         }
     }
