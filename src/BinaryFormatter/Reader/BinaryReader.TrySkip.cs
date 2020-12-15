@@ -1,11 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Xfrogcn.BinaryFormatter
 {
+
     public ref partial struct BinaryReader
     {
+        /// <summary>
+        /// 跳过节点读取
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public bool TrySkip(BinarySerializerOptions options)
         {
             if (_tokenType == BinaryTokenType.Null)
