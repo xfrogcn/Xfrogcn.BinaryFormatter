@@ -88,6 +88,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 The constructor &apos;{0}&apos; on type &apos;{1}&apos; may not have more than 64 parameters for deserialization. 的本地化字符串。
+        /// </summary>
+        internal static string ConstructorMaxOf64Parameters {
+            get {
+                return ResourceManager.GetString("ConstructorMaxOf64Parameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Each parameter in constructor &apos;{0}&apos; on type &apos;{1}&apos; must bind to an object property or field on deserialization. Each parameter name must match with a property or field on the object. The match can be case-insensitive. 的本地化字符串。
         /// </summary>
         internal static string ConstructorParamIncompleteBinding {

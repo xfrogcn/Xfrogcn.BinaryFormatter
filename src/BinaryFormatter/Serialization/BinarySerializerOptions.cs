@@ -2,8 +2,11 @@
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Xfrogcn.BinaryFormatter.Resources;
 using Xfrogcn.BinaryFormatter.Serialization;
+
+[assembly: InternalsVisibleTo("Xfrogcn.BinaryFormatter.Tests")]
 
 namespace Xfrogcn.BinaryFormatter
 {

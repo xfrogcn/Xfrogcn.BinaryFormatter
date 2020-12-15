@@ -390,5 +390,12 @@ namespace Xfrogcn.BinaryFormatter
         {
             throw new InvalidOperationException(string.Format(Strings.ConstructorParamIncompleteBinding, constructorInfo, parentType));
         }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowNotSupportedException_ConstructorMaxOf64Parameters(ConstructorInfo constructorInfo, Type type)
+        {
+            throw new NotSupportedException(string.Format(Strings.ConstructorMaxOf64Parameters, constructorInfo, type));
+        }
     }
 }

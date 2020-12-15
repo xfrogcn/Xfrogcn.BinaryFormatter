@@ -13,7 +13,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
         public async Task Test<T>(T input, Action<T> check, BinarySerializerOptions options = null)
         {
             MemoryStream ms = new MemoryStream();
-            await BinarySerializer.SerializeAsync<T>(ms, input);
+            await BinarySerializer.SerializeAsync<T>(ms, input, options);
 
             ms.Position = 0;
 

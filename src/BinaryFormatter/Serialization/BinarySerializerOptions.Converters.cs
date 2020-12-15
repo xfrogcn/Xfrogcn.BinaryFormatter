@@ -26,6 +26,8 @@ namespace Xfrogcn.BinaryFormatter
             new ObjectConverterFactory()
         };
 
+        internal bool IgnoreCtorParameterCountThreshold = false;
+
         public IList<BinaryConverter> Converters { get; }
 
         private static Dictionary<Type, BinaryConverter> GetDefaultSimpleConverters()

@@ -37,7 +37,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             {
                 int parameterCount = parameters.Length;
 
-                if (parameterCount <= BinarySerializerConstants.UnboxedParameterCountThreshold)
+                if (!options.IgnoreCtorParameterCountThreshold && parameterCount <= BinarySerializerConstants.UnboxedParameterCountThreshold)
                 {
                     Type placeHolderType = BinaryClassInfo.ObjectType;
                     Type[] typeArguments = new Type[BinarySerializerConstants.UnboxedParameterCountThreshold + 1];
@@ -60,7 +60,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 }
                 else
                 {
-                   // converterType = typeof(LargeObjectWithParameterizedConstructorConverter<>).MakeGenericType(typeToConvert);
+                    converterType = typeof(LargeObjectWithParameterizedConstructorConverter<>).MakeGenericType(typeToConvert);
                 }
             }
 
