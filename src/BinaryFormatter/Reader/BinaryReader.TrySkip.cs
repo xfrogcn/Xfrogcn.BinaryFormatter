@@ -59,11 +59,36 @@ namespace Xfrogcn.BinaryFormatter
             {
                 if (_binaryTypeToBytesLen.ContainsKey(typeInfo.Type))
                 {
-                    offset += _binaryTypeToBytesLen[typeInfo.Type];
+
+                    int len = _binaryTypeToBytesLen[typeInfo.Type];
+                    if(!TryRequestData(offset, len))
+                    {
+                        return false;
+                    }
+
+                    offset += len;
+                    return true;
+
                 }
                 else if (typeInfo.Type == TypeEnum.Nullable)
                 {
-                    return TryForwardRead(_typeMap.GetTypeInfo(typeInfo.GenericArguments[0]), ref offset);
+                    int curOffset = offset;
+                    if (!TryReadTypeSeq(ref curOffset, out ushort typeSeq))
+                    {
+                        return false;
+                    }
+                    if (typeSeq == TypeMap.NullTypeSeq)
+                    {
+                        offset = curOffset;
+                        return true;
+                    }
+                    if( !TryForwardRead(_typeMap.GetTypeInfo(typeSeq), ref curOffset))
+                    {
+                        return false;
+                    }
+
+                    offset = curOffset;
+                    return true;
                 }
                 else
                 {
@@ -117,6 +142,10 @@ namespace Xfrogcn.BinaryFormatter
                     }
 
                     BinaryTypeInfo ti = _typeMap.GetTypeInfo(typeSeq);
+                    if(ti == null)
+                    {
+
+                    }
                     if(!TryForwardRead(ti, ref curOffset))
                     {
                         return false;

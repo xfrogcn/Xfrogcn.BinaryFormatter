@@ -158,6 +158,7 @@ namespace Xfrogcn.BinaryFormatter
             Span<byte> output = _memory.Span;
             output[BytesPending++] = typeBytes[0];
             output[BytesPending++] = typeBytes[1];
+            
         }
 
         public void WriteEndObject()

@@ -8,7 +8,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
         public override int GetBytesCount(ref BinaryReader reader, BinarySerializerOptions options)
         {
-            return _converter.GetBytesCount(ref reader, options);
+            return BinarySerializerConstants.BytesCount_Dynamic;
         }
 
         public NullableConverter(BinaryConverter<T> converter)
@@ -16,18 +16,45 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             _converter = converter;
         }
 
-        public override T? Read(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options)
+        internal override bool OnTryRead(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options, ref ReadStack state, out T? value)
         {
             if (reader.TokenType == BinaryTokenType.Null)
             {
-                return null;
+                value = null;
+                return true;
             }
+
+
             if (!reader.ReadTypeSeq())
             {
-                return null;
+                value = default;
+                reader.Rollback(2);
+                return false;
             }
-            T value = _converter.Read(ref reader, typeof(T), options);
-            return value;
+
+            if (!_converter.TryRead(ref reader, typeof(T), options, ref state, out T typedValue))
+            {
+                value = default;
+                return false;
+            }
+
+            value = typedValue;
+
+
+            return true;
+
+            //if (!reader.ReadTypeSeq())
+            //{
+            //    return null;
+            //}
+            //T value = _converter.Read(ref reader, typeof(T), options);
+            //return value;
+        }
+
+        public override T? Read(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options)
+        {
+            ThrowHelper.ThrowBinaryException();
+            return default;
         }
 
         public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)

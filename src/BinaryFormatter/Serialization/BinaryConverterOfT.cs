@@ -156,6 +156,15 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     return true;
                 }
 
+                if (reader.CurrentTypeInfo.Type == TypeEnum.Nullable)
+                {
+                    if (!OnTryRead(ref reader, typeToConvert, options, ref state, out value))
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+
                 int readCount = GetBytesCount(ref reader, options);
                 // 读取指定数量的字节
                 if (readCount > 0)
@@ -194,7 +203,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 // For performance, only perform validation on internal converters on debug builds.
                 if (IsInternalConverter)
                 {
+
                     value = Read(ref reader, typeToConvert, options);
+
                 }
                 else
                 // #endif
@@ -359,6 +370,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
             
             ushort typeSeq = state.PushType(typeof(T));
+            state.Current.BinaryTypeInfo = state.TypeMap.GetTypeInfo(typeSeq);
             if (CanBePolymorphic)
             {
                 if (value == null)
