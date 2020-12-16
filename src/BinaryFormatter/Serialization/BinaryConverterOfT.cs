@@ -30,7 +30,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             // 2) A converter overroad HandleNull and returned false so HandleNullOnRead and HandleNullOnWrite
             // will be their default values of false.
 
-            CanUseDirectReadOrWrite = !CanBePolymorphic && IsInternalConverter && ClassType == ClassType.Value;
+            //CanUseDirectReadOrWrite = !CanBePolymorphic && IsInternalConverter && ClassType == ClassType.Value;
         }
 
         /// <summary>
@@ -428,7 +428,15 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 Debug.Assert(!state.IsContinuation);
 
                 int originalPropertyDepth = writer.CurrentDepth;
-                Write(writer, value, options);
+                if(state.Current.BinaryTypeInfo.Type == TypeEnum.Nullable)
+                {
+                    OnTryWrite(writer, value, options, ref state);
+                }
+                else
+                {
+                    Write(writer, value, options);
+                }
+                
                 VerifyWrite(originalPropertyDepth, writer);
                 return true;
             }

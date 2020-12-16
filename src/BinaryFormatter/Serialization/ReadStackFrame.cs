@@ -32,6 +32,9 @@ namespace Xfrogcn.BinaryFormatter
         public BinaryClassInfo PolymorphicBinaryClassInfo;
         public BinaryTypeInfo PolymorphicBinaryTypeInfo;
         public BinaryConverter PropertyPolymorphicConverter;
+        public byte EnumerableIndexBytes;
+        public ulong EnumerableLength;
+        public ulong EnumerableIndex;
 
         public StackFrameObjectState ObjectState; // State tracking the current object.
 
@@ -77,6 +80,7 @@ namespace Xfrogcn.BinaryFormatter
         {
             BinaryPropertyNameAsString = null;
             PropertyState = StackFramePropertyState.None;
+            EnumerableIndex++;
         }
 
         /// <summary>
@@ -86,6 +90,8 @@ namespace Xfrogcn.BinaryFormatter
         {
             return (BinaryClassInfo.ClassType & ClassType.Dictionary) != 0;
         }
+
+        
 
         /// <summary>
         /// Is the current object an Enumerable.
@@ -124,7 +130,9 @@ namespace Xfrogcn.BinaryFormatter
             PropertyIndex = 0;
             PropertyRefCache = null;
             ReturnValue = null;
-
+            EnumerableIndexBytes = 0;
+            EnumerableLength = 0;
+            EnumerableIndex = 0;
             EndProperty();
         }
     }

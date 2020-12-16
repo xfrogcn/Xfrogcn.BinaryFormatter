@@ -48,7 +48,8 @@ namespace Xfrogcn.BinaryFormatter
         // Class-level state for collections.
         public bool ProcessedStartToken;
         public bool ProcessedEndToken;
-
+        //public bool ProcessedArrayLength;
+        public byte EnumerableIndexBytes;
         /// <summary>
         /// Property or Element state.
         /// </summary>
@@ -88,6 +89,31 @@ namespace Xfrogcn.BinaryFormatter
             PropertyState = StackFramePropertyState.None;
         }
 
+
+        public void WriteEnumerableIndex(long idx, BinaryWriter writer)
+        {
+            if (EnumerableIndexBytes == 1)
+            {
+                writer.WriteByteValue((byte)idx);
+            }
+            else if (EnumerableIndexBytes == 2)
+            {
+                writer.WriteUInt16Value((ushort)idx);
+            }
+            else if (EnumerableIndexBytes == 4)
+            {
+                writer.WriteUInt32Value((UInt32)idx);
+            }
+            else if (EnumerableIndexBytes == 8)
+            {
+                writer.WriteUInt64Value((ulong)idx);
+            }
+            else
+            {
+                ThrowHelper.ThrowBinaryException();
+            }
+        } 
+
         /// <summary>
         /// Return the property that contains the correct polymorphic properties including
         /// the ClassType and ConverterBase.
@@ -120,11 +146,13 @@ namespace Xfrogcn.BinaryFormatter
             EnumeratorIndex = 0;
             IgnoreDictionaryKeyPolicy = false;
             BinaryClassInfo = null!;
+            EnumerableIndexBytes = 8;
             //PolymorphicBinaryClassInfo = null;
             PolymorphicBinaryPropertyInfo = null;
             OriginalDepth = 0;
             ProcessedStartToken = false;
             ProcessedEndToken = false;
+            //ProcessedArrayLength = false;
 
             EndProperty();
         }

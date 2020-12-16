@@ -29,7 +29,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         /// <summary>
         /// Can direct Read or Write methods be called (for performance).
         /// </summary>
-        internal bool CanUseDirectReadOrWrite { get; set; }
+        //internal bool CanUseDirectReadOrWrite { get; set; }
 
         /// <summary>
         /// Can the converter have $id metadata.

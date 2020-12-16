@@ -8,22 +8,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
 {
     public partial class ObjectTests
     {
-        class TestCtorA
-        {
-            [BinaryFormatter.Serialization.BinaryConstructor]
-            public TestCtorA(string a, uint b)
-            {
-                A = a;
-                B = b;
-            }
-
-            public string A { get; set; }
-
-            public uint B { get; set; }
-
-            public string C { get; set; }
-        }
-
+       
         private Action<TestCtorA> checkTestCtorA(TestCtorA a)
         {
             return (b) =>
@@ -61,16 +46,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
             await Test(a, checkTestCtorA(a), options);
         }
 
-        class TestCtorB : TestCtorA
-        {
-            public TestCtorB(string a, uint b) : base(a,b)
-            {
-
-            }
-
-            public ObjTestA TestA { get; set; }
-        }
-
+       
         [Fact(DisplayName = "Object_Simple_Inherit_Ctor")]
         public async Task Test_Simple_Inherit_Ctor()
         {
@@ -80,75 +56,6 @@ namespace Xfrogcn.BinaryFormatter.Tests
             a.C = "C";
             await Test(a, checkTestCtorA(a));
         }
-
-        class TestCtorC : TestCtorB
-        {
-            [BinaryFormatter.Serialization.BinaryConstructor]
-            public TestCtorC(TestCtorB parent, TestCtorA temp) : base(parent.A,parent.B)
-            {
-                Temp = temp;
-                Parent = parent;
-            }
-
-            public TestCtorB Parent { get; set; }
-
-            public TestCtorA Temp { get; }
-        }
-
-        private Action<TestCtorA> checkCtorCProc(TestCtorA a)
-        {
-            Action<TestCtorA> check = b =>
-            {
-                Assert.Equal(a.GetType(), b.GetType());
-                Assert.Equal(a.A, b.A);
-                Assert.Equal(a.B, b.B);
-
-                if (a is TestCtorB cb)
-                {
-                    TestCtorB cb2 = b as TestCtorB;
-                    Assert.Equal(cb.C, cb2.C);
-                    if(cb.TestA == null)
-                    {
-                        Assert.Null(cb2.TestA);
-                    }
-                    else
-                    {
-                        checkTestAProc(cb.TestA)(cb2.TestA);
-                    }
-                }
-                if (a is TestCtorC cc)
-                {
-                    TestCtorB p1 = cc.Parent;
-                    TestCtorB p2 = (b as TestCtorC).Parent;
-                    if (p1 == null)
-                    {
-                        Assert.Null(p2);
-                    }
-                    else
-                    {
-                        checkCtorCProc(p1).Invoke(p2);
-                    }
-                    
-
-                    TestCtorA t1 = cc.Temp;
-                    TestCtorA t2 = (b as TestCtorC).Temp;
-                    if(t1 == null)
-                    {
-                        Assert.Null(t2);
-                    }
-                    else
-                    {
-                        checkCtorCProc(t1).Invoke(t2);
-                    }
-                    
-                }
-
-
-            };
-
-            return check;
-        }
-
 
         [Fact(DisplayName = "Object_Simple_Object_Ctor")]
         public async Task Test_Simple_Object_Ctor()
@@ -227,38 +134,6 @@ namespace Xfrogcn.BinaryFormatter.Tests
             await Test<TestCtorC>(c, checkCtorCProc(c), options);
 
         }
-
-
-        private TestCtorC createComplexCtorC(int len)
-        {
-            TestCtorB b = new TestCtorB(new string('B', len), 1);
-            b.C = new string('C', len);
-            TestCtorA a = new TestCtorC(new TestCtorC(
-                new TestCtorB(new string('B', len), 1),
-                new TestCtorB(new string('B', len), 1))
-            {
-                TestA = new ObjTestB()
-                {
-                    E = 1,
-                    B = new string('B', len)
-                }
-            },
-            new TestCtorB(new string('A', len), 1)
-            {
-                TestA = new ObjTestA()
-                {
-                    B = new string('B', len),
-                    A = 1
-                },
-                C = new string('C', len)
-            });
-
-
-            TestCtorC c = new TestCtorC(b, a);
-
-            return c;
-        }
-
 
         [InlineData(1024 * 10)]
         [InlineData(1024 * 512)]

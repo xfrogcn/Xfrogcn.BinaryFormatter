@@ -133,6 +133,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 CurrentDepth ({0}) is equal to or larger than the maximum allowed depth of {1}. Cannot write the next Binary object or array. 的本地化字符串。
+        /// </summary>
+        internal static string DepthTooLarge {
+            get {
+                return ResourceManager.GetString("DepthTooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The Binary value could not be converted to {0}. 的本地化字符串。
         /// </summary>
         internal static string DeserializeUnableToConvertValue {

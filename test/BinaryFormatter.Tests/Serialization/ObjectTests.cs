@@ -6,43 +6,9 @@ using Xunit;
 namespace Xfrogcn.BinaryFormatter.Tests
 {
     [Trait("", "Object")]
-    public partial class ObjectTests
+    public partial class ObjectTests : SerializerTestsBase
     {
-        
        
-        public async Task Test<T>(T input, Action<T> check, BinarySerializerOptions options = null)
-        {
-            MemoryStream ms = new MemoryStream();
-            await BinarySerializer.SerializeAsync<T>(ms, input, options);
-
-            ms.Position = 0;
-
-            T b =  await BinarySerializer.DeserializeAsync<T>(ms, options);
-            check(b);
-
-            ms.Position = 0;
-            object b1 = await BinarySerializer.DeserializeAsync(ms, options);
-            check((T)b1);
-
-        }
-
-        class ObjTestA
-        {
-            public uint A { get; set; }
-
-            public string B { get; set; }
-            
-        }
-
-        class ObjTestB : ObjTestA
-        {
-
-            public ObjTestB C { get; set; }
-
-            public ObjTestA D { get; set; }
-
-            public int? E { get; set; }
-        }
 
         [Fact(DisplayName = "Object-Simple")]
         public async Task Test_SimpleObj()
@@ -389,39 +355,6 @@ namespace Xfrogcn.BinaryFormatter.Tests
             };
 
             return check;
-        }
-        
-
-        private Action<ObjTestA> checkTestAProc(ObjTestA a)
-        {
-            return (b) =>
-            {
-                Assert.Equal(a.GetType(), b.GetType());
-                Assert.Equal(a.A, b.A);
-                Assert.Equal(a.B, b.B);
-
-                if( a is ObjTestB ab)
-                {
-                    ObjTestB bb = b as ObjTestB;
-                    Assert.Equal(ab.E, bb.E);
-                    if( ab.D == null)
-                    {
-                        Assert.Null(bb.D);
-                    }
-                    else
-                    {
-                        checkTestAProc(ab.D)(bb.D);
-                    }
-                    if(ab.C == null)
-                    {
-                        Assert.Null(bb.C);
-                    }
-                    else
-                    {
-                        checkTestAProc(ab.C)(bb.C);
-                    }
-                }
-            };
         }
     }
 }

@@ -75,26 +75,28 @@ namespace Xfrogcn.BinaryFormatter
             }
             else if (typeInfo.SerializeType == ClassType.Object)
             {
+                int curOffset = offset;
                 // 引用、非引用
-                if (!TryRequestData(offset, 1))
+                if (!TryRequestData(curOffset, 1))
                 {
                     return false;
                 }
 
-                byte refSign = _buffer[offset++];
+                byte refSign = _buffer[curOffset++];
                 if(refSign == 0xFF)
                 {
-                    if (!TryRequestData(offset, 4))
+                    if (!TryRequestData(curOffset, 4))
                     {
                         return false;
                     }
-                    offset += 4;
+                    curOffset += 4;
                 }
+
 
                 // 读取属性
                 while (true)
                 {
-                    if(!TryReadPropertySeq(ref offset, out ushort propertySeq))
+                    if(!TryReadPropertySeq(ref curOffset, out ushort propertySeq))
                     {
                         return false;
                     }
@@ -104,7 +106,7 @@ namespace Xfrogcn.BinaryFormatter
                         break;
                     }
 
-                    if (!TryReadTypeSeq(ref offset, out ushort typeSeq))
+                    if (!TryReadTypeSeq(ref curOffset, out ushort typeSeq))
                     {
                         return false;
                     }
@@ -115,14 +117,85 @@ namespace Xfrogcn.BinaryFormatter
                     }
 
                     BinaryTypeInfo ti = _typeMap.GetTypeInfo(typeSeq);
-                    if(!TryForwardRead(ti, ref offset))
+                    if(!TryForwardRead(ti, ref curOffset))
                     {
                         return false;
                     }
                 }
 
-                
+                offset = curOffset;
 
+            }
+            else if( typeInfo.SerializeType == ClassType.Enumerable)
+            {
+                int curOffset = offset;
+                // 可枚举类型 
+                // 引用、非引用
+                if (!TryRequestData(curOffset, 1))
+                {
+                    return false;
+                }
+
+                byte refSign = _buffer[curOffset++];
+                if (refSign == 0xFF)
+                {
+                    // 引用
+                    if (!TryRequestData(curOffset, 4))
+                    {
+                        return false;
+                    }
+                    curOffset += 4;
+                    return true;
+                }
+
+                // 索引长度
+                if (!TryRequestData(curOffset, 1))
+                {
+                    return false;
+                }
+
+                byte lenBytes = _buffer[curOffset++];
+                if (!TryRequestData(curOffset, lenBytes))
+                {
+                    return false;
+                }
+
+                var lenSpan = _buffer.Slice(curOffset, lenBytes);
+                ulong len = GetEnumerableLength(lenSpan);
+                curOffset += lenBytes;
+
+                // 按顺序读取
+                ulong curIdx = 0;
+                while (curIdx< len)
+                {
+                    if (!TryReadTypeSeq(ref curOffset, out ushort typeSeq))
+                    {
+                        return false;
+                    }
+
+                    if (typeSeq == TypeMap.NullTypeSeq)
+                    {
+                        continue;
+                    }
+
+                    BinaryTypeInfo ti = _typeMap.GetTypeInfo(typeSeq);
+                    if (!TryForwardRead(ti, ref curOffset))
+                    {
+                        return false;
+                    }
+                }
+
+                // 校验是否为枚举结束标记
+                if (!TryReadPropertySeq(ref curOffset, out ushort propertySeq))
+                {
+                    return false;
+                }
+                if(propertySeq!= 0x7FF)
+                {
+                    ThrowHelper.ThrowBinaryException();
+                }
+
+                offset = curOffset;
             }
             else
             {
@@ -165,6 +238,47 @@ namespace Xfrogcn.BinaryFormatter
             return false;
         }
 
+        public bool TryReadEnumerableIndex(ref int offset)
+        {
+            // 长度 16位或32位
+            if (!TryRequestData(offset, 2))
+            {
+                return false;
+            }
+
+            // 如果最高位是1，表示31位长度，否则表示15位长度
+            int len = default;
+            byte b1 = _buffer[offset];
+            int lenBytes = 4;
+            if ((b1 & 0x80) == 0x80)
+            {
+                if (!TryRequestData(offset, 4))
+                {
+                    return false;
+                }
+
+                len = ((_buffer[offset] & 0x7F) << 24) |
+                    (_buffer[offset + 1] << 16) |
+                    (_buffer[offset + 2] << 8) |
+                    _buffer[offset + 3];
+
+                lenBytes = 4;
+            }
+            else
+            {
+                len = _buffer[offset] << 8 | _buffer[offset + 1];
+                lenBytes = 2;
+            }
+
+
+            if (!TryRequestData(offset, len + lenBytes))
+            {
+                return false;
+            }
+
+            offset += (len + lenBytes);
+            return true;
+        }
 
         public bool TrySkipBytes(ref int offset)
         {

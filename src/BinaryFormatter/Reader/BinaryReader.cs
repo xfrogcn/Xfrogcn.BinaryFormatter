@@ -153,9 +153,16 @@ namespace Xfrogcn.BinaryFormatter
         {
         }
 
+        /// <summary>
+        /// 读取指定字节数，并返回
+        /// 此方法会修改Reader的读取位置，但不会修改Reader的ValueSpan属性
+        /// </summary>
+        /// <param name="len">待读取的长度</param>
+        /// <param name="output">读取结果</param>
+        /// <returns>成功返回ture，如果没有足够的数据返回false</returns>
         public bool ReadBytes(int len, out ReadOnlySpan<byte> output)
         {
-            if((_consumed+len)>= _buffer.Length)
+            if((_consumed+len)> _buffer.Length)
             {
                 output = default;
                 return false;
@@ -165,6 +172,13 @@ namespace Xfrogcn.BinaryFormatter
             return true;
         }
 
+        /// <summary>
+        /// 读取指定字节数，并返回
+        /// 此方法会修改Reader的读取位置及Reader的ValueSpan属性
+        /// </summary>
+        /// <param name="len">待读取的长度</param>
+        /// <param name="output">读取结果</param>
+        /// <returns>成功返回ture，如果没有足够的数据返回false</returns>
         internal bool ReadBytes(int len)
         {
             if((_consumed + len) > _buffer.Length)
@@ -425,6 +439,11 @@ namespace Xfrogcn.BinaryFormatter
                 ThrowHelper.ThrowBinaryReaderException(ref this, ExceptionResource.ExpectedBinaryTokens);
             }
             return false;
+        }
+
+        internal bool ReadEndArrayToken()
+        {
+            return ReadPropertyName();
         }
 
         internal bool ReadPropertyName()

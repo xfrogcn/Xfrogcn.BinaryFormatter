@@ -43,7 +43,8 @@ namespace Xfrogcn.BinaryFormatter
 
 
 
-        public int CurrentDepth => _currentDepth;
+        public int CurrentDepth => _currentDepth & BinarySerializerConstants.RemoveFlagsBitMask;
+
 
         private byte[] versionBytes = new byte[] { 1 };
 
@@ -164,6 +165,17 @@ namespace Xfrogcn.BinaryFormatter
             WritePropertySeq(0x7FFF);
             if (CurrentDepth != 0)
             {
+                _currentDepth &= BinarySerializerConstants.RemoveFlagsBitMask;
+                _currentDepth--;
+            }
+        }
+
+        public void WriteEndArray()
+        {
+            WritePropertySeq(0x7FFF);
+            if (CurrentDepth != 0)
+            {
+                _currentDepth &= BinarySerializerConstants.RemoveFlagsBitMask;
                 _currentDepth--;
             }
         }
@@ -211,7 +223,22 @@ namespace Xfrogcn.BinaryFormatter
         }
         public void WriteStartObject()
         {
+            WriteStart(BinaryTokenType.StartObject);
+        }
+
+        public void WriteStartArray()
+        {
+            WriteStart(BinaryTokenType.StartArray);
+        }
+
+        internal void WriteStart(BinaryTokenType tokenType)
+        {
+            if (CurrentDepth >= BinarySerializerConstants.MaxWriterDepth)
+                ThrowHelper.ThrowInvalidOperationException(ExceptionResource.DepthTooLarge, _currentDepth, token: default, tokenType: default);
+
+            _currentDepth &= BinarySerializerConstants.RemoveFlagsBitMask;
             _currentDepth++;
+            _tokenType = tokenType;
         }
 
         internal void WriteTypeInfos(IList<BinaryTypeInfo> typeList, ushort primaryTypeSeq)
@@ -252,6 +279,55 @@ namespace Xfrogcn.BinaryFormatter
             var output = _memory.Span;
             output[BytesPending++] = (byte)(seq >> 8);
             output[BytesPending++] = (byte)(seq & 0xFF);
+        }
+
+        internal byte WriteEnumerableLength(long len)
+        {
+            // 第一个字节是枚举索引的字节长度
+            // 第二个至第N个位总长度
+            byte byteLen = 1;
+            Action action = null;
+            if (len <= byte.MaxValue)
+            {
+                byteLen = 1;
+                action = () =>
+                {
+                    _memory.Span[BytesPending] = (byte)len;
+                };
+            }
+            else if (len <= ushort.MaxValue)
+            {
+                byteLen = 2;
+                action = () =>
+                {
+                    BitConverter.TryWriteBytes(_memory.Span.Slice(BytesPending), (ushort)len);
+                };
+            }
+            else if (len <= uint.MaxValue)
+            {
+                byteLen = 4;
+                action = () =>
+                {
+                    BitConverter.TryWriteBytes(_memory.Span.Slice(BytesPending), (uint)len);
+                };
+            }
+            else
+            {
+                byteLen = 8;
+                action = () =>
+                {
+                    BitConverter.TryWriteBytes(_memory.Span.Slice(BytesPending), (ulong)len);
+                };
+            }
+            if (_memory.Length - BytesPending < (byteLen + 1))
+            {
+                Grow(byteLen + 1);
+            }
+            _memory.Span[BytesPending++] = byteLen;
+            action();
+            BytesPending += byteLen;
+
+            return byteLen;
         }
 
         private void WriteTypeInfo(BinaryTypeInfo typeInfo)

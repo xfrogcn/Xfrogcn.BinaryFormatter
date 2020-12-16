@@ -60,6 +60,62 @@ namespace Xfrogcn.BinaryFormatter
             return IsPrintable(value) ? ((char)value).ToString() : $"0x{value:X2}";
         }
 
+        [DoesNotReturn]
+        public static void ThrowInvalidOperationException(ExceptionResource resource, int currentDepth, byte token, BinaryTokenType tokenType)
+        {
+            throw GetInvalidOperationException(resource, currentDepth, token, tokenType);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static InvalidOperationException GetInvalidOperationException(ExceptionResource resource, int currentDepth, byte token, BinaryTokenType tokenType)
+        {
+            string message = GetResourceString(resource, currentDepth, token, tokenType);
+            InvalidOperationException ex = GetInvalidOperationException(message);
+            ex.Source = ExceptionSourceValueToRethrowAsBinaryException;
+            return ex;
+        }
+
+        // This function will convert an ExceptionResource enum value to the resource string.
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static string GetResourceString(ExceptionResource resource, int currentDepth, byte token, BinaryTokenType tokenType)
+        {
+            string message = "";
+            switch (resource)
+            {
+                //case ExceptionResource.MismatchedObjectArray:
+                //    Debug.Assert(token == JsonConstants.CloseBracket || token == JsonConstants.CloseBrace);
+                //    message = (tokenType == JsonTokenType.PropertyName) ?
+                //        SR.Format(SR.CannotWriteEndAfterProperty, (char)token) :
+                //        SR.Format(SR.MismatchedObjectArray, (char)token);
+                //    break;
+                case ExceptionResource.DepthTooLarge:
+                    message = string.Format(Strings.DepthTooLarge, currentDepth & BinarySerializerConstants.RemoveFlagsBitMask, BinarySerializerConstants.MaxWriterDepth);
+                    break;
+                //case ExceptionResource.CannotStartObjectArrayWithoutProperty:
+                //    message = SR.Format(SR.CannotStartObjectArrayWithoutProperty, tokenType);
+                //    break;
+                //case ExceptionResource.CannotStartObjectArrayAfterPrimitiveOrClose:
+                //    message = SR.Format(SR.CannotStartObjectArrayAfterPrimitiveOrClose, tokenType);
+                //    break;
+                //case ExceptionResource.CannotWriteValueWithinObject:
+                //    message = SR.Format(SR.CannotWriteValueWithinObject, tokenType);
+                //    break;
+                //case ExceptionResource.CannotWritePropertyWithinArray:
+                //    message = (tokenType == JsonTokenType.PropertyName) ?
+                //        SR.Format(SR.CannotWritePropertyAfterProperty) :
+                //        SR.Format(SR.CannotWritePropertyWithinArray, tokenType);
+                //    break;
+                //case ExceptionResource.CannotWriteValueAfterPrimitiveOrClose:
+                //    message = SR.Format(SR.CannotWriteValueAfterPrimitiveOrClose, tokenType);
+                //    break;
+                default:
+                    Debug.Fail($"The ExceptionResource enum value: {resource} is not part of the switch. Add the appropriate case and exception message.");
+                    break;
+            }
+
+            return message;
+        }
+
         // This function will convert an ExceptionResource enum value to the resource string.
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static string GetResourceString(ref BinaryReader binary, ExceptionResource resource, byte nextByte)
@@ -223,7 +279,7 @@ namespace Xfrogcn.BinaryFormatter
         //MismatchedObjectArray,
         //ObjectDepthTooLarge,
         //ZeroDepthAtEnd,
-        //DepthTooLarge,
+        DepthTooLarge,
         //CannotStartObjectArrayWithoutProperty,
         //CannotStartObjectArrayAfterPrimitiveOrClose,
         //CannotWriteValueWithinObject,

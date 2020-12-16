@@ -7,7 +7,7 @@ using Xunit;
 namespace Xfrogcn.BinaryFormatter.Tests
 {
     [Trait("", "内置类型")]
-    public class EnumTests
+    public class EnumTests : SerializerTestsBase
     {
         public enum TestByteEnum : byte
         {
@@ -78,6 +78,31 @@ namespace Xfrogcn.BinaryFormatter.Tests
         public async Task Int64EnumTest(TestInt64Enum input)
         {
             await Test(input);
+        }
+
+        class TestEnumWrapper
+        {
+            public TestEnumA? EnumA { get; set; }
+        }
+
+       
+        [Fact(DisplayName = "Enum_Nullable")]
+        public async Task NullableEnumTest()
+        {
+            TestEnumWrapper a = new TestEnumWrapper()
+            {
+                EnumA = null
+            };
+            await Test(a, (b) =>
+            {
+                Assert.Equal(a.EnumA, b.EnumA);
+            });
+
+            a.EnumA = TestEnumA.None;
+            await Test(a, (b) =>
+            {
+                Assert.Equal(a.EnumA, b.EnumA);
+            });
         }
     }
 }

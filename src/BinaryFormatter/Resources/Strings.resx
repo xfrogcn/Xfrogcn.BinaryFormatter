@@ -141,6 +141,9 @@
   <data name="DefaultIgnoreConditionInvalid" xml:space="preserve">
     <value>The value cannot be 'BinaryIgnoreCondition.Always'.</value>
   </data>
+  <data name="DepthTooLarge" xml:space="preserve">
+    <value>CurrentDepth ({0}) is equal to or larger than the maximum allowed depth of {1}. Cannot write the next Binary object or array.</value>
+  </data>
   <data name="DeserializeUnableToConvertValue" xml:space="preserve">
     <value>The Binary value could not be converted to {0}.</value>
   </data>

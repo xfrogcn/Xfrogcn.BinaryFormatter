@@ -22,6 +22,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             {
                 return null;
             }
+            if (!reader.ReadTypeSeq())
+            {
+                return null;
+            }
             T value = _converter.Read(ref reader, typeof(T), options);
             return value;
         }
@@ -29,19 +33,26 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             _converter.SetTypeMetadata(typeInfo, typeMap, options);
+            typeInfo.FullName = null;
             typeInfo.Type = TypeEnum.Nullable;
         }
 
-        public override void Write(BinaryWriter writer, T? value, BinarySerializerOptions options)
+        internal override bool OnTryWrite(BinaryWriter writer, T? value, BinarySerializerOptions options, ref WriteStack state)
         {
             if (!value.HasValue)
             {
                 writer.WriteNullValue();
+                return true;
             }
             else
             {
-                _converter.Write(writer, value.Value, options);
+                return _converter.TryWrite(writer, value.Value, options, ref state);
             }
+        }
+
+        public override void Write(BinaryWriter writer, T? value, BinarySerializerOptions options)
+        {
+            ThrowHelper.ThrowBinaryException();
             
         }
     }

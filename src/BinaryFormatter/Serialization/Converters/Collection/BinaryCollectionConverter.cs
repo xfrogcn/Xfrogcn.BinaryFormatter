@@ -5,5 +5,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
     {
         internal sealed override ClassType ClassType => ClassType.Enumerable;
         internal override Type ElementType => typeof(TElement);
+
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
+        {
+            typeInfo.SerializeType = ClassType.Enumerable;
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace Xfrogcn.BinaryFormatter
             new NullableConverterFactory(),
             new EnumConverterFactory(),
             //// IEnumerable should always be second to last since they can convert any IEnumerable.
-            //new IEnumerableConverterFactory(),
+            new IEnumerableConverterFactory(),
             //// Object should always be last since it converts any type.
             new ObjectConverterFactory()
         };

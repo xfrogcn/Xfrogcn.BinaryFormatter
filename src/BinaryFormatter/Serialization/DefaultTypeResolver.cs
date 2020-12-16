@@ -75,12 +75,22 @@ namespace Xfrogcn.BinaryFormatter
                 type = _internalTypeMaps[typeInfo.Type];
             }
 
-            if (type == null || type.IsGenericType )
+            if (type == null || type.IsGenericType  )
             {
                 string typeName = typeInfo.GetFullName(typeMap);
                 Type tmp = type;
                 type = _typeNameMaps.GetOrAdd(typeName, (tn) =>
                 {
+                    if(typeInfo.Type == TypeEnum.Array)
+                    {
+                        TryResolveType(typeMap, typeMap.GetTypeInfo(typeInfo.GenericArguments[0]), out Type elementType);
+                        if(elementType != null)
+                        {
+                            return elementType.MakeArrayType();
+                        }
+                        return null;
+                    }
+
                     // 从fullName获取Type
                     Type t = tmp ?? ParseType(typeInfo.FullName);
                     if (t != null)
@@ -149,7 +159,7 @@ namespace Xfrogcn.BinaryFormatter
 
         private Type CreateGenericType(TypeMap typeMap, Type type, BinaryTypeInfo typeInfo)
         {
-            if (!typeInfo.IsGeneric)
+            if (!typeInfo.IsGeneric || typeInfo.Type == TypeEnum.Array)
             {
                 return type;
             }

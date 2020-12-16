@@ -165,7 +165,7 @@ namespace Xfrogcn.BinaryFormatter
                     else
                     {
                         Debug.Assert(((ClassType.Enumerable | ClassType.Dictionary) & Current.BinaryClassInfo.ClassType) != 0);
-                        binaryClassInfo = Current.BinaryClassInfo.ElementClassInfo!;
+                        binaryClassInfo = Current.PolymorphicBinaryClassInfo ?? Current.BinaryClassInfo.ElementClassInfo!;
                     }
 
                     AddCurrent();
