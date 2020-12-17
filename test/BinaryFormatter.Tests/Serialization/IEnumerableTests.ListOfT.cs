@@ -281,23 +281,9 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
         }
 
-        [InlineData(500)]
-        [InlineData(1024 * 10)]
-        [InlineData(1024 * 1024)]
-        [Theory(DisplayName = "Test_List_With_List_Buffer")]
-        public async Task Test_List_With_List_Buffer(int len)
+        [Fact(DisplayName = "Test_List_With_List_Simple")]
+        public async Task Test_List_With_List_Simple()
         {
-            //IList<List<IList<TestCtorA>>> a = new List<List<IList<TestCtorA>>>()
-            //{
-            //    new List<IList<TestCtorA>>()
-            //    {
-            //        new TestListA()
-            //        {
-            //            createComplexCtorC(len),
-            //            createComplexCtorC(len)
-            //        }
-            //    }
-            //};
             IList<TestListA> a = new List<TestListA>()
             {
 
@@ -310,9 +296,65 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
             await Test(a, (b) =>
             {
-
+                Assert.Equal(a.Count, b.Count);
+                Assert.Equal(a[0].A, b[0].A);
+                CheckIEnumerableOfList(a[0], (a1, b1) => checkCtorCProc(a1)(b1))(b[0]);
             });
-            
+
+        }
+
+        [Fact(DisplayName = "Test_List_With_List_More")]
+        public async Task Test_List_With_List_More()
+        {
+            IList<IList<TestListA>> a = new List<IList<TestListA>>()
+            {
+                new List<TestListA>(){
+                    new TestListA()
+                    {
+                        new TestCtorA("A",1)
+                    }
+                }
+
+            };
+
+            await Test(a, (b) =>
+            {
+                Assert.Equal(a.Count, b.Count);
+                Assert.Equal(a[0].Count, b[0].Count);
+                Assert.Equal(a[0][0].A, b[0][0].A);
+                CheckIEnumerableOfList(a[0][0], (a1, b1) => checkCtorCProc(a1)(b1))(b[0][0]);
+            });
+
+        }
+
+        [InlineData(500)]
+        [InlineData(1024 * 10)]
+        [InlineData(1024 * 1024)]
+        [Theory(DisplayName = "Test_List_With_List_More_Buffer")]
+        public async Task Test_List_With_List_More_Buffer(int len)
+        {
+            IList<IList<TestListA>> a = new List<IList<TestListA>>()
+            {
+                new List<TestListA>(){
+                    new TestListA()
+                    {
+                        createComplexCtorC(len),
+                        new TestCtorA(new string('A', len), 1),
+                        null,
+                        createComplexCtorC(len)
+                    }
+                }
+
+            };
+
+            await Test(a, (b) =>
+            {
+                Assert.Equal(a.Count, b.Count);
+                Assert.Equal(a[0].Count, b[0].Count);
+                Assert.Equal(a[0][0].A, b[0][0].A);
+                CheckIEnumerableOfList(a[0][0], (a1, b1) => checkCtorCProc(a1)(b1))(b[0][0]);
+            }, new BinarySerializerOptions() { DefaultBufferSize = 1 });
+
         }
 
         protected virtual Action<List<TElement>> CheckIEnumerableOfList<TElement>(List<TElement> a,  Action<TElement,TElement> checker )

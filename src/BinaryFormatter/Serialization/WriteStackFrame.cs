@@ -153,6 +153,7 @@ namespace Xfrogcn.BinaryFormatter
             OriginalDepth = 0;
             ProcessedStartToken = false;
             ProcessedEndToken = false;
+            ProcessedEnumerableIndex = false;
             ObjectState = StackFrameWriteObjectState.None;
             //ProcessedArrayLength = false;
 
