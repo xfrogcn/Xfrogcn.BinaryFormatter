@@ -79,7 +79,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             // Immutable non-dictionaries from System.Collections.Immutable, e.g. ImmutableStack<T>
             else if (typeToConvert.IsImmutableEnumerableType())
             {
-               // converterType = typeof(ImmutableEnumerableOfTConverter<,>);
+                converterType = typeof(ImmutableEnumerableOfTConverter<,>);
                 elementType = typeToConvert.GetGenericArguments()[0];
             }
             // IList<>

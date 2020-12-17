@@ -64,6 +64,12 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             return null;
         }
 
+        /// <summary>
+        /// 获取兼容的接口类型
+        /// </summary>
+        /// <param name="type">类型</param>
+        /// <param name="interfaceType">接口类型</param>
+        /// <returns>如果存在指定接口返回接口类型，否则返回null</returns>
         internal static Type GetCompatibleGenericInterface(this Type type, Type interfaceType)
         {
             Debug.Assert(interfaceType.IsGenericType);
@@ -115,6 +121,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             }
         }
 
+        /// <summary>
+        /// 检查类型是否为不可变集合类型
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static bool IsImmutableEnumerableType(this Type type)
         {
             if (!type.IsGenericType || !type.Assembly.FullName!.StartsWith("System.Collections.Immutable,", StringComparison.Ordinal))
@@ -138,16 +149,27 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 default:
                     return false;
             }
+
+            
         }
 
+        /// <summary>
+        /// 获取不可变集合的CreateRange方法，用于创建对应的不可变集合实例
+        /// </summary>
+        /// <param name="type">集合类型</param>
+        /// <param name="elementType">元素类型</param>
+        /// <returns>对应的创建方法</returns>
         public static MethodInfo GetImmutableEnumerableCreateRangeMethod(this Type type, Type elementType)
         {
+            // 获取构造类型
             Type constructingType = GetImmutableEnumerableConstructingType(type);
             if (constructingType != null)
             {
+
                 MethodInfo[] constructingTypeMethods = constructingType.GetMethods();
                 foreach (MethodInfo method in constructingTypeMethods)
                 {
+                    // CreateRange<T>(IEnumerable<T>)
                     if (method.Name == CreateRangeMethodName &&
                         method.GetParameters().Length == 1 &&
                         method.IsGenericMethod &&
@@ -181,6 +203,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             throw new NotSupportedException($"类型不支持序列化：{type.FullName}");
         }
 
+        /// <summary>
+        /// 获取不可变集合对应的构造类型
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         private static Type GetImmutableEnumerableConstructingType(Type type)
         {
             Debug.Assert(type.IsImmutableEnumerableType());

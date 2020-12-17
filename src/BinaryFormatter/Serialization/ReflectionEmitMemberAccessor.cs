@@ -173,9 +173,16 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             return dynamicMethod;
         }
 
+        /// <summary>
+        /// 创建不可变集合类型对应的CreateRange构造方法
+        /// </summary>
+        /// <typeparam name="TElement"></typeparam>
+        /// <typeparam name="TCollection"></typeparam>
+        /// <returns></returns>
         public override Func<IEnumerable<TElement>, TCollection> CreateImmutableEnumerableCreateRangeDelegate<TElement, TCollection>() =>
             CreateDelegate<Func<IEnumerable<TElement>, TCollection>>(
                 CreateImmutableEnumerableCreateRangeDelegate(typeof(TCollection), typeof(TElement), typeof(IEnumerable<TElement>)));
+
 
         private static DynamicMethod CreateImmutableEnumerableCreateRangeDelegate(Type collectionType, Type elementType, Type enumerableType)
         {
