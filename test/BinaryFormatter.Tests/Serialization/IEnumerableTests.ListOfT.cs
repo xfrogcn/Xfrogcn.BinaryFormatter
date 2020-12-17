@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Xfrogcn.BinaryFormatter.Tests
 {
-   
+
     public partial class IEnumerableTests 
     {
         [InlineData(0)]
