@@ -9,7 +9,7 @@ namespace Xfrogcn.BinaryFormatter
         public void WriteBytesValue(ReadOnlySpan<byte> value)
         {
             int len = value.Length;
-            if(len > 0x7FFF)
+            if(len > BinarySerializerConstants.EndObjectSeq)
             {
                 ReadOnlySpan<byte> lenBytes = BitConverter.GetBytes(len);
                 Span<byte> bytes = stackalloc byte[4];

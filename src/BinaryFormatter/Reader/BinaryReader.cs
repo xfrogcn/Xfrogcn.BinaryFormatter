@@ -467,7 +467,7 @@ namespace Xfrogcn.BinaryFormatter
 
                 ValueSpan = _buffer.Slice(_consumed, 2);
                 ushort seq = (ushort)((ValueSpan[0] << 8) | ValueSpan[1]);
-                if(seq == 0x7FFF)
+                if(seq == BinarySerializerConstants.EndObjectSeq)
                 {
                     // 对象结束
                     _tokenType = BinaryTokenType.EndObject;

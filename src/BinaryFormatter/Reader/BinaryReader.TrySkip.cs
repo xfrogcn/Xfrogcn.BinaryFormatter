@@ -5,6 +5,8 @@ namespace Xfrogcn.BinaryFormatter
 
     public ref partial struct BinaryReader
     {
+        
+
         /// <summary>
         /// 跳过节点读取
         /// </summary>
@@ -61,7 +63,7 @@ namespace Xfrogcn.BinaryFormatter
                 {
 
                     int len = _binaryTypeToBytesLen[typeInfo.Type];
-                    if(!TryRequestData(offset, len))
+                    if (!TryRequestData(offset, len))
                     {
                         return false;
                     }
@@ -82,7 +84,7 @@ namespace Xfrogcn.BinaryFormatter
                         offset = curOffset;
                         return true;
                     }
-                    if( !TryForwardRead(_typeMap.GetTypeInfo(typeSeq), ref curOffset))
+                    if (!TryForwardRead(_typeMap.GetTypeInfo(typeSeq), ref curOffset))
                     {
                         return false;
                     }
@@ -108,7 +110,7 @@ namespace Xfrogcn.BinaryFormatter
                 }
 
                 byte refSign = _buffer[curOffset++];
-                if(refSign == 0xFF)
+                if (refSign == 0xFF)
                 {
                     if (!TryRequestData(curOffset, 4))
                     {
@@ -121,12 +123,12 @@ namespace Xfrogcn.BinaryFormatter
                 // 读取属性
                 while (true)
                 {
-                    if(!TryReadPropertySeq(ref curOffset, out ushort propertySeq))
+                    if (!TryReadPropertySeq(ref curOffset, out ushort propertySeq))
                     {
                         return false;
                     }
 
-                    if( propertySeq == 0x7FFF)
+                    if (propertySeq == BinarySerializerConstants.EndObjectSeq)
                     {
                         break;
                     }
@@ -136,17 +138,17 @@ namespace Xfrogcn.BinaryFormatter
                         return false;
                     }
 
-                    if(typeSeq == TypeMap.NullTypeSeq)
+                    if (typeSeq == TypeMap.NullTypeSeq)
                     {
                         continue;
                     }
 
                     BinaryTypeInfo ti = _typeMap.GetTypeInfo(typeSeq);
-                    if(ti == null)
+                    if (ti == null)
                     {
 
                     }
-                    if(!TryForwardRead(ti, ref curOffset))
+                    if (!TryForwardRead(ti, ref curOffset))
                     {
                         return false;
                     }
@@ -155,7 +157,7 @@ namespace Xfrogcn.BinaryFormatter
                 offset = curOffset;
 
             }
-            else if( typeInfo.SerializeType == ClassType.Enumerable)
+            else if (typeInfo.SerializeType == ClassType.Enumerable)
             {
                 int curOffset = offset;
                 // 可枚举类型 
@@ -195,8 +197,14 @@ namespace Xfrogcn.BinaryFormatter
 
                 // 按顺序读取
                 ulong curIdx = 0;
-                while (curIdx< len)
+                while (curIdx < len)
                 {
+                    // 读取索引
+                    if (!TrySkipBytes(ref curOffset, lenBytes))
+                    {
+                        return false;
+                    }
+
                     if (!TryReadTypeSeq(ref curOffset, out ushort typeSeq))
                     {
                         return false;
@@ -212,6 +220,7 @@ namespace Xfrogcn.BinaryFormatter
                     {
                         return false;
                     }
+                    curIdx++;
                 }
 
                 // 校验是否为枚举结束标记
@@ -219,7 +228,7 @@ namespace Xfrogcn.BinaryFormatter
                 {
                     return false;
                 }
-                if(propertySeq!= 0x7FF)
+                if (propertySeq != BinarySerializerConstants.EndObjectSeq)
                 {
                     ThrowHelper.ThrowBinaryException();
                 }
@@ -230,9 +239,19 @@ namespace Xfrogcn.BinaryFormatter
             {
                 ThrowHelper.ThrowBinaryException();
             }
-           
+
             return true;
 
+        }
+
+        internal bool TrySkipBytes(ref int offset, int len)
+        {
+            if(!TryRequestData(offset, len))
+            {
+                return false;
+            }
+            offset += len;
+            return true;
         }
 
 
@@ -267,47 +286,6 @@ namespace Xfrogcn.BinaryFormatter
             return false;
         }
 
-        public bool TryReadEnumerableIndex(ref int offset)
-        {
-            // 长度 16位或32位
-            if (!TryRequestData(offset, 2))
-            {
-                return false;
-            }
-
-            // 如果最高位是1，表示31位长度，否则表示15位长度
-            int len = default;
-            byte b1 = _buffer[offset];
-            int lenBytes = 4;
-            if ((b1 & 0x80) == 0x80)
-            {
-                if (!TryRequestData(offset, 4))
-                {
-                    return false;
-                }
-
-                len = ((_buffer[offset] & 0x7F) << 24) |
-                    (_buffer[offset + 1] << 16) |
-                    (_buffer[offset + 2] << 8) |
-                    _buffer[offset + 3];
-
-                lenBytes = 4;
-            }
-            else
-            {
-                len = _buffer[offset] << 8 | _buffer[offset + 1];
-                lenBytes = 2;
-            }
-
-
-            if (!TryRequestData(offset, len + lenBytes))
-            {
-                return false;
-            }
-
-            offset += (len + lenBytes);
-            return true;
-        }
 
         public bool TrySkipBytes(ref int offset)
         {

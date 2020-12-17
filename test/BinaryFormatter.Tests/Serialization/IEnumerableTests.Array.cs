@@ -99,6 +99,120 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
         }
 
+        class TestArrayCtorObj
+        {
+            [BinaryFormatter.Serialization.BinaryConstructor]
+            public TestArrayCtorObj(TestCtorA[] a)
+            {
+                A = a;
+            }
+
+            public TestCtorA[] A { get; set; }
+        }
+
+        [Fact(DisplayName = "Test_Array_Ctor_Object")]
+        public async Task Test_Array_Ctor_Object()
+        {
+            TestCtorA[] a1 = new TestCtorA[]
+            {
+                createComplexCtorC(1),
+                createComplexCtorC(2),
+                null,
+                createComplexCtorC(3),
+                null
+            };
+
+            TestArrayCtorObj obj = new TestArrayCtorObj(a1);
+
+
+            await Test(obj, b=>
+            {
+                CheckIEnumerable(obj.A, (a, b) => checkCtorCProc(a)(b));
+            });
+
+        }
+
+        [InlineData(1024 * 10)]
+        [InlineData(1024 * 512)]
+        [InlineData(1024 * 1024)]
+        [Theory(DisplayName = "Test_Array_Ctor_Object_Buffer")]
+        public async Task Test_Array_Ctor_Object_Buffer(int len)
+        {
+            BinarySerializerOptions options = new BinarySerializerOptions()
+            {
+                DefaultBufferSize = 1
+            };
+            TestCtorA[] a1 = new TestCtorA[]
+            {
+                createComplexCtorC(len),
+                //createComplexCtorC(len),
+                //null,
+                //createComplexCtorC(len),
+                //null
+            };
+
+            TestArrayCtorObj obj = new TestArrayCtorObj(a1);
+
+
+            await Test(obj, b =>
+            {
+                CheckIEnumerable(obj.A, (a, b) => checkCtorCProc(a)(b));
+            }, options);
+
+        }
+
+        class TestArraySkipObj
+        {
+            public TestCtorA[] A { get; set; }
+
+            public TestCtorA[] B { get; internal set; }
+
+            public string C { get; set; }
+        }
+
+        [Fact(DisplayName = "Test_Array_Skip")]
+        public async Task Test_Array_Skip()
+        {
+            TestArraySkipObj a = new TestArraySkipObj()
+            {
+                A = new TestCtorA[] { createComplexCtorC(1)},
+                B = new TestCtorA[] {createComplexCtorC(1)},
+                C = "C"
+            };
+
+
+            await Test(a, b =>
+            {
+                CheckIEnumerable(a.A, (a1, b1) => checkCtorCProc(a1)(b1));
+                Assert.Null(b.B);
+                Assert.Equal(a.C, b.C);
+            });
+
+        }
+
+        [InlineData(1024 * 10)]
+        [InlineData(1024 * 512)]
+        [InlineData(1024 * 1024)]
+        [Theory(DisplayName = "Test_Array_Skip_Buffer")]
+        public async Task Test_Array_Skip_Buffer(int len)
+        {
+            TestArraySkipObj a = new TestArraySkipObj()
+            {
+                A = new TestCtorA[] { createComplexCtorC(len) },
+                B = new TestCtorA[] { createComplexCtorC(len) },
+                C = "C"
+            };
+
+
+            await Test(a, b =>
+            {
+                CheckIEnumerable(a.A, (a1, b1) => checkCtorCProc(a1)(b1));
+                Assert.Null(b.B);
+                Assert.Equal(a.C, b.C);
+            }, new BinarySerializerOptions() { DefaultBufferSize = 1 });
+
+        }
+
         protected virtual Action<TElement[]> CheckIEnumerable<TElement>(TElement[] a,  Action<TElement,TElement> checker )
         {
             return (b) =>

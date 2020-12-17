@@ -163,7 +163,7 @@ namespace Xfrogcn.BinaryFormatter
 
         public void WriteEndObject()
         {
-            WritePropertySeq(0x7FFF);
+            WritePropertySeq(BinarySerializerConstants.EndObjectSeq);
             if (CurrentDepth != 0)
             {
                 _currentDepth &= BinarySerializerConstants.RemoveFlagsBitMask;
@@ -173,7 +173,7 @@ namespace Xfrogcn.BinaryFormatter
 
         public void WriteEndArray()
         {
-            WritePropertySeq(0x7FFF);
+            WritePropertySeq(BinarySerializerConstants.EndObjectSeq);
             if (CurrentDepth != 0)
             {
                 _currentDepth &= BinarySerializerConstants.RemoveFlagsBitMask;
@@ -267,7 +267,7 @@ namespace Xfrogcn.BinaryFormatter
         internal void WritePropertySeq(ushort seq)
         {
             // 写属性索引
-            if (seq > (ushort)0x7FFF)
+            if (seq > (ushort)BinarySerializerConstants.EndObjectSeq)
             {
                 ThrowHelper.ThrowBinaryException();
             }
