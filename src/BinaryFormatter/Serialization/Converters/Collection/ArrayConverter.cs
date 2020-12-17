@@ -38,22 +38,29 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             //}
             //else
             //{
-                for (; index < array.Length; index++)
+            for (; index < array.Length; index++)
+            {
+                if (!state.Current.ProcessedEnumerableIndex)
                 {
                     state.Current.WriteEnumerableIndex(index, writer);
-                    TElement element = array[index];
-                    if (!elementConverter.TryWrite(writer, element, options, ref state))
-                    {
-                        state.Current.EnumeratorIndex = index;
-                        return false;
-                    }
-
-                    if (ShouldFlush(writer, ref state))
-                    {
-                        state.Current.EnumeratorIndex = ++index;
-                        return false;
-                    }
+                    state.Current.ProcessedEnumerableIndex = true;
                 }
+
+                TElement element = array[index];
+                if (!elementConverter.TryWrite(writer, element, options, ref state))
+                {
+                    state.Current.EnumeratorIndex = index;
+                    return false;
+                }
+
+                state.Current.ProcessedEnumerableIndex = false;
+
+                if (ShouldFlush(writer, ref state))
+                {
+                    state.Current.EnumeratorIndex = ++index;
+                    return false;
+                }
+            }
             //}
 
             return true;

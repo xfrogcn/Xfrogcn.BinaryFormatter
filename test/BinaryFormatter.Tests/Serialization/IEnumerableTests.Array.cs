@@ -132,6 +132,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
         }
 
+        [InlineData(500)]
         [InlineData(1024 * 10)]
         [InlineData(1024 * 512)]
         [InlineData(1024 * 1024)]
@@ -144,11 +145,12 @@ namespace Xfrogcn.BinaryFormatter.Tests
             };
             TestCtorA[] a1 = new TestCtorA[]
             {
+                new TestCtorB(new string('A',len),1),
                 createComplexCtorC(len),
-                //createComplexCtorC(len),
-                //null,
-                //createComplexCtorC(len),
-                //null
+                createComplexCtorC(len),
+                null,
+                createComplexCtorC(len),
+                null
             };
 
             TestArrayCtorObj obj = new TestArrayCtorObj(a1);

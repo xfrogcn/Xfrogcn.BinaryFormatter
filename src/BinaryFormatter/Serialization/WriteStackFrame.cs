@@ -48,7 +48,7 @@ namespace Xfrogcn.BinaryFormatter
         // Class-level state for collections.
         public bool ProcessedStartToken;
         public bool ProcessedEndToken;
-        //public bool ProcessedArrayLength;
+        public bool ProcessedEnumerableIndex;
         public byte EnumerableIndexBytes;
         /// <summary>
         /// Property or Element state.

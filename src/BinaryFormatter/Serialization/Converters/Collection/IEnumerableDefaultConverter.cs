@@ -185,17 +185,17 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                             }
                             state.Current.PropertyState = StackFramePropertyState.ReadValue;
 
-                            if(reader.TokenType == BinaryTokenType.Null)
+                            if (reader.TokenType == BinaryTokenType.Null)
                             {
                                 Add(default, ref state);
                                 state.Current.EndElement();
                                 continue;
                             }
-                            
+
                             if (elementConverter.CanBePolymorphic)
                             {
                                 Type t = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
-                                if (state.Current.PropertyPolymorphicConverter!=null && t == state.Current.PropertyPolymorphicConverter.TypeToConvert)
+                                if (state.Current.PropertyPolymorphicConverter != null && t == state.Current.PropertyPolymorphicConverter.TypeToConvert)
                                 {
                                     converter = state.Current.PropertyPolymorphicConverter;
                                 }
@@ -206,6 +206,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                                     state.Current.PolymorphicBinaryClassInfo = options.GetOrAddClass(t);
                                 }
                             }
+                        }
+                        else if (state.Current.PropertyPolymorphicConverter != null)
+                        {
+                            converter = state.Current.PropertyPolymorphicConverter;
                         }
 
 
@@ -243,7 +247,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                 if (state.Current.ObjectState < StackFrameObjectState.EndToken)
                 {
-                    state.Current.ObjectState = StackFrameObjectState.EndToken;
+                    
 
                     // 读取对象结束标记用于校验
                     if (!reader.ReadEndArrayToken())
@@ -251,6 +255,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         value = default;
                         return false;
                     }
+                    state.Current.ObjectState = StackFrameObjectState.EndToken;
                 }
 
                 if (state.Current.ObjectState < StackFrameObjectState.EndTokenValidation)
