@@ -158,11 +158,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
                 if (reader.CurrentTypeInfo.Type == TypeEnum.Nullable)
                 {
-                    if (!OnTryRead(ref reader, typeToConvert, options, ref state, out value))
-                    {
-                        return false;
-                    }
-                    return true;
+                    state.Push(reader.CurrentTypeInfo);
+                    bool isSuccess = OnTryRead(ref reader, typeToConvert, options, ref state, out value);
+                    state.Pop(isSuccess);
+                    return isSuccess;
                 }
 
                 int readCount = GetBytesCount(ref reader, options);

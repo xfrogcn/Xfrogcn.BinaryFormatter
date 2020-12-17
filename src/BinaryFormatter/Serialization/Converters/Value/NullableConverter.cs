@@ -24,13 +24,16 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 return true;
             }
 
-
-            if (!reader.ReadTypeSeq())
+            if(state.Current.ObjectState < StackFrameObjectState.CreatedObject)
             {
-                value = default;
-                reader.Rollback(2);
-                return false;
+                if (!reader.ReadTypeSeq())
+                {
+                    value = default;
+                    return false;
+                }
+                state.Current.ObjectState = StackFrameObjectState.CreatedObject;
             }
+            
 
             if (!_converter.TryRead(ref reader, typeof(T), options, ref state, out T typedValue))
             {

@@ -4,6 +4,26 @@ using System.Text;
 
 namespace Xfrogcn.BinaryFormatter.Tests
 {
+    public enum TestEnumA
+    {
+        None,
+        A,
+        B
+    }
+
+    struct StructA
+    {
+        public int? A { get; set; }
+
+        public int B;
+
+        public String C { get; set; }
+
+        public TestEnumA EA { get; set; }
+
+        public TestEnumA? EB { get; set; }
+
+    }
     class ObjTestA
     {
         public uint A { get; set; }
@@ -38,12 +58,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
         public string C { get; set; }
     }
 
-    public enum TestEnumA
-    {
-        None,
-        A,
-        B
-    }
+
 
 
     class TestCtorB : TestCtorA
