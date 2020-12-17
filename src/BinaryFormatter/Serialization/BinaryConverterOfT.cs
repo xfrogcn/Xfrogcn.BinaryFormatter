@@ -13,7 +13,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         {
             // Today only typeof(object) can have polymorphic writes.
             // In the future, this will be check for !IsSealed (and excluding value types).
-            CanBePolymorphic = TypeToConvert.IsClass && !TypeToConvert.IsSealed;
+            CanBePolymorphic = (TypeToConvert.IsClass || TypeToConvert.IsAbstract || TypeToConvert.IsInterface) && !TypeToConvert.IsSealed;
             IsValueType = TypeToConvert.IsValueType;
             CanBeNull = !IsValueType || TypeToConvert.IsNullableOfT();
             IsInternalConverter = GetType().Assembly == typeof(BinaryConverter).Assembly;

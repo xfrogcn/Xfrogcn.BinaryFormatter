@@ -191,6 +191,10 @@ namespace Xfrogcn.BinaryFormatter
 
         public override string TryGetTypeFullName(Type type)
         {
+            if (type.IsGenericType)
+            {
+                return type.GetGenericTypeDefinition().AssemblyQualifiedName;
+            }
             return type.AssemblyQualifiedName;
         }
     }

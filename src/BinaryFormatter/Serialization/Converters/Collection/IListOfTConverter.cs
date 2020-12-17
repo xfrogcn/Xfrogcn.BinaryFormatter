@@ -4,28 +4,98 @@ using System.Text;
 
 namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
+    /// <summary>
+    /// 处理List<>或从List<>继承的类型，注意，如果是从List<>继承的自定义类型，则不支持有参数的构造函数
+    /// </summary>
+    /// <typeparam name="TCollection"></typeparam>
+    /// <typeparam name="TElement"></typeparam>
     internal sealed class IListOfTConverter<TCollection, TElement>
-       : IEnumerableDefaultConverter<TCollection, TElement>
-       where TCollection : IList<TElement>
+        : IEnumerableDefaultConverter<TCollection, TElement>
+        where TCollection : IList<TElement>
     {
         protected override void Add(in TElement value, ref ReadStack state)
         {
-            throw new NotImplementedException();
+            ((TCollection)state.Current.ReturnValue!).Add(value);
         }
 
         protected override void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options)
         {
-            throw new NotImplementedException();
+            if (state.Current.BinaryClassInfo.CreateObject == null)
+            {
+                ThrowHelper.ThrowNotSupportedException_SerializationNotSupported(state.Current.BinaryClassInfo.Type);
+            }
+
+            state.Current.ReturnValue = state.Current.BinaryClassInfo.CreateObject();
         }
 
         protected override long GetLength(TCollection value, BinarySerializerOptions options, ref WriteStack state)
         {
-            throw new NotImplementedException();
+            return value.Count;
         }
 
         protected override bool OnWriteResume(BinaryWriter writer, TCollection value, BinarySerializerOptions options, ref WriteStack state)
         {
-            throw new NotImplementedException();
+            IList<TElement> list = value;
+
+            // Using an index is 2x faster than using an enumerator.
+            int index = state.Current.EnumeratorIndex;
+            BinaryConverter<TElement> elementConverter = GetElementConverter(ref state);
+
+            //if (elementConverter.CanUseDirectReadOrWrite && state.Current.NumberHandling == null)
+            //{
+            //    // Fast path that avoids validation and extra indirection.
+            //    for (; index < list.Count; index++)
+            //    {
+            //        elementConverter.Write(writer, list[index], options);
+            //    }
+            //}
+            //else
+            //{
+
+            for (; index < list.Count; index++)
+            {
+                if (!state.Current.ProcessedEnumerableIndex)
+                {
+                    state.Current.WriteEnumerableIndex(index, writer);
+                    state.Current.ProcessedEnumerableIndex = true;
+                }
+
+                TElement element = list[index];
+                if (!elementConverter.TryWrite(writer, element, options, ref state))
+                {
+                    state.Current.EnumeratorIndex = index;
+                    return false;
+                }
+
+                state.Current.PolymorphicBinaryPropertyInfo = null;
+                state.Current.ProcessedEnumerableIndex = false;
+
+                if (ShouldFlush(writer, ref state))
+                {
+                    state.Current.EnumeratorIndex = ++index;
+                    return false;
+                }
+            }
+
+            //}
+
+            return true;
+        }
+
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
+        {
+            typeInfo.SerializeType = ClassType.Enumerable;
+            Type listType = typeof(TCollection);
+            if (listType.IsGenericType && listType.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                typeInfo.Type = TypeEnum.List;
+            }
+            else
+            {
+                typeInfo.Type = TypeEnum.Class;
+                typeInfo.FullName = options.GetTypeFullName(typeof(TCollection));
+            }
+            
         }
     }
 }

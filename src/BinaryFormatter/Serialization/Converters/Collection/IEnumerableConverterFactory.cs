@@ -11,7 +11,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
     {
        // private static readonly IDictionaryConverter<IDictionary> s_converterForIDictionary = new IDictionaryConverter<IDictionary>();
       //  private static readonly IEnumerableConverter<IEnumerable> s_converterForIEnumerable = new IEnumerableConverter<IEnumerable>();
-      //  private static readonly IListConverter<IList> s_converterForIList = new IListConverter<IList>();
+        private static readonly IListConverter<IList> s_converterForIList = new IListConverter<IList>();
 
         public override bool CanConvert(Type typeToConvert)
         {
@@ -39,11 +39,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 elementType = typeToConvert.GetElementType();
             }
             // List<> or deriving from List<>
-            else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericBaseClass(typeof(List<>))) != null)
-            {
-                converterType = typeof(ListOfTConverter<,>);
-                elementType = actualTypeToConvert.GetGenericArguments()[0];
-            }
+            //else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericBaseClass(typeof(List<>))) != null)
+            //{
+            //    converterType = typeof(ListOfTConverter<,>);
+            //    elementType = actualTypeToConvert.GetGenericArguments()[0];
+            //}
             // Dictionary<TKey, TValue> or deriving from Dictionary<TKey, TValue>
             else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericBaseClass(typeof(Dictionary<,>))) != null)
             {
@@ -85,7 +85,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             // IList<>
             else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericInterface(typeof(IList<>))) != null)
             {
-               // converterType = typeof(IListOfTConverter<,>);
+                converterType = typeof(IListOfTConverter<,>);
                 elementType = actualTypeToConvert.GetGenericArguments()[0];
             }
             // ISet<>
@@ -144,10 +144,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             {
                 if (typeToConvert == typeof(IList))
                 {
-                //    return s_converterForIList;
+                    return s_converterForIList;
                 }
 
-              //  converterType = typeof(IListConverter<>);
+                converterType = typeof(IListConverter<>);
             }
             else if (typeToConvert.IsNonGenericStackOrQueue())
             {

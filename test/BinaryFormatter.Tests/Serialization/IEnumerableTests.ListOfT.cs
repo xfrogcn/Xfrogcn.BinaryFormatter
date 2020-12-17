@@ -281,6 +281,40 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
         }
 
+        [InlineData(500)]
+        [InlineData(1024 * 10)]
+        [InlineData(1024 * 1024)]
+        [Theory(DisplayName = "Test_List_With_List_Buffer")]
+        public async Task Test_List_With_List_Buffer(int len)
+        {
+            //IList<List<IList<TestCtorA>>> a = new List<List<IList<TestCtorA>>>()
+            //{
+            //    new List<IList<TestCtorA>>()
+            //    {
+            //        new TestListA()
+            //        {
+            //            createComplexCtorC(len),
+            //            createComplexCtorC(len)
+            //        }
+            //    }
+            //};
+            IList<TestListA> a = new List<TestListA>()
+            {
+
+                    new TestListA()
+                    {
+                        new TestCtorA("A",1)
+                    }
+
+            };
+
+            await Test(a, (b) =>
+            {
+
+            });
+            
+        }
+
         protected virtual Action<List<TElement>> CheckIEnumerableOfList<TElement>(List<TElement> a,  Action<TElement,TElement> checker )
         {
             return (b) =>

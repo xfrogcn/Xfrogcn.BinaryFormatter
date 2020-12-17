@@ -10,9 +10,17 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
     {
         public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
-            typeInfo.FullName = options.GetTypeFullName(typeof(T));
             typeInfo.SerializeType = ClassType.Object;
-            typeInfo.Type = TypeEnum.Class;
+            if (typeof(T) == typeof(object))
+            {
+                typeInfo.Type = TypeEnum.Object;
+            }
+            else
+            {
+                typeInfo.FullName = options.GetTypeFullName(typeof(T));
+                typeInfo.Type = TypeEnum.Class;
+            }
+
         }
 
 
