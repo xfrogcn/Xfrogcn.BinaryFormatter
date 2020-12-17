@@ -50,6 +50,7 @@ namespace Xfrogcn.BinaryFormatter
         public bool ProcessedEndToken;
         public bool ProcessedEnumerableIndex;
         public byte EnumerableIndexBytes;
+        public StackFrameWriteObjectState ObjectState;
         /// <summary>
         /// Property or Element state.
         /// </summary>
@@ -152,6 +153,7 @@ namespace Xfrogcn.BinaryFormatter
             OriginalDepth = 0;
             ProcessedStartToken = false;
             ProcessedEndToken = false;
+            ObjectState = StackFrameWriteObjectState.None;
             //ProcessedArrayLength = false;
 
             EndProperty();

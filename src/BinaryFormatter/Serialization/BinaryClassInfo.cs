@@ -96,105 +96,7 @@ namespace Xfrogcn.BinaryFormatter
                 case ClassType.Object:
                     {
                         CreateObject = Options.MemberAccessorStrategy.CreateConstructor(type);
-                        Dictionary<string, BinaryPropertyInfo> cache = new Dictionary<string, BinaryPropertyInfo>(
-                            Options.PropertyNameCaseInsensitive
-                                ? StringComparer.OrdinalIgnoreCase
-                                : StringComparer.Ordinal);
-
-                        Dictionary<string, MemberInfo> ignoredMembers = null;
-
-                        // We start from the most derived type.
-                        for (Type currentType = type; currentType != null; currentType = currentType.BaseType)
-                        {
-                            const BindingFlags bindingFlags =
-                                BindingFlags.Instance |
-                                BindingFlags.Public |
-                                BindingFlags.NonPublic |
-                                BindingFlags.DeclaredOnly;
-
-                            foreach (PropertyInfo propertyInfo in currentType.GetProperties(bindingFlags))
-                            {
-                                // Ignore indexers and virtual properties that have overrides that were [BinaryIgnore]d.
-                                if (propertyInfo.GetIndexParameters().Length > 0 || PropertyIsOverridenAndIgnored(propertyInfo, ignoredMembers))
-                                {
-                                    continue;
-                                }
-
-                                // For now we only support public properties (i.e. setter and/or getter is public).
-                                if (propertyInfo.GetMethod?.IsPublic == true ||
-                                    propertyInfo.SetMethod?.IsPublic == true)
-                                {
-                                    CacheMember(currentType, propertyInfo.PropertyType, propertyInfo, cache, ref ignoredMembers);
-                                }
-                                else
-                                {
-                                    if (BinaryPropertyInfo.GetAttribute<BinaryIncludeAttribute>(propertyInfo) != null)
-                                    {
-                                        ThrowHelper.ThrowInvalidOperationException_BinaryIncludeOnNonPublicInvalid(propertyInfo, currentType);
-                                    }
-
-                                    // Non-public properties should not be included for (de)serialization.
-                                }
-                            }
-
-                            foreach (FieldInfo fieldInfo in currentType.GetFields(bindingFlags))
-                            {
-                                if (PropertyIsOverridenAndIgnored(fieldInfo, ignoredMembers))
-                                {
-                                    continue;
-                                }
-
-                                bool hasBinaryInclude = BinaryPropertyInfo.GetAttribute<BinaryIncludeAttribute>(fieldInfo) != null;
-
-                                if (fieldInfo.IsPublic)
-                                {
-                                    if (hasBinaryInclude || Options.IncludeFields || converter.IncludeFields)
-                                    {
-                                        CacheMember(currentType, fieldInfo.FieldType, fieldInfo, cache, ref ignoredMembers);
-                                    }
-                                }
-                                else
-                                {
-                                    if (hasBinaryInclude)
-                                    {
-                                        ThrowHelper.ThrowInvalidOperationException_BinaryIncludeOnNonPublicInvalid(fieldInfo, currentType);
-                                    }
-
-                                    // Non-public fields should not be included for (de)serialization.
-                                }
-                            }
-                        }
-
-                        BinaryPropertyInfo[] cacheArray;
-                        if (DetermineExtensionDataProperty(cache))
-                        {
-                            // Remove from cache since it is handled independently.
-                            cache.Remove(DataExtensionProperty!.NameAsString);
-
-                            cacheArray = new BinaryPropertyInfo[cache.Count + 1];
-
-                            // Set the last element to the extension property.
-                            cacheArray[cache.Count] = DataExtensionProperty;
-                        }
-                        else
-                        {
-                            cacheArray = new BinaryPropertyInfo[cache.Count];
-                        }
-
-                        // Copy the dictionary cache to the array cache.
-                        cache.Values.CopyTo(cacheArray, 0);
-
-                        // These are not accessed by other threads until the current JsonClassInfo instance
-                        // is finished initializing and added to the cache on JsonSerializerOptions.
-                        PropertyCache = cache;
-                        PropertyCacheArray = cacheArray;
-
-                        if (converter.ConstructorIsParameterized)
-                        {
-                            InitializeConstructorParameters(converter.ConstructorInfo!);
-                        }
-
-                        typeMap.TrySetTypeMemberInfos(TypeSeq, this.GetMemberInfos);
+                        GetObjectMemberInfos(type, typeMap, converter);
                     }
                     break;
                 case ClassType.Enumerable:
@@ -202,6 +104,7 @@ namespace Xfrogcn.BinaryFormatter
                     {
                         ElementType = converter.ElementType;
                         CreateObject = Options.MemberAccessorStrategy.CreateConstructor(runtimeType);
+                        GetObjectMemberInfos(type, typeMap, converter, true);
                     }
                     break;
                 case ClassType.Value:
@@ -219,6 +122,113 @@ namespace Xfrogcn.BinaryFormatter
                     Debug.Fail($"Unexpected class type: {ClassType}");
                     throw new InvalidOperationException();
             }
+        }
+
+        private void GetObjectMemberInfos(Type type, TypeMap typeMap, BinaryConverter converter, bool ignoreReadOnly = false)
+        {
+            Dictionary<string, BinaryPropertyInfo> cache = new Dictionary<string, BinaryPropertyInfo>(
+                                        Options.PropertyNameCaseInsensitive
+                                            ? StringComparer.OrdinalIgnoreCase
+                                            : StringComparer.Ordinal);
+
+            Dictionary<string, MemberInfo> ignoredMembers = null;
+
+            // We start from the most derived type.
+            for (Type currentType = type; currentType != null; currentType = currentType.BaseType)
+            {
+                const BindingFlags bindingFlags =
+                    BindingFlags.Instance |
+                    BindingFlags.Public |
+                    BindingFlags.NonPublic |
+                    BindingFlags.DeclaredOnly;
+
+                foreach (PropertyInfo propertyInfo in currentType.GetProperties(bindingFlags))
+                {
+                    // Ignore indexers and virtual properties that have overrides that were [BinaryIgnore]d.
+                    if (propertyInfo.GetIndexParameters().Length > 0 || PropertyIsOverridenAndIgnored(propertyInfo, ignoredMembers))
+                    {
+                        continue;
+                    }
+
+                    // For now we only support public properties (i.e. setter and/or getter is public).
+                    if (propertyInfo.GetMethod?.IsPublic == true ||
+                        propertyInfo.SetMethod?.IsPublic == true)
+                    {
+                        if(!propertyInfo.CanWrite && ignoreReadOnly)
+                        {
+                            continue;
+                        }
+                        CacheMember(currentType, propertyInfo.PropertyType, propertyInfo, cache, ref ignoredMembers);
+                    }
+                    else
+                    {
+                        if (BinaryPropertyInfo.GetAttribute<BinaryIncludeAttribute>(propertyInfo) != null)
+                        {
+                            ThrowHelper.ThrowInvalidOperationException_BinaryIncludeOnNonPublicInvalid(propertyInfo, currentType);
+                        }
+
+                        // Non-public properties should not be included for (de)serialization.
+                    }
+                }
+
+                foreach (FieldInfo fieldInfo in currentType.GetFields(bindingFlags))
+                {
+                    if (PropertyIsOverridenAndIgnored(fieldInfo, ignoredMembers))
+                    {
+                        continue;
+                    }
+
+                    bool hasBinaryInclude = BinaryPropertyInfo.GetAttribute<BinaryIncludeAttribute>(fieldInfo) != null;
+
+                    if (fieldInfo.IsPublic)
+                    {
+                        if (hasBinaryInclude || Options.IncludeFields || converter.IncludeFields)
+                        {
+                            CacheMember(currentType, fieldInfo.FieldType, fieldInfo, cache, ref ignoredMembers);
+                        }
+                    }
+                    else
+                    {
+                        if (hasBinaryInclude)
+                        {
+                            ThrowHelper.ThrowInvalidOperationException_BinaryIncludeOnNonPublicInvalid(fieldInfo, currentType);
+                        }
+
+                        // Non-public fields should not be included for (de)serialization.
+                    }
+                }
+            }
+
+            BinaryPropertyInfo[] cacheArray;
+            if (DetermineExtensionDataProperty(cache))
+            {
+                // Remove from cache since it is handled independently.
+                cache.Remove(DataExtensionProperty!.NameAsString);
+
+                cacheArray = new BinaryPropertyInfo[cache.Count + 1];
+
+                // Set the last element to the extension property.
+                cacheArray[cache.Count] = DataExtensionProperty;
+            }
+            else
+            {
+                cacheArray = new BinaryPropertyInfo[cache.Count];
+            }
+
+            // Copy the dictionary cache to the array cache.
+            cache.Values.CopyTo(cacheArray, 0);
+
+            // These are not accessed by other threads until the current JsonClassInfo instance
+            // is finished initializing and added to the cache on JsonSerializerOptions.
+            PropertyCache = cache;
+            PropertyCacheArray = cacheArray;
+
+            if (converter.ConstructorIsParameterized)
+            {
+                InitializeConstructorParameters(converter.ConstructorInfo!);
+            }
+
+            typeMap.TrySetTypeMemberInfos(TypeSeq, this.GetMemberInfos);
         }
 
         private int _propertySeq = 0;

@@ -43,6 +43,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     return false;
                 }
 
+                // 列表状态下，每个写每个元素时独立的，故需清理多态属性
+                state.Current.PolymorphicBinaryPropertyInfo = null;
                 state.Current.ProcessedEnumerableIndex = false;
 
                 if (ShouldFlush(writer, ref state))

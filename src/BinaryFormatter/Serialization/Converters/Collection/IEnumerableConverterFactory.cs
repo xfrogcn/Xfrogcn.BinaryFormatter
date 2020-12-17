@@ -41,7 +41,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             // List<> or deriving from List<>
             else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericBaseClass(typeof(List<>))) != null)
             {
-               // converterType = typeof(ListOfTConverter<,>);
+                converterType = typeof(ListOfTConverter<,>);
                 elementType = actualTypeToConvert.GetGenericArguments()[0];
             }
             // Dictionary<TKey, TValue> or deriving from Dictionary<TKey, TValue>

@@ -57,6 +57,7 @@ namespace Xfrogcn.BinaryFormatter
                 { TypeEnum.KeyValuePair, typeof(KeyValuePair<,>) },
 
                 { TypeEnum.Nullable, typeof(Nullable<>)  },
+                { TypeEnum.List, typeof(List<>) },
                 { TypeEnum.Object, typeof(object)  },
             };
 

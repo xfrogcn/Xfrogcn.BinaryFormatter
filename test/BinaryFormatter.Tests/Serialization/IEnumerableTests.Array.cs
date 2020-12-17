@@ -8,7 +8,7 @@ using Xunit;
 namespace Xfrogcn.BinaryFormatter.Tests
 {
     [Trait("", "IEnumerable")]
-    public class IEnumerableTests : SerializerTestsBase
+    public partial class IEnumerableTests : SerializerTestsBase
     {
         [InlineData(0)]
         [InlineData(127)]
@@ -74,11 +74,22 @@ namespace Xfrogcn.BinaryFormatter.Tests
                 "A",
                 0,
                 (Nullable<int>)null,
-                new Vector2(1,2)
+                new Vector2(1,2),
+                new object()
             };
 
 
-            await Test(a1, CheckIEnumerable(a1, (a, b) => Assert.Equal(a, b)));
+            await Test(a1, CheckIEnumerable(a1, (a, b) =>
+            {
+                if(a!=null && a.GetType() == typeof(object))
+                {
+                    Assert.IsType<object>(b);
+                }
+                else
+                {
+                    Assert.Equal(a, b);
+                }
+            }));
 
         }
 

@@ -40,7 +40,7 @@ namespace Xfrogcn.BinaryFormatter
             out bool useExtensionProperty,
             bool createExtensionProperty = true)
         {
-            Debug.Assert(state.Current.BinaryClassInfo.ClassType == ClassType.Object);
+            Debug.Assert(state.Current.BinaryClassInfo.ClassType == ClassType.Object || state.Current.BinaryClassInfo.ClassType == ClassType.Enumerable || state.Current.BinaryClassInfo.ClassType == ClassType.Dictionary);
 
             useExtensionProperty = false;
 

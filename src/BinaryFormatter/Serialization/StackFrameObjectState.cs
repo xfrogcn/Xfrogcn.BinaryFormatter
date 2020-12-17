@@ -29,6 +29,7 @@ namespace Xfrogcn.BinaryFormatter
         ReadEnumerableLengthBytes,
         ReadEnumerableLength,
         ReadElements,
+        ReadProperties,
         EndToken,
         EndTokenValidation,
     }
