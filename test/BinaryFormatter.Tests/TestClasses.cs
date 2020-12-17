@@ -11,7 +11,10 @@ namespace Xfrogcn.BinaryFormatter.Tests
         B
     }
 
-    struct StructA
+    interface EmptyInterface  { }
+
+
+    struct StructA : EmptyInterface
     {
         public int? A { get; set; }
 
@@ -24,6 +27,8 @@ namespace Xfrogcn.BinaryFormatter.Tests
         public TestEnumA? EB { get; set; }
 
     }
+
+ 
     class ObjTestA
     {
         public uint A { get; set; }

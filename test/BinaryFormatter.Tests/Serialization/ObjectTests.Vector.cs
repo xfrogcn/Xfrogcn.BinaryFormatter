@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
+﻿using System.Numerics;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -50,6 +47,34 @@ namespace Xfrogcn.BinaryFormatter.Tests
                 Assert.Equal(v4.W, b.W);
             });
 
+        }
+
+        [Fact(DisplayName = "Object_VectorOfT_byte_Test")]
+        public async Task Object_VectorOfT_byte_Test()
+        {
+            byte[] data = new byte[Vector<byte>.Count];
+            data[1] = 1;
+            Vector<byte> a = new Vector<byte>(data);
+           
+
+            await Test(a, (b) =>
+            {
+                Assert.Equal(a, b);
+            });
+        }
+
+        [Fact(DisplayName = "Object_VectorOfT_double_Test")]
+        public async Task Object_VectorOfT_double_Test()
+        {
+            double[] data = new double[Vector<double>.Count];
+            data[1] = 1.23;
+            Vector<double> a = new Vector<double>(data);
+
+
+            await Test(a, (b) =>
+            {
+                Assert.Equal(a, b);
+            });
         }
     }
 }

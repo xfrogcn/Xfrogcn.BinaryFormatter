@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Numerics;
 using System.Text;
 
 namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
-    internal sealed class ArrayConverter<TCollection, TElement>
-        : IEnumerableDefaultConverter<TCollection, TElement>
-        where TCollection : IEnumerable
+    internal sealed class VectorOfTConverter<TElement> : IEnumerableDefaultConverter<Vector<TElement>, TElement>
+       where TElement: struct
     {
         protected override void Add(in TElement value, ref ReadStack state)
         {
@@ -20,15 +18,25 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             state.Current.ReturnValue = new List<TElement>();
         }
 
-        protected override bool OnWriteResume(BinaryWriter writer, TCollection value, BinarySerializerOptions options, ref WriteStack state)
+        protected override void ConvertCollection(ref ReadStack state, BinarySerializerOptions options)
         {
-            TElement[] array = (TElement[])(IEnumerable)value;
+            List<TElement> list = (List<TElement>)state.Current.ReturnValue!;
+            state.Current.ReturnValue = new Vector<TElement>(list.ToArray());
+        }
 
+        protected override long GetLength(Vector<TElement> value, BinarySerializerOptions options, ref WriteStack state)
+        {
+            return Vector<TElement>.Count;
+        }
+
+        protected override bool OnWriteResume(BinaryWriter writer, Vector<TElement> value, BinarySerializerOptions options, ref WriteStack state)
+        {
             int index = state.Current.EnumeratorIndex;
 
-            BinaryConverter<TElement> elementConverter = GetElementConverter(ref state);
+            BinaryConverter<TElement> elementConverter = options.GetConverter(typeof(TElement)) as BinaryConverter<TElement>;
+            
 
-            for (; index < array.Length; index++)
+            for (; index < Vector<TElement>.Count; index++)
             {
                 if (!state.Current.ProcessedEnumerableIndex)
                 {
@@ -36,7 +44,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     state.Current.ProcessedEnumerableIndex = true;
                 }
 
-                TElement element = array[index];
+                TElement element = value[index];
                 if (!elementConverter.TryWrite(writer, element, options, ref state))
                 {
                     state.Current.EnumeratorIndex = index;
@@ -51,32 +59,15 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     return false;
                 }
             }
- 
+
 
             return true;
-        }
-
-        protected override void ConvertCollection(ref ReadStack state, BinarySerializerOptions options)
-        {
-            List<TElement> list = (List<TElement>)state.Current.ReturnValue!;
-            state.Current.ReturnValue = list.ToArray();
         }
 
         public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             typeInfo.SerializeType = ClassType.Enumerable;
-            typeInfo.Type = TypeEnum.Array;
-            typeInfo.GenericArgumentCount = 1;
-            typeInfo.IsGeneric = true;
-            var converter = options.GetConverter(typeof(TCollection).GetElementType());
-            Debug.Assert(converter != null);
-            typeInfo.GenericArguments = new ushort[] { converter.GetTypeSeq(typeMap, options) } ;
-        }
-
-        protected override long GetLength(TCollection value, BinarySerializerOptions options, ref WriteStack state)
-        {
-            TElement[] array = (TElement[])(IEnumerable)value;
-            return array.LongLength;
+            typeInfo.Type = TypeEnum.VectorT;
         }
     }
 }
