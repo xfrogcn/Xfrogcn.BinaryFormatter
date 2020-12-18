@@ -9,6 +9,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             typeInfo.SerializeType = ClassType.Enumerable;
+            typeInfo.Type = TypeEnum.Class;
+            typeInfo.FullName = options.GetTypeFullName(typeof(TCollection));
         }
     }
 }

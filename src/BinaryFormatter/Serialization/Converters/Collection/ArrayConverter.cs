@@ -66,8 +66,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
         public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
-            typeInfo.SerializeType = ClassType.Enumerable;
+            base.SetTypeMetadata(typeInfo, typeMap, options);
             typeInfo.Type = TypeEnum.Array;
+            typeInfo.FullName = null;
             typeInfo.GenericArgumentCount = 1;
             typeInfo.IsGeneric = true;
             var converter = options.GetConverter(typeof(TCollection).GetElementType());

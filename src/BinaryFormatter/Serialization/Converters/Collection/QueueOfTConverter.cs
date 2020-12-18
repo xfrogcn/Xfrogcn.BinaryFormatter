@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
-    internal sealed class IListConverter<TCollection>
-        : IEnumerableDefaultConverter<TCollection, object>
-        where TCollection : IList
+    internal sealed class QueueOfTConverter<TCollection, TElement>
+        : IEnumerableDefaultConverter<TCollection, TElement>
+        where TCollection : Queue<TElement>
     {
-        protected override void Add(in object value, ref ReadStack state)
+        protected override void Add(in TElement value, ref ReadStack state)
         {
-            ((IList)state.Current.ReturnValue!).Add(value);
+            ((TCollection)state.Current.ReturnValue!).Enqueue(value);
         }
 
         protected override void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options)
@@ -31,40 +30,53 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
         protected override bool OnWriteResume(BinaryWriter writer, TCollection value, BinarySerializerOptions options, ref WriteStack state)
         {
-            IList list = value;
-
-            // Using an index is 2x faster than using an enumerator.
-            int index = state.Current.EnumeratorIndex;
-            BinaryConverter<object> elementConverter = GetElementConverter(ref state);
-
-            for (; index < list.Count; index++)
+            IEnumerator<TElement> enumerator;
+            if (state.Current.CollectionEnumerator == null)
             {
+                enumerator = value.GetEnumerator();
+                if (!enumerator.MoveNext())
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                enumerator = (IEnumerator<TElement>)state.Current.CollectionEnumerator;
+            }
+
+            BinaryConverter<TElement> converter = GetElementConverter(ref state);
+            int index = state.Current.EnumeratorIndex;
+            do
+            {
+                if (ShouldFlush(writer, ref state))
+                {
+                    state.Current.CollectionEnumerator = enumerator;
+                    return false;
+                }
+
                 if (!state.Current.ProcessedEnumerableIndex)
                 {
                     state.Current.WriteEnumerableIndex(index, writer);
                     state.Current.ProcessedEnumerableIndex = true;
                 }
 
-                object element = list[index];
-                if (!elementConverter.TryWrite(writer, element, options, ref state))
+                TElement element = enumerator.Current;
+                if (!converter.TryWrite(writer, element, options, ref state))
                 {
+                    state.Current.CollectionEnumerator = enumerator;
                     state.Current.EnumeratorIndex = index;
                     return false;
                 }
 
+                // 列表状态下，每个写每个元素时独立的，故需清理多态属性
                 state.Current.PolymorphicBinaryPropertyInfo = null;
                 state.Current.ProcessedEnumerableIndex = false;
+                index++;
 
-                if (ShouldFlush(writer, ref state))
-                {
-                    state.Current.EnumeratorIndex = ++index;
-                    return false;
-                }
-            }
+            } while (enumerator.MoveNext());
 
             return true;
         }
-
 
     }
 }
