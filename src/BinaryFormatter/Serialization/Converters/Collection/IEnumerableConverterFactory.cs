@@ -103,7 +103,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             // Stack<> or deriving from Stack<>
             else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericBaseClass(typeof(Stack<>))) != null)
             {
-               // converterType = typeof(StackOfTConverter<,>);
+                converterType = typeof(StackOfTConverter<,>);
                 elementType = actualTypeToConvert.GetGenericArguments()[0];
             }
             // Queue<> or deriving from Queue<>
