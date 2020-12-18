@@ -249,6 +249,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                     state.Current.ObjectState = StackFrameObjectState.ReadElements;
                     state.Current.EndProperty();
+
+                    // 转实际类型
+                    ConvertCollection(ref state, options);
                 }
 
                 if(state.Current.ObjectState< StackFrameObjectState.ReadProperties)
@@ -356,32 +359,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                     state.Current.ObjectState = StackFrameObjectState.ReadProperties;
                 }
-
-
-                //if (state.Current.ObjectState < StackFrameObjectState.EndToken)
-                //{
-                    
-
-                //    // 读取对象结束标记用于校验
-                //    if (!reader.ReadEndArrayToken())
-                //    {
-                //        value = default;
-                //        return false;
-                //    }
-                //    state.Current.ObjectState = StackFrameObjectState.EndToken;
-                //}
-
-                //if (state.Current.ObjectState < StackFrameObjectState.EndTokenValidation)
-                //{
-                //    state.Current.ObjectState = StackFrameObjectState.EndTokenValidation;
-                //    if(reader.TokenType != BinaryTokenType.EndObject)
-                //    {
-                //        ThrowHelper.ThrowBinaryException();
-                //    }
-                //}
             }
 
-            ConvertCollection(ref state, options);
+            
             value = (TCollection)state.Current.ReturnValue!;
             return true;
         }
@@ -449,6 +429,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     }
                     state.Current.ObjectState = StackFrameWriteObjectState.WriteElements;
                     state.Current.EnumeratorIndex = 0;
+                    state.Current.EndProperty();
                 }
                
 

@@ -139,7 +139,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
             var a = ImmutableArray.Create(a1.ToArray());
 
-            await Test(a, CheckIEnumerableOfIEnumerable(a, (a, b) => checkCtorCProc(a)(b)));
+            await Test(a, CheckIEnumerableOfIEnumerable(a, (a, b) => checkCtorCProc(a)(b)), new BinarySerializerOptions() { DefaultBufferSize = 1 });
 
         }
 
@@ -168,7 +168,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
                 Assert.Equal(a[0].Length, b[0].Length);
                 checkCtorCProc(a[0][0][0])(b[0][0][0]);
 
-            });
+            }, new BinarySerializerOptions() { DefaultBufferSize = 1 });
 
         }
 

@@ -47,7 +47,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
         public int? E { get; set; }
     }
 
-    class TestCtorA
+    class TestCtorA : IComparable
     {
         [BinaryFormatter.Serialization.BinaryConstructor]
         public TestCtorA(string a, uint b)
@@ -61,6 +61,15 @@ namespace Xfrogcn.BinaryFormatter.Tests
         public uint B { get; set; }
 
         public string C { get; set; }
+
+        public int CompareTo(object obj)
+        {
+            if(obj == null)
+            {
+                return 0;
+            }
+            return (int)(this.B - (obj as TestCtorA).B);
+        }
     }
 
 

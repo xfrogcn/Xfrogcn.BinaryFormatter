@@ -45,7 +45,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
             a.Push(new TestCtorA(new string('A', len), 0));
             a.Push(createComplexCtorC(len));
            
-            await Test(a, CheckIEnumerableOfIEnumerable(a, (a, b) => checkCtorCProc(a)(b)));
+            await Test(a, CheckIEnumerableOfIEnumerable(a, (a, b) => checkCtorCProc(a)(b)), new BinarySerializerOptions() { DefaultBufferSize = 1 });
 
         }
 
@@ -73,7 +73,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
             {
                 Assert.Equal(a.A, b.A);
                 CheckIEnumerableOfIEnumerable(a, (a, b) => checkCtorCProc(a)(b));
-            });
+            }, new BinarySerializerOptions() { DefaultBufferSize = 1 });
 
         }
 

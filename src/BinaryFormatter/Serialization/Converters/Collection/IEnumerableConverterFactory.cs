@@ -38,12 +38,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 converterType = typeof(ArrayConverter<,>);
                 elementType = typeToConvert.GetElementType();
             }
-            // List<> or deriving from List<>
-            //else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericBaseClass(typeof(List<>))) != null)
-            //{
-            //    converterType = typeof(ListOfTConverter<,>);
-            //    elementType = actualTypeToConvert.GetGenericArguments()[0];
-            //}
             // Dictionary<TKey, TValue> or deriving from Dictionary<TKey, TValue>
             else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericBaseClass(typeof(Dictionary<,>))) != null)
             {
@@ -91,7 +85,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             // ISet<>
             else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericInterface(typeof(ISet<>))) != null)
             {
-               // converterType = typeof(ISetOfTConverter<,>);
+                converterType = typeof(ISetOfTConverter<,>);
                 elementType = actualTypeToConvert.GetGenericArguments()[0];
             }
             // ICollection<>
