@@ -153,6 +153,17 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             
         }
 
+        public static bool IsImmutableStackType(this Type type)
+        {
+            string fullName = type.GetGenericTypeDefinition().FullName;
+            if(fullName == ImmutableStackGenericTypeName || fullName == ImmutableStackGenericInterfaceTypeName)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// 获取不可变集合的CreateRange方法，用于创建对应的不可变集合实例
         /// </summary>
