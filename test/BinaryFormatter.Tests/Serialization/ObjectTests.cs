@@ -13,7 +13,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [Fact(DisplayName = "Object-Simple")]
         public async Task Test_SimpleObj()
         {
-            
+
             ObjTestA a = new ObjTestA()
             {
                 A = 1,

@@ -61,6 +61,32 @@ namespace Xfrogcn.BinaryFormatter
                 { TypeEnum.Object, typeof(object)  },
             };
 
+        readonly Dictionary<int, Type> _tupleTypeMaps =
+            new Dictionary<int, Type>()
+            {
+                { 1, typeof(Tuple<>) },
+                { 2, typeof(Tuple<,>) },
+                { 3, typeof(Tuple<,,>) },
+                { 4, typeof(Tuple<,,,>) },
+                { 5, typeof(Tuple<,,,,>) },
+                { 6, typeof(Tuple<,,,,,>) },
+                { 7, typeof(Tuple<,,,,,,>) },
+                { 8, typeof(Tuple<,,,,,,,>) },
+            };
+
+        readonly IDictionary<int, Type> _valueTupleTypeMaps =
+            new Dictionary<int, Type>()
+            {
+                { 1, typeof(ValueTuple<>) },
+                { 2, typeof(ValueTuple<,>) },
+                { 3, typeof(ValueTuple<,,>) },
+                { 4, typeof(ValueTuple<,,,>) },
+                { 5, typeof(ValueTuple<,,,,>) },
+                { 6, typeof(ValueTuple<,,,,,>) },
+                { 7, typeof(ValueTuple<,,,,,,>) },
+                { 8, typeof(ValueTuple<,,,,,,,>) },
+            };
+
         readonly ConcurrentDictionary<string, Type> _typeNameMaps =
             new ConcurrentDictionary<string, Type>();
 
@@ -76,20 +102,25 @@ namespace Xfrogcn.BinaryFormatter
                 type = _internalTypeMaps[typeInfo.Type];
             }
 
-            if (type == null || type.IsGenericType  )
+            if (type == null || type.IsGenericType)
             {
                 string typeName = typeInfo.GetFullName(typeMap);
                 Type tmp = type;
                 type = _typeNameMaps.GetOrAdd(typeName, (tn) =>
                 {
-                    if(typeInfo.Type == TypeEnum.Array)
+                    if (typeInfo.Type == TypeEnum.Array)
                     {
                         TryResolveType(typeMap, typeMap.GetTypeInfo(typeInfo.GenericArguments[0]), out Type elementType);
-                        if(elementType != null)
+                        if (elementType != null)
                         {
                             return elementType.MakeArrayType();
                         }
                         return null;
+                    }
+                    else if (typeInfo.Type == TypeEnum.Tuple ||
+                   typeInfo.Type == TypeEnum.ValueTuple)
+                    {
+                        tmp = GetTupleType(typeInfo);
                     }
 
                     // 从fullName获取Type
@@ -110,6 +141,23 @@ namespace Xfrogcn.BinaryFormatter
 
 
             return false;
+        }
+
+        private Type GetTupleType(BinaryTypeInfo ti)
+        {
+            if (!ti.IsGeneric)
+            {
+                return null;
+            }
+            if (ti.Type == TypeEnum.Tuple)
+            {
+                return _tupleTypeMaps[ti.GenericArgumentCount];
+            }
+            else if (ti.Type == TypeEnum.ValueTuple)
+            {
+                return _valueTupleTypeMaps[ti.GenericArgumentCount];
+            }
+            return null;
         }
 
         public virtual Type ParseType(string fullName)

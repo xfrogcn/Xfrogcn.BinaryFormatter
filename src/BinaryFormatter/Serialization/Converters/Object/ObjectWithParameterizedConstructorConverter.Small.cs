@@ -142,5 +142,33 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
             state.Current.CtorArgumentState!.Arguments = arguments;
         }
+
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
+        {
+            base.SetTypeMetadata(typeInfo, typeMap, options);
+            Type t = typeof(T);
+            if (t.IsGenericType)
+            {
+                Type gt = t.GetGenericTypeDefinition();
+                if (gt == typeof(Tuple<>) ||
+                    gt == typeof(Tuple<,>) ||
+                    gt == typeof(Tuple<,,>) ||
+                    gt == typeof(Tuple<,,,>))
+                {
+                    typeInfo.Type = TypeEnum.Tuple;
+                    typeInfo.FullName = null;
+                }
+                else if (gt == typeof(ValueTuple<>) ||
+                    gt == typeof(ValueTuple<,>) ||
+                    gt == typeof(ValueTuple<,,>) ||
+                    gt == typeof(ValueTuple<,,,>))
+                {
+                    typeInfo.Type = TypeEnum.ValueTuple;
+                    typeInfo.FullName = null;
+                }
+
+            }
+            
+        }
     }
 }

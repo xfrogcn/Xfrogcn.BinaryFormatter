@@ -51,11 +51,11 @@
         Nullable = 81,
 
         ValueTuple = 90,
-        ValueTupleT = 91,
+       // ValueTupleT = 91,
         
         
         Tuple = 92,
-        TupleT = 93,
+       // TupleT = 93,
 
         Array = 100,
         List = 101,
