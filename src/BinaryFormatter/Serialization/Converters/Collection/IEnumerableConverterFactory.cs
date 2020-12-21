@@ -115,7 +115,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             // ConcurrentQueue<> or deriving from ConcurrentQueue<>
             else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericBaseClass(typeof(ConcurrentQueue<>))) != null)
             {
-               // converterType = typeof(ConcurrentQueueOfTConverter<,>);
+                converterType = typeof(ConcurrentQueueOfTConverter<,>);
                 elementType = actualTypeToConvert.GetGenericArguments()[0];
             }
             // IEnumerable<>, types assignable from List<>

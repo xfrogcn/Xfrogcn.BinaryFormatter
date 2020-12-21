@@ -1,6 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Xunit;
+using System.Collections.Immutable;
+using System.Collections.Concurrent;
 
 namespace Xfrogcn.BinaryFormatter.Tests
 {
@@ -11,10 +16,10 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [InlineData(0)]
         [InlineData(127)]
         [InlineData(512)]
-        [Theory(DisplayName = "Test_Queue_Simple_Number")]
-        public async Task Test_Queue_Simple_Number(int len)
+        [Theory(DisplayName = "Test_ConcurrentQueue_Simple_Number")]
+        public async Task Test_ConcurrentQueue_Simple_Number(int len)
         {
-            Queue<long> a = new Queue<long>();
+            ConcurrentQueue<long> a = new ConcurrentQueue<long>();
             for (long i = 0; i < len; i++)
             {
                 a.Enqueue(i);
@@ -30,10 +35,10 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [InlineData(500)]
         [InlineData(1024)]
         [InlineData(1024 * 1024)]
-        [Theory(DisplayName = "Test_Queue_Complex_Object_Buffer")]
-        public async Task Test_Queue_Complex_Object_Buffer(int len)
+        [Theory(DisplayName = "Test_ConcurrentQueue_Complex_Object_Buffer")]
+        public async Task Test_ConcurrentQueue_Complex_Object_Buffer(int len)
         {
-            Queue<TestCtorA> a = new Queue<TestCtorA>();
+            ConcurrentQueue<TestCtorA> a = new ConcurrentQueue<TestCtorA>();
             
             a.Enqueue(createComplexCtorC(len));
             a.Enqueue(null);
@@ -45,7 +50,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
         }
 
-        class TestQueueA : Queue<TestCtorA>
+        class TestConcurrentQueueA : ConcurrentQueue<TestCtorA>
         {
             public string A { get; set; }
         }
@@ -53,8 +58,8 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [InlineData(500)]
         [InlineData(1024)]
         [InlineData(1024 * 1024)]
-        [Theory(DisplayName = "Test_Queue_Custom_Complex_Object_Buffer")]
-        public async Task Test_Queue_Custom_Complex_Object_Buffer(int len)
+        [Theory(DisplayName = "Test_ConcurrentQueue_Custom_Complex_Object_Buffer")]
+        public async Task Test_ConcurrentQueue_Custom_Complex_Object_Buffer(int len)
         {
             TestQueueA a = new TestQueueA()
             {
@@ -63,6 +68,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
             
             a.Enqueue(null);
+            a.Enqueue(createComplexCtorC(len));
           
 
             await Test(a, (b)=>
