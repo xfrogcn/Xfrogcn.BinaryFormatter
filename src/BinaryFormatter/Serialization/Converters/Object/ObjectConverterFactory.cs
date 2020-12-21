@@ -8,6 +8,33 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
     internal class ObjectConverterFactory : BinaryConverterFactory
     {
+        readonly HashSet<Type> _tupleTypes =
+            new HashSet<Type>()
+            {
+                typeof(Tuple<>),
+                typeof(Tuple<,>),
+                typeof(Tuple<,,>),
+                typeof(Tuple<,,,>),
+                typeof(Tuple<,,,,>),
+                typeof(Tuple<,,,,,>),
+                typeof(Tuple<,,,,,,>),
+                typeof(Tuple<,,,,,,,>),
+            };
+
+        readonly HashSet<Type> _valueTupleTypes =
+            new HashSet<Type>()
+            {
+ 
+                typeof(ValueTuple<>),
+                typeof(ValueTuple<,>),
+                typeof(ValueTuple<,,>),
+                typeof(ValueTuple<,,,>),
+                typeof(ValueTuple<,,,,>),
+                typeof(ValueTuple<,,,,,>),
+                typeof(ValueTuple<,,,,,,>),
+                typeof(ValueTuple<,,,,,,,>),
+            };
+
         public override bool CanConvert(Type typeToConvert)
         {
             // This is the last built-in factory converter, so if the IEnumerableConverterFactory doesn't
@@ -29,9 +56,17 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             ConstructorInfo constructor = GetDeserializationConstructor(typeToConvert);
             ParameterInfo[] parameters = constructor?.GetParameters();
 
-            if (constructor == null || typeToConvert.IsAbstract || parameters!.Length == 0)
+            if( typeToConvert.IsGenericType  && _valueTupleTypes.Contains(typeToConvert.GetGenericTypeDefinition()))
+            {
+                converterType = typeof(ValueTupleConverter<>).MakeGenericType(typeToConvert);
+            }
+            else if (constructor == null || typeToConvert.IsAbstract || parameters!.Length == 0)
             {
                 converterType = typeof(ObjectDefaultConverter<>).MakeGenericType(typeToConvert);
+            }
+            else if(typeToConvert.IsGenericType && _tupleTypes.Contains(typeToConvert.GetGenericTypeDefinition()))
+            {
+                converterType = typeof(TupleConverter<>).MakeGenericType(typeToConvert);
             }
             else
             {
