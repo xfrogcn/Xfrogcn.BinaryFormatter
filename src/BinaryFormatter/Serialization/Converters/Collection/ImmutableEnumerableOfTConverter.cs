@@ -42,9 +42,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             _addProc(value, ref state);
         }
 
-        protected override void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options)
+        protected override void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options, ulong len)
         {
-            state.Current.ReturnValue = new List<TElement>();
+            state.Current.ReturnValue = new List<TElement>((int)len);
         }
 
         protected override long GetLength(TCollection value, BinarySerializerOptions options, ref WriteStack state)

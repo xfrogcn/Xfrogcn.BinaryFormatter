@@ -109,7 +109,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             // ConcurrentStack<> or deriving from ConcurrentStack<>
             else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericBaseClass(typeof(ConcurrentStack<>))) != null)
             {
-               // converterType = typeof(ConcurrentStackOfTConverter<,>);
+                converterType = typeof(ConcurrentStackOfTConverter<,>);
                 elementType = actualTypeToConvert.GetGenericArguments()[0];
             }
             // ConcurrentQueue<> or deriving from ConcurrentQueue<>

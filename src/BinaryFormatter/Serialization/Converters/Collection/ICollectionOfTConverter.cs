@@ -17,7 +17,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             };
         }
 
-        protected override void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options)
+        protected override void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options, ulong len)
         {
             BinaryClassInfo classInfo = state.Current.BinaryClassInfo;
 

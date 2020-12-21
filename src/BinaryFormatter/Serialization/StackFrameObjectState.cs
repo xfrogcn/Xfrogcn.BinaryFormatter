@@ -25,9 +25,11 @@ namespace Xfrogcn.BinaryFormatter
 
         PropertyValue, // Whether all metadata properties has been read.
 
-        CreatedObject,
         ReadEnumerableLengthBytes,
         ReadEnumerableLength,
+        CreatedObject,
+        
+        
         ReadElements,
         ReadProperties,
         EndToken,

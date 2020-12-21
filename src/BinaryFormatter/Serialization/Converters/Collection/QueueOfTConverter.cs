@@ -13,7 +13,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             ((TCollection)state.Current.ReturnValue!).Enqueue(value);
         }
 
-        protected override void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options)
+        protected override void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options, ulong len)
         {
             if (state.Current.BinaryClassInfo.CreateObject == null)
             {

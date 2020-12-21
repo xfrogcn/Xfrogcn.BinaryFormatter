@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -8,7 +9,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         : BinaryCollectionConverter<TCollection, TElement>
     {
         protected abstract void Add(in TElement value, ref ReadStack state);
-        protected abstract void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options);
+        protected abstract void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options, ulong len);
 
         protected virtual void ConvertCollection(ref ReadStack state, BinarySerializerOptions options) { }
 
@@ -119,12 +120,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     }
                 }
 
-                if (state.Current.ObjectState < StackFrameObjectState.CreatedObject)
-                {
-                    CreateCollection(ref reader, ref state, options);
-                    state.Current.BinaryPropertyInfo = state.Current.BinaryClassInfo.ElementClassInfo!.PropertyInfoForClassInfo;
-                    state.Current.ObjectState = StackFrameObjectState.CreatedObject;
-                }
+                
 
                 // 读取枚举集合索引的字节长度（根据总长度，可能为1、2、4、8字节长度）
                 if(state.Current.ObjectState < StackFrameObjectState.ReadEnumerableLengthBytes)
@@ -140,7 +136,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 }
 
                 // 读取枚举集合的总长度
-                if(state.Current.ObjectState< StackFrameObjectState.ReadEnumerableLength)
+                if (state.Current.ObjectState < StackFrameObjectState.ReadEnumerableLength)
                 {
                     if (!reader.ReadBytes(state.Current.EnumerableIndexBytes))
                     {
@@ -152,6 +148,15 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     state.Current.EnumerableIndex = 0;
                     state.Current.ObjectState = StackFrameObjectState.ReadEnumerableLength;
                 }
+
+                if (state.Current.ObjectState < StackFrameObjectState.CreatedObject)
+                {
+                    CreateCollection(ref reader, ref state, options, state.Current.EnumerableLength);
+                    state.Current.BinaryPropertyInfo = state.Current.BinaryClassInfo.ElementClassInfo!.PropertyInfoForClassInfo;
+                    state.Current.ObjectState = StackFrameObjectState.CreatedObject;
+                }
+
+
 
 
 
@@ -500,6 +505,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         protected abstract bool OnWriteResume(BinaryWriter writer, TCollection value, BinarySerializerOptions options, ref WriteStack state);
 
         internal sealed override void CreateInstanceForReferenceResolver(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options)
-            => CreateCollection(ref reader, ref state, options);
+            => CreateCollection(ref reader, ref state, options, 16);
     }
 }

@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Xunit;
 using System.Collections.Immutable;
+using System.Collections.Concurrent;
 
 namespace Xfrogcn.BinaryFormatter.Tests
 {
@@ -15,10 +16,10 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [InlineData(0)]
         [InlineData(127)]
         [InlineData(512)]
-        [Theory(DisplayName = "Test_Stack_Simple_Number")]
-        public async Task Test_Stack_Simple_Number(int len)
+        [Theory(DisplayName = "Test_ConcurrentStack_Simple_Number")]
+        public async Task Test_ConcurrentStack_Simple_Number(int len)
         {
-            Stack<long> a = new Stack<long>();
+            ConcurrentStack<long> a = new ConcurrentStack<long>();
             for (long i = 0; i < len; i++)
             {
                 a.Push(i);
@@ -34,10 +35,10 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [InlineData(500)]
         [InlineData(1024)]
         [InlineData(1024 * 1024)]
-        [Theory(DisplayName = "Test_Stack_Complex_Object_Buffer")]
-        public async Task Test_Stack_Complex_Object_Buffer(int len)
+        [Theory(DisplayName = "Test_ConcurrentStack_Complex_Object_Buffer")]
+        public async Task Test_ConcurrentStack_Complex_Object_Buffer(int len)
         {
-            Stack<TestCtorA> a = new Stack<TestCtorA>();
+            ConcurrentStack<TestCtorA> a = new ConcurrentStack<TestCtorA>();
             
             a.Push(createComplexCtorC(len));
             a.Push(null);
@@ -49,7 +50,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
         }
 
-        class TestStackA : Stack<TestCtorA>
+        class TestConcurrentStackA : ConcurrentStack<TestCtorA>
         {
             public string A { get; set; }
         }
@@ -57,10 +58,10 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [InlineData(500)]
         [InlineData(1024)]
         [InlineData(1024 * 1024)]
-        [Theory(DisplayName = "Test_Stack_Custom_Complex_Object_Buffer")]
-        public async Task Test_Stack_Custom_Complex_Object_Buffer(int len)
+        [Theory(DisplayName = "Test_ConcurrentStack_Custom_Complex_Object_Buffer")]
+        public async Task Test_ConcurrentStack_Custom_Complex_Object_Buffer(int len)
         {
-            TestStackA a = new TestStackA()
+            TestConcurrentStackA a = new TestConcurrentStackA()
             {
                 A = new string('A', len)
             };
@@ -77,34 +78,6 @@ namespace Xfrogcn.BinaryFormatter.Tests
             }, new BinarySerializerOptions() { DefaultBufferSize = 1 });
 
         }
-
-        //[InlineData(500)]
-        //[InlineData(1024 * 10)]
-        //[Theory(DisplayName = "Test_ImmutableArray_Nest_Buffer")]
-        //public async Task Test_ImmutableArray_Nest_Buffer(int len)
-        //{
-        //    IList<ImmutableArray<TestListA>> a1 = new List<ImmutableArray<TestListA>>()
-        //    {
-        //        ImmutableArray.Create(new TestListA[]
-        //        {
-        //            new TestListA()
-        //            {
-        //                createComplexCtorC(len)
-        //            }
-        //        })
-        //    };
-
-        //    IImmutableList<ImmutableArray<TestListA>> a = ImmutableArray.Create(a1.ToArray());
-
-        //    await Test(a, (b)=>
-        //    {
-        //        Assert.Equal(a.Count, b.Count);
-        //        Assert.Equal(a[0].Length, b[0].Length);
-        //        checkCtorCProc(a[0][0][0])(b[0][0][0]);
-
-        //    });
-
-        //}
 
 
     }

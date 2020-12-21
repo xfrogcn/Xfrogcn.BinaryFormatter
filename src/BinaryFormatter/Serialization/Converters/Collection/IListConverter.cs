@@ -14,7 +14,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             ((IList)state.Current.ReturnValue!).Add(value);
         }
 
-        protected override void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options)
+        protected override void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options, ulong len)
         {
             if (state.Current.BinaryClassInfo.CreateObject == null)
             {

@@ -13,9 +13,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             ((List<TElement>)state.Current.ReturnValue!).Add(value);
         }
 
-        protected override void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options)
+        protected override void CreateCollection(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options, ulong len)
         {
-            state.Current.ReturnValue = new List<TElement>();
+            state.Current.ReturnValue = new List<TElement>((int)len);
         }
 
         protected override void ConvertCollection(ref ReadStack state, BinarySerializerOptions options)

@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Text;
 using static Xfrogcn.BinaryFormatter.BinaryClassInfo;
 
 namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
-    internal sealed class StackOfTConverter<TCollection, TElement>
-        : IEnumeratorOfTConverter<TCollection, TElement>
-        where TCollection : Stack<TElement>
+    internal sealed class ConcurrentStackOfTConverter<TCollection, TElement> : IEnumeratorOfTConverter<TCollection, TElement>
+        where TCollection : ConcurrentStack<TElement>
     {
-        public StackOfTConverter()
+        public ConcurrentStackOfTConverter()
         {
             ConstructorInfo = typeof(TCollection).GetConstructor(new Type[] { typeof(IEnumerable<TElement>) });
         }
@@ -25,7 +26,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
         protected override void ConvertCollection(ref ReadStack state, BinarySerializerOptions options)
         {
-
             ParameterizedConstructorDelegate<TCollection> creator = null;
             if (state.Current.BinaryClassInfo.CreateObjectWithArgs == null && ConstructorInfo != null)
             {
@@ -35,15 +35,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             else if (state.Current.BinaryClassInfo.CreateObjectWithArgs != null)
             {
                 creator = (ParameterizedConstructorDelegate<TCollection>)state.Current.BinaryClassInfo.CreateObjectWithArgs;
-            }
-            else if (state.Current.BinaryClassInfo.CreateObject == null)
+            }else if (state.Current.BinaryClassInfo.CreateObject == null)
             {
                 ThrowHelper.ThrowNotSupportedException_SerializationNotSupported(state.Current.BinaryClassInfo.Type);
             }
 
 
             Stack<TElement> list = (Stack<TElement>)state.Current.ReturnValue;
-            if(creator != null)
+            if (creator != null)
             {
                 state.Current.ReturnValue = creator(new object[] { list });
             }
@@ -53,7 +52,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 int index = list.Count - 1;
                 while (list.Count > 0)
                 {
-                    ((Stack<TElement>)state.Current.ReturnValue).Push(list.Pop());
+                    ((ConcurrentStack<TElement>)state.Current.ReturnValue).Push(list.Pop());
                 }
             }
         }
@@ -63,6 +62,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             return value.Count;
         }
 
-       
+
     }
 }
