@@ -397,5 +397,12 @@ namespace Xfrogcn.BinaryFormatter
         {
             throw new NotSupportedException(string.Format(Strings.ConstructorMaxOf64Parameters, constructorInfo, type));
         }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowNotSupportedException_CannotPopulateCollection(Type type, ref BinaryReader reader, ref ReadStack state)
+        {
+            ThrowNotSupportedException(state, reader, new NotSupportedException(string.Format(Strings.CannotPopulateCollection, type)));
+        }
     }
 }

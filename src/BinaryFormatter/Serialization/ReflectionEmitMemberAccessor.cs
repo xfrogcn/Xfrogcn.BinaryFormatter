@@ -173,6 +173,42 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             return dynamicMethod;
         }
 
+
+        public override Action<TCollection, TElement> CreateIEnumerableAddMethod<TCollection, TElement>()
+        {
+            Type collectionType = typeof(TCollection);
+            Type elementType = typeof(TElement);
+            MethodInfo realMethod = collectionType.GetMethod("Add");
+
+            if (realMethod == null)
+            {
+                return null;
+            }
+
+            return CreateDelegate<Action<TCollection, TElement>>(CreateIEnumerableAddMethodDelegate(collectionType, elementType, realMethod));
+        }
+
+        private static DynamicMethod CreateIEnumerableAddMethodDelegate(Type collectionType, Type elementType, MethodInfo realMethod)
+        {
+           
+            var dynamicMethod = new DynamicMethod(
+                realMethod.Name,
+                typeof(void),
+                new[] { collectionType, elementType },
+                typeof(ReflectionEmitMemberAccessor).Module,
+                skipVisibility: true);
+
+            ILGenerator generator = dynamicMethod.GetILGenerator();
+
+            generator.Emit(OpCodes.Ldarg_0);
+            generator.Emit(OpCodes.Ldarg_1);
+            generator.Emit(OpCodes.Callvirt, realMethod);
+            generator.Emit(OpCodes.Ret);
+
+            return dynamicMethod;
+        }
+
+
         /// <summary>
         /// 创建不可变集合类型对应的CreateRange构造方法
         /// </summary>
@@ -226,6 +262,40 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             generator.Emit(OpCodes.Ret);
 
             return dynamicMethod;
+        }
+
+        public override Func<TCollection, int> CreateIEnumerableCountMethod<TCollection>()
+        {
+            Type collectionType = typeof(TCollection);
+            MemberInfo mi = collectionType.GetProperty("Count", BindingFlags.Public | BindingFlags.Instance);
+            if (mi == null)
+            {
+                mi = collectionType.GetField("Count", BindingFlags.Public | BindingFlags.Instance);
+            }
+            if (mi == null)
+            {
+                mi = collectionType.GetProperty("Length", BindingFlags.Public | BindingFlags.Instance);
+                if (mi == null)
+                {
+                    mi = collectionType.GetField("Length", BindingFlags.Public | BindingFlags.Instance);
+                }
+            }
+
+            if (mi == null )
+            {
+                return null;
+            }
+
+            if (mi is PropertyInfo pi && pi.PropertyType == typeof(int))
+            {
+                return CreateDelegate<Func<TCollection, int>>(CreatePropertyGetter(pi, pi.PropertyType));
+            }
+            else if (mi is FieldInfo fi && fi.FieldType == typeof(int))
+            {
+                return CreateDelegate<Func<TCollection, int>>(CreateFieldGetter(fi, fi.FieldType));
+            }
+
+            return null;
         }
 
         public override Func<object, TProperty> CreatePropertyGetter<TProperty>(PropertyInfo propertyInfo) =>

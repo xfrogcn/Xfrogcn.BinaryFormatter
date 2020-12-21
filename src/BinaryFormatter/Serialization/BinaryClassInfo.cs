@@ -35,6 +35,11 @@ namespace Xfrogcn.BinaryFormatter
         // Add method delegate for non-generic Stack and Queue; and types that derive from them.
         public object AddMethodDelegate { get; set; }
 
+        /// <summary>
+        /// 获取集合数量的方法委托
+        /// </summary>
+        public object CountMethodDelegate { get; set; }
+
    
         public BinaryPropertyInfo DataExtensionProperty { get; private set; }
 

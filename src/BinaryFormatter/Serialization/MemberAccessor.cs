@@ -17,6 +17,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         public abstract Action<TCollection, object> CreateAddMethodDelegate<TCollection>();
 
+        public abstract Action<TCollection, TElement> CreateIEnumerableAddMethod<TCollection, TElement>();
+
+        public abstract Func<TCollection, int> CreateIEnumerableCountMethod<TCollection>();
+
         public abstract Func<IEnumerable<TElement>, TCollection> CreateImmutableEnumerableCreateRangeDelegate<TElement, TCollection>();
 
         public abstract Func<IEnumerable<KeyValuePair<string, TElement>>, TCollection> CreateImmutableDictionaryCreateRangeDelegate<TElement, TCollection>();

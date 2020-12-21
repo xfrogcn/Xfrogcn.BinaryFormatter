@@ -118,10 +118,16 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 converterType = typeof(ConcurrentQueueOfTConverter<,>);
                 elementType = actualTypeToConvert.GetGenericArguments()[0];
             }
+            // ConcurrentBag<> or deriving from ConcurrentBag<>
+            else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericBaseClass(typeof(ConcurrentBag<>))) != null)
+            {
+                converterType = typeof(ConcurrentBagOfTConverter<,>);
+                elementType = actualTypeToConvert.GetGenericArguments()[0];
+            }
             // IEnumerable<>, types assignable from List<>
             else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericInterface(typeof(IEnumerable<>))) != null)
             {
-               // converterType = typeof(IEnumerableOfTConverter<,>);
+                converterType = typeof(IEnumerableOfTWithAddMethodConverter<,>);
                 elementType = actualTypeToConvert.GetGenericArguments()[0];
             }
             // Check for non-generics after checking for generics.

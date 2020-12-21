@@ -120,6 +120,9 @@
   <data name="BinaryIncludeOnNonPublicInvalid" xml:space="preserve">
     <value>The non-public property '{0}' on type '{1}' is annotated with 'BinaryIncludeAttribute' which is invalid.</value>
   </data>
+  <data name="CannotPopulateCollection" xml:space="preserve">
+    <value>The collection type '{0}' is abstract, an interface, or is read only, and could not be instantiated and populated.</value>
+  </data>
   <data name="CannotSerializeInvalidMember" xml:space="preserve">
     <value>The type '{0}' of property '{1}' on type '{2}' is invalid for serialization or deserialization because it is a pointer type, is a ref struct, or contains generic parameters that have not been replaced by specific types.</value>
   </data>

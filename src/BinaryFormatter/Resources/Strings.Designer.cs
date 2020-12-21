@@ -70,6 +70,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 The collection type &apos;{0}&apos; is abstract, an interface, or is read only, and could not be instantiated and populated. 的本地化字符串。
+        /// </summary>
+        internal static string CannotPopulateCollection {
+            get {
+                return ResourceManager.GetString("CannotPopulateCollection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The type &apos;{0}&apos; of property &apos;{1}&apos; on type &apos;{2}&apos; is invalid for serialization or deserialization because it is a pointer type, is a ref struct, or contains generic parameters that have not been replaced by specific types. 的本地化字符串。
         /// </summary>
         internal static string CannotSerializeInvalidMember {
