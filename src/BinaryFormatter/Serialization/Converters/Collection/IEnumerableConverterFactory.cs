@@ -10,8 +10,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
     internal class IEnumerableConverterFactory : BinaryConverterFactory
     {
        // private static readonly IDictionaryConverter<IDictionary> s_converterForIDictionary = new IDictionaryConverter<IDictionary>();
-      //  private static readonly IEnumerableConverter<IEnumerable> s_converterForIEnumerable = new IEnumerableConverter<IEnumerable>();
-        private static readonly IListConverter<IList> s_converterForIList = new IListConverter<IList>();
+       private static readonly IListConverter<IList> s_converterForIList = new IListConverter<IList>();
 
         public override bool CanConvert(Type typeToConvert)
         {
@@ -155,13 +154,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             }
             else
             {
-                Debug.Assert(typeof(IEnumerable).IsAssignableFrom(typeToConvert));
-                if (typeToConvert == typeof(IEnumerable))
-                {
-                //    return s_converterForIEnumerable;
-                }
-
-              //  converterType = typeof(IEnumerableConverter<>);
+               converterType = typeof(IEnumerableWithAddMethodConverter<>);
             }
 
             Type genericType;

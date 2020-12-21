@@ -10,11 +10,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         where TCollection : IEnumerable<TElement>
 
     {
-        public IEnumerableOfTWithAddMethodConverter()
-        {
-            
-        }
-
+  
         protected override void Add(in TElement value, ref ReadStack state)
         {
             var addMethodDelegate = ((Action<TCollection, TElement>)state.Current.BinaryClassInfo.AddMethodDelegate);
