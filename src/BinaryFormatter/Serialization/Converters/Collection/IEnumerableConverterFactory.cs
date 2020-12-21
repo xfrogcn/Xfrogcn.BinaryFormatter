@@ -91,7 +91,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             // ICollection<>
             else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericInterface(typeof(ICollection<>))) != null)
             {
-                //converterType = typeof(ICollectionOfTConverter<,>);
+                converterType = typeof(ICollectionOfTConverter<,>);
                 elementType = actualTypeToConvert.GetGenericArguments()[0];
             }
             // Stack<> or deriving from Stack<>

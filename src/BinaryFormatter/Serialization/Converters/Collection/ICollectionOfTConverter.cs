@@ -21,19 +21,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         {
             BinaryClassInfo classInfo = state.Current.BinaryClassInfo;
 
-
-            //if (classInfo.CreateObject == null)
-            //{
-            //    ThrowHelper.ThrowNotSupportedException_DeserializeNoConstructor(TypeToConvert, ref reader, ref state);
-            //}
-
             TCollection returnValue = (TCollection)classInfo.CreateObject()!;
-
-            //if (returnValue.IsReadOnly)
-            //{
-            //    ThrowHelper.ThrowNotSupportedException_CannotPopulateCollection(TypeToConvert, ref reader, ref state);
-            //}
-
             state.Current.ReturnValue = returnValue;
         }
 
