@@ -351,6 +351,6 @@ namespace Xfrogcn.BinaryFormatter
 
         internal int EffectiveMaxDepth { get; private set; } = DefaultMaxDepth;
 
-
+       
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Xfrogcn.BinaryFormatter.Serialization.Converters
+﻿namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
     internal abstract class BinaryDictionaryConverter<T> : BinaryResumableConverter<T>
     {
