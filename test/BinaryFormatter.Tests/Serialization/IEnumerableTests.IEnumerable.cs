@@ -96,6 +96,86 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
         }
 
+
+    
+        [Fact(DisplayName = "Test_IEnumerable_ArrayList")]
+        public async Task Test_IEnumerable_ArrayList()
+        {
+            ArrayList a = new ArrayList();
+            a.Add(createComplexCtorC(1));
+            a.Add(null);
+            await Test(a, CheckIEnumerableOfIEnumerable(a, (a, b) =>
+            {
+                if (a == null)
+                {
+                    Assert.Null(b);
+                }
+                else if (a is TestCtorA ta)
+                {
+                    checkCtorCProc(ta)(b as TestCtorA);
+                }
+            }));
+
+        }
+
+        [Fact(DisplayName = "Test_IEnumerable_BitArray ")]
+        public async Task Test_IEnumerable_BitArray()
+        {
+            BitArray a = new BitArray(new bool[]{
+                true,
+                false,
+                true,
+                true,
+                false
+            });
+
+            await Test(a, CheckIEnumerableOfIEnumerable(a, (a, b) =>
+            {
+                Assert.Equal(a, b);
+            }));
+
+        }
+
+        [Fact(DisplayName = "Test_IEnumerable_Queue ")]
+        public async Task Test_IEnumerable_Queue()
+        {
+            Queue a = new Queue();
+            a.Enqueue(1L);
+            a.Enqueue(2L);
+            await Test(a, CheckIEnumerableOfIEnumerable(a, (a, b) =>
+            {
+                if (a == null)
+                {
+                    Assert.Null(b);
+                }
+                else if (a is TestCtorA ta)
+                {
+                    checkCtorCProc(ta)(b as TestCtorA);
+                }
+            }));
+
+        }
+
+        [Fact(DisplayName = "Test_IEnumerable_Stack ")]
+        public async Task Test_IEnumerable_Stack()
+        {
+            Stack a = new Stack();
+            a.Push(1L);
+            a.Push(2L);
+            await Test(a, CheckIEnumerableOfIEnumerable(a, (a, b) =>
+            {
+                if (a == null)
+                {
+                    Assert.Null(b);
+                }
+                else if (a is TestCtorA ta)
+                {
+                    checkCtorCProc(ta)(b as TestCtorA);
+                }
+            }));
+
+        }
+
         protected virtual Action<IEnumerable> CheckIEnumerableOfIEnumerable(IEnumerable a, Action<object, object> checker)
         {
             return (b) =>

@@ -178,7 +178,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         {
             Type collectionType = typeof(TCollection);
             Type elementType = typeof(TElement);
-            MethodInfo realMethod = collectionType.GetMethod("Add");
+            MethodInfo realMethod = collectionType.GetMethod("Add") ?? collectionType.GetMethod("Push") ?? collectionType.GetMethod("Enqueue");
 
             if (realMethod == null)
             {

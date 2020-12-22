@@ -11,6 +11,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
     {
        // private static readonly IDictionaryConverter<IDictionary> s_converterForIDictionary = new IDictionaryConverter<IDictionary>();
        private static readonly IListConverter<IList> s_converterForIList = new IListConverter<IList>();
+        private static readonly BitArrayConverter s_converterForBitArray = new BitArrayConverter();
 
         public override bool CanConvert(Type typeToConvert)
         {
@@ -148,9 +149,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                 converterType = typeof(IListConverter<>);
             }
-            else if (typeToConvert.IsNonGenericStackOrQueue())
+            else if(typeToConvert == typeof(BitArray))
             {
-              //  converterType = typeof(IEnumerableWithAddMethodConverter<>);
+                return s_converterForBitArray;
             }
             else
             {
