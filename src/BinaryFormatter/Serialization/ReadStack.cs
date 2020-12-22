@@ -319,7 +319,7 @@ namespace Xfrogcn.BinaryFormatter
                 return count;
             }
 
-            static void AppendPropertyName(StringBuilder sb, string? propertyName)
+            static void AppendPropertyName(StringBuilder sb, string propertyName)
             {
                 if (propertyName != null)
                 {
@@ -342,7 +342,7 @@ namespace Xfrogcn.BinaryFormatter
                 string propertyName = null;
 
                 // Attempt to get the Binary property name from the frame.
-                byte[]? utf8PropertyName = frame.BinaryPropertyName;
+                byte[] utf8PropertyName = frame.BinaryPropertyName;
                 if (utf8PropertyName == null)
                 {
                     if (frame.BinaryPropertyNameAsString != null)

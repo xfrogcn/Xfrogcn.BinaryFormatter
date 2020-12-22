@@ -196,7 +196,7 @@ namespace Xfrogcn.BinaryFormatter
 
         public abstract object GetValueAsObject(object obj);
 
-        public abstract bool ReadBinaryAsObject(ref ReadStack state, ref BinaryReader reader, out object? value);
+        public abstract bool ReadBinaryAsObject(ref ReadStack state, ref BinaryReader reader, out object value);
 
         public bool HasGetter { get; set; }
         public bool HasSetter { get; set; }

@@ -252,7 +252,7 @@ namespace Xfrogcn.BinaryFormatter
             void AppendStackFrame(StringBuilder sb, in WriteStackFrame frame)
             {
                 // Append the property name.
-                string? propertyName = frame.DeclaredBinaryPropertyInfo?.MemberInfo?.Name;
+                string propertyName = frame.DeclaredBinaryPropertyInfo?.MemberInfo?.Name;
                 if (propertyName == null)
                 {
                     propertyName = frame.BinaryPropertyNameAsString;
@@ -261,7 +261,7 @@ namespace Xfrogcn.BinaryFormatter
                 AppendPropertyName(sb, propertyName);
             }
 
-            void AppendPropertyName(StringBuilder sb, string? propertyName)
+            void AppendPropertyName(StringBuilder sb, string propertyName)
             {
                 if (propertyName != null)
                 {

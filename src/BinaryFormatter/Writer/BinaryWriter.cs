@@ -19,7 +19,7 @@ namespace Xfrogcn.BinaryFormatter
 
         private Memory<byte> _memory;
 
-        private bool _inObject;
+        // private bool _inObject;
         private BinaryTokenType _tokenType;
         //private BitStack _bitStack;
 
@@ -105,7 +105,7 @@ namespace Xfrogcn.BinaryFormatter
             BytesCommitted = default;
             _memory = default;
 
-            _inObject = default;
+            //_inObject = default;
             _tokenType = default;
             _currentDepth = default;
 

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-
-using FoundProperty = System.ValueTuple<Xfrogcn.BinaryFormatter.BinaryPropertyInfo, Xfrogcn.BinaryFormatter.BinaryReaderState, long, byte[]?, string?>;
-using FoundPropertyAsync = System.ValueTuple<Xfrogcn.BinaryFormatter.BinaryPropertyInfo, object?, string?>;
+using FoundPropertyAsync = System.ValueTuple<Xfrogcn.BinaryFormatter.BinaryPropertyInfo, object, string>;
 
 
 namespace Xfrogcn.BinaryFormatter.Serialization.Converters
