@@ -10,6 +10,8 @@
         EndArray,
         PropertyName,
         TypeSeq,
+        DictionaryKeySeq,
+        EndDictionaryKey,
         Bytes,
         Null
     }

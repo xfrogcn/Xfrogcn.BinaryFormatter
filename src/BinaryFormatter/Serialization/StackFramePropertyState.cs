@@ -9,11 +9,16 @@ namespace Xfrogcn.BinaryFormatter
         None = 0,
 
         ReadName,   // Read the name of the property.
+        ReadKeySeq,
+        ReadKeyTypeSeq,
+        ReadKey,
         Name,   // Verify or process the name.
+        ReadValueTypeSeq,
         ReadValue,  // Read the value of the property.
         ReadValueIsEnd, // Determine if we are done reading.
         TryReadTypeSeq,
         TryRead,    // Perform the actual call to the converter's TryRead().
-        
+        WriteKey,
+        WriteValue
     }
 }

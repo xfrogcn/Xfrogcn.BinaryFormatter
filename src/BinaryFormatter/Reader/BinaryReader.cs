@@ -27,6 +27,7 @@ namespace Xfrogcn.BinaryFormatter
         private BinaryTokenType _previousTokenType;
         private ushort _typeSeq;
         private int _version;
+        private byte _dicKeySeq;
       //  private BinarySerializerOptions _readerOptions;
         // private BitStack _bitStack;
 
@@ -113,6 +114,7 @@ namespace Xfrogcn.BinaryFormatter
             _isFinalBlock = isFinalBlock;
             _isInputSequence = false;
             _typeSeq = state._typeSeq;
+            _dicKeySeq = state._dicKeySeq;
             CurrentTypeInfo = state._typeInfo;
             CurrentPropertySeq = state._propertySeq;
             _typeMap = state._typeMap;
@@ -255,7 +257,8 @@ namespace Xfrogcn.BinaryFormatter
             _typeSeq = _typeSeq,
             _version = _version,
             _typeInfo = CurrentTypeInfo,
-            _propertySeq = CurrentPropertySeq
+            _propertySeq = CurrentPropertySeq,
+            _dicKeySeq = _dicKeySeq
         };
 
         public bool Read()
@@ -374,6 +377,31 @@ namespace Xfrogcn.BinaryFormatter
 
             return ReadTypeSeq();
             
+        }
+
+        internal bool ReadDictionaryKeySeq()
+        {
+            if (!RequestData(1))
+            {
+                return false;
+            }
+
+            ValueSpan = _buffer.Slice(_consumed, 1);
+            _dicKeySeq = ValueSpan[0];
+            if (_dicKeySeq == BinarySerializerConstants.EndDictionaryKey)
+            {
+                _tokenType = BinaryTokenType.EndDictionaryKey;
+            }
+            else if (_dicKeySeq == BinarySerializerConstants.DictionaryKeySeq)
+            {
+                _tokenType = BinaryTokenType.DictionaryKeySeq;
+            }
+            else
+            {
+                ThrowHelper.ThrowBinaryReaderException(ref this, ExceptionResource.InvalidByte);
+            }
+            _consumed++;
+            return true;
         }
 
         internal bool ReadTypeSeq()

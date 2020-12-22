@@ -272,6 +272,7 @@ namespace Xfrogcn.BinaryFormatter
         //ExpectedTrue,
         //ExpectedValueAfterPropertyNameNotFound,
         //FoundInvalidCharacter,
+        InvalidByte,
         //InvalidCharacterWithinString,
         //InvalidCharacterAfterEscapeWithinString,
         //InvalidHexCharacterWithinString,

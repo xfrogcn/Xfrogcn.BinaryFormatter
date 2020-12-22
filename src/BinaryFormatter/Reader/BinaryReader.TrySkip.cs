@@ -125,38 +125,6 @@ namespace Xfrogcn.BinaryFormatter
                 {
                     return false;
                 }
-                //while (true)
-                //{
-                //    if (!TryReadPropertySeq(ref curOffset, out ushort propertySeq))
-                //    {
-                //        return false;
-                //    }
-
-                //    if (propertySeq == BinarySerializerConstants.EndObjectSeq)
-                //    {
-                //        break;
-                //    }
-
-                //    if (!TryReadTypeSeq(ref curOffset, out ushort typeSeq))
-                //    {
-                //        return false;
-                //    }
-
-                //    if (typeSeq == TypeMap.NullTypeSeq)
-                //    {
-                //        continue;
-                //    }
-
-                //    BinaryTypeInfo ti = _typeMap.GetTypeInfo(typeSeq);
-                //    if (ti == null)
-                //    {
-
-                //    }
-                //    if (!TryForwardRead(ti, ref curOffset))
-                //    {
-                //        return false;
-                //    }
-                //}
 
                 offset = curOffset;
 
@@ -228,6 +196,84 @@ namespace Xfrogcn.BinaryFormatter
                 }
 
                 // 读取自定义属性
+                if (!TrySkipObjectProperties(ref curOffset))
+                {
+                    return false;
+                }
+
+                offset = curOffset;
+            }
+            else if( typeInfo.SerializeType == ClassType.Dictionary)
+            {
+                int curOffset = offset;
+                // 引用、非引用
+                if (!TryRequestData(curOffset, 1))
+                {
+                    return false;
+                }
+
+                byte refSign = _buffer[curOffset++];
+                if (refSign == 0xFF)
+                {
+                    if (!TryRequestData(curOffset, 4))
+                    {
+                        return false;
+                    }
+                    curOffset += 4;
+                }
+
+                // Key Value
+                while (true)
+                {
+                    if (!TryRequestData(curOffset, 1))
+                    {
+                        return false;
+                    }
+
+                    byte keySeq = _buffer[curOffset++];
+
+                    if (keySeq == BinarySerializerConstants.EndDictionaryKey)
+                    {
+                        break;
+                    }
+                    else if (keySeq != BinarySerializerConstants.DictionaryKeySeq)
+                    {
+                        ThrowHelper.ThrowBinaryReaderException(ref this, ExceptionResource.InvalidByte);
+                    }
+
+                    // Key
+                    if (!TryReadTypeSeq(ref curOffset, out ushort typeSeq))
+                    {
+                        return false;
+                    }
+
+                    if (typeSeq != TypeMap.NullTypeSeq)
+                    {
+                        BinaryTypeInfo ti = _typeMap.GetTypeInfo(typeSeq);
+                        if (!TryForwardRead(ti, ref curOffset))
+                        {
+                            return false;
+                        }
+                    }
+
+                    // Value
+                    if (!TryReadTypeSeq(ref curOffset, out typeSeq))
+                    {
+                        return false;
+                    }
+
+                    if (typeSeq != TypeMap.NullTypeSeq)
+                    {
+                        BinaryTypeInfo ti = _typeMap.GetTypeInfo(typeSeq);
+                        if (!TryForwardRead(ti, ref curOffset))
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+
+                // 读取属性
                 if (!TrySkipObjectProperties(ref curOffset))
                 {
                     return false;

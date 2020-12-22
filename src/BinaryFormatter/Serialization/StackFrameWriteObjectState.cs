@@ -5,6 +5,7 @@
         None,
         WriteStartToken,
         WriteElements,
+        WriteElementsEnd,
         WriteProperties,
         WriteEndToken
     }

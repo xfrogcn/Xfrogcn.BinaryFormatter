@@ -181,6 +181,16 @@ namespace Xfrogcn.BinaryFormatter
             }
         }
 
+        public void WriteEndDictionary()
+        {
+            WritePropertySeq(BinarySerializerConstants.EndObjectSeq);
+            if (CurrentDepth != 0)
+            {
+                _currentDepth &= BinarySerializerConstants.RemoveFlagsBitMask;
+                _currentDepth--;
+            }
+        }
+
         internal void WriteTypeSeqAndBytes(ushort typeSeq, ReadOnlySpan<byte> bytes)
         {
             int maxRequired = 2 + bytes.Length;
@@ -232,6 +242,11 @@ namespace Xfrogcn.BinaryFormatter
             WriteStart(BinaryTokenType.StartArray);
         }
 
+        public void WriteStartDictionary()
+        {
+            WriteStart(BinaryTokenType.StartObject);
+        }
+
         internal void WriteStart(BinaryTokenType tokenType)
         {
             if (CurrentDepth >= BinarySerializerConstants.MaxWriterDepth)
@@ -261,7 +276,12 @@ namespace Xfrogcn.BinaryFormatter
 
         internal void WritePropertyStringSeq()
         {
-            WriteByteValue((byte)80);
+            WriteByteValue(BinarySerializerConstants.DictionaryKeySeq);
+        }
+
+        internal void WriteKeyEnd()
+        {
+            WriteByteValue(BinarySerializerConstants.EndDictionaryKey);
         }
 
         internal void WritePropertySeq(ushort seq)
