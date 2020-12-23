@@ -80,6 +80,7 @@ namespace Xfrogcn.BinaryFormatter
         public void EndDictionaryElement()
         {
             PropertyState = StackFramePropertyState.None;
+            PolymorphicBinaryPropertyInfo = null;
         }
 
         public void EndProperty()

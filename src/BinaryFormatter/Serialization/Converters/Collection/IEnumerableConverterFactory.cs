@@ -39,13 +39,13 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 elementType = typeToConvert.GetElementType();
             }
             // Dictionary<TKey, TValue> or deriving from Dictionary<TKey, TValue>
-            else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericBaseClass(typeof(Dictionary<,>))) != null)
-            {
-                genericArgs = actualTypeToConvert.GetGenericArguments();
-              //  converterType = typeof(DictionaryOfTKeyTValueConverter<,,>);
-                dictionaryKeyType = genericArgs[0];
-                elementType = genericArgs[1];
-            }
+            //else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericBaseClass(typeof(Dictionary<,>))) != null)
+            //{
+            //    genericArgs = actualTypeToConvert.GetGenericArguments();
+            //    converterType = typeof(DictionaryOfTKeyTValueConverter<,,>);
+            //    dictionaryKeyType = genericArgs[0];
+            //    elementType = genericArgs[1];
+            //}
             // Immutable dictionaries from System.Collections.Immutable, e.g. ImmutableDictionary<TKey, TValue>
             else if (typeToConvert.IsImmutableDictionaryType())
             {
@@ -58,7 +58,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericInterface(typeof(IDictionary<,>))) != null)
             {
                 genericArgs = actualTypeToConvert.GetGenericArguments();
-               // converterType = typeof(IDictionaryOfTKeyTValueConverter<,,>);
+                converterType = typeof(IDictionaryOfTKeyTValueConverter<,,>);
                 dictionaryKeyType = genericArgs[0];
                 elementType = genericArgs[1];
             }

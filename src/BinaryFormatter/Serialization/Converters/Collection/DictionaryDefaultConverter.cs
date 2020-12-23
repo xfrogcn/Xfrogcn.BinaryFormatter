@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Xfrogcn.BinaryFormatter.Serialization.Converters.Collection
+namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
     internal abstract class DictionaryDefaultConverter<TCollection, TKey, TValue>
         : BinaryDictionaryConverter<TCollection>
@@ -128,7 +128,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters.Collection
                 if (state.Current.ObjectState == StackFrameObjectState.None)
                 {
                     // 刚进入对象读取
-                    if (reader.CurrentTypeInfo == null || reader.CurrentTypeInfo.SerializeType != ClassType.Enumerable)
+                    if (reader.CurrentTypeInfo == null || reader.CurrentTypeInfo.SerializeType != ClassType.Dictionary)
                     {
                         ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(TypeToConvert);
                     }
@@ -661,5 +661,12 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters.Collection
 
         internal sealed override void CreateInstanceForReferenceResolver(ref BinaryReader reader, ref ReadStack state, BinarySerializerOptions options)
             => CreateCollection(ref reader, ref state);
+
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
+        {
+            typeInfo.Type = TypeEnum.Class;
+            typeInfo.SerializeType = ClassType.Dictionary;
+            typeInfo.FullName = options.GetTypeFullName(typeof(TCollection));
+        }
     }
 }
