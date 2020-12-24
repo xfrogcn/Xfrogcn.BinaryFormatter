@@ -50,7 +50,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             else if (typeToConvert.IsImmutableDictionaryType())
             {
                 genericArgs = typeToConvert.GetGenericArguments();
-             //   converterType = typeof(ImmutableDictionaryOfTKeyTValueConverter<,,>);
+                converterType = typeof(ImmutableDictionaryOfTKeyTValueConverter<,,>);
                 dictionaryKeyType = genericArgs[0];
                 elementType = genericArgs[1];
             }

@@ -55,6 +55,7 @@ namespace Xfrogcn.BinaryFormatter
                 { TypeEnum.DBNull, typeof(DBNull)  },
 
                 { TypeEnum.KeyValuePair, typeof(KeyValuePair<,>) },
+                { TypeEnum.Dictionary, typeof(Dictionary<,>) },
 
                 { TypeEnum.Nullable, typeof(Nullable<>)  },
                 { TypeEnum.List, typeof(List<>) },

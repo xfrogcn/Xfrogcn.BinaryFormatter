@@ -8,6 +8,17 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         where TCollection : IDictionary<TKey, TValue>
         where TKey : notnull
     {
+        private bool _isDictionary = false;
+
+        public IDictionaryOfTKeyTValueConverter()
+        {
+            Type t = typeof(TCollection);
+            if(t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+            {
+                _isDictionary = true;
+            }
+        }
+
         protected override void Add(TKey key, in TValue value, BinarySerializerOptions options, ref ReadStack state)
         {
             TCollection collection = (TCollection)state.Current.ReturnValue!;
@@ -29,6 +40,16 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             }
 
             state.Current.ReturnValue = returnValue;
+        }
+
+        public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
+        {
+            base.SetTypeMetadata(typeInfo, typeMap, options);
+            if (_isDictionary)
+            {
+                typeInfo.Type = TypeEnum.Dictionary;
+                typeInfo.FullName = null;
+            }
         }
     }
 }

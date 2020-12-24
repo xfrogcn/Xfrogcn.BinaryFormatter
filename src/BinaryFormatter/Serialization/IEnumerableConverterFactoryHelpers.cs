@@ -193,7 +193,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             throw new NotSupportedException($"类型不支持序列化：{type.FullName}");
         }
 
-           public static MethodInfo GetImmutableDictionaryCreateRangeMethod(this Type type, Type elementType)
+           public static MethodInfo GetImmutableDictionaryCreateRangeMethod(this Type type, Type keyType, Type elementType)
         {
             Type constructingType = GetImmutableDictionaryConstructingType(type);
             if (constructingType != null)
@@ -206,7 +206,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                         method.IsGenericMethod &&
                         method.GetGenericArguments().Length == 2)
                     {
-                        return method.MakeGenericMethod(typeof(string), elementType);
+                        return method.MakeGenericMethod(keyType, elementType);
                     }
                 }
             }

@@ -23,7 +23,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         public abstract Func<IEnumerable<TElement>, TCollection> CreateImmutableEnumerableCreateRangeDelegate<TElement, TCollection>();
 
-        public abstract Func<IEnumerable<KeyValuePair<string, TElement>>, TCollection> CreateImmutableDictionaryCreateRangeDelegate<TElement, TCollection>();
+        public abstract Func<IEnumerable<KeyValuePair<TKey, TElement>>, TCollection> CreateImmutableDictionaryCreateRangeDelegate<TKey, TElement, TCollection>();
 
         public abstract Func<object, TProperty> CreatePropertyGetter<TProperty>(PropertyInfo propertyInfo);
 

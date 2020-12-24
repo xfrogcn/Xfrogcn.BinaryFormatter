@@ -240,13 +240,13 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             return dynamicMethod;
         }
 
-        public override Func<IEnumerable<KeyValuePair<string, TElement>>, TCollection> CreateImmutableDictionaryCreateRangeDelegate<TElement, TCollection>() =>
-            CreateDelegate<Func<IEnumerable<KeyValuePair<string, TElement>>, TCollection>>(
-                CreateImmutableDictionaryCreateRangeDelegate(typeof(TCollection), typeof(TElement), typeof(IEnumerable<KeyValuePair<string, TElement>>)));
+        public override Func<IEnumerable<KeyValuePair<TKey, TElement>>, TCollection> CreateImmutableDictionaryCreateRangeDelegate<TKey, TElement, TCollection>() =>
+            CreateDelegate<Func<IEnumerable<KeyValuePair<TKey, TElement>>, TCollection>>(
+                CreateImmutableDictionaryCreateRangeDelegate(typeof(TCollection), typeof(TKey), typeof(TElement), typeof(IEnumerable<KeyValuePair<TKey, TElement>>)));
 
-        private static DynamicMethod CreateImmutableDictionaryCreateRangeDelegate(Type collectionType, Type elementType, Type enumerableType)
+        private static DynamicMethod CreateImmutableDictionaryCreateRangeDelegate(Type collectionType, Type keyType, Type elementType, Type enumerableType)
         {
-            MethodInfo realMethod = collectionType.GetImmutableDictionaryCreateRangeMethod(elementType);
+            MethodInfo realMethod = collectionType.GetImmutableDictionaryCreateRangeMethod(keyType, elementType);
 
             var dynamicMethod = new DynamicMethod(
                 realMethod.Name,
