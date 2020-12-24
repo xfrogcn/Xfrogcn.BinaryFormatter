@@ -89,6 +89,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         return false;
                     }
                     BeginRead(ref state, ref reader, options);
+                    // 初始化中可能会修改状态对象
+                    argumentState = state.Current.CtorArgumentState!;
                 }
 
                 // 读取构造参数
@@ -448,17 +450,21 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(TypeToConvert);
             }
 
-            if (state.Current.BinaryClassInfo.ParameterCount != state.Current.BinaryClassInfo.ParameterCache!.Count)
-            {
-                ThrowHelper.ThrowInvalidOperationException_ConstructorParameterIncompleteBinding(ConstructorInfo!, TypeToConvert);
-            }
+            
 
             // Set current JsonPropertyInfo to null to avoid conflicts on push.
             state.Current.BinaryPropertyInfo = null;
 
-            Debug.Assert(state.Current.CtorArgumentState != null);
+            
 
             InitializeConstructorArgumentCaches(ref state, options);
+
+            Debug.Assert(state.Current.CtorArgumentState != null);
+
+            if (state.Current.BinaryClassInfo.ParameterCount != state.Current.BinaryClassInfo.ParameterCache!.Count)
+            {
+                ThrowHelper.ThrowInvalidOperationException_ConstructorParameterIncompleteBinding(ConstructorInfo!, TypeToConvert);
+            }
         }
 
         protected virtual void EndRead(ref ReadStack state) { }

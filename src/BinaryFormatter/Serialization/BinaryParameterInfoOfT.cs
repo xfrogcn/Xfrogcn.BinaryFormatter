@@ -25,7 +25,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 matchingProperty,
                 options);
 
-            if (parameterInfo.HasDefaultValue)
+            if (parameterInfo!=null && parameterInfo.HasDefaultValue)
             {
                 DefaultValue = parameterInfo.DefaultValue;
                 TypedDefaultValue = (T)parameterInfo.DefaultValue!;

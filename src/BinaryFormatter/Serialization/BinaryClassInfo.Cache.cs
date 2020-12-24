@@ -15,7 +15,7 @@ namespace Xfrogcn.BinaryFormatter
     {
         // The number of parameters the deserialization constructor has. If this is not equal to ParameterCache.Count, this means
         // that not all parameters are bound to object properties, and an exception will be thrown if deserialization is attempted.
-        public int ParameterCount { get; private set; }
+        public int ParameterCount { get; internal set; }
 
         private const int PropertyNameKeyLength = 7;
 

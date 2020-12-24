@@ -25,6 +25,8 @@ namespace Xfrogcn.BinaryFormatter
         // The name of the parameter as UTF-8 bytes.
         public byte[] NameAsUtf8Bytes { get; private set; } = null!;
 
+        public string NameAsString { get; internal set; }
+
         // The zero-based position of the parameter in the formal parameter list.
         public int Position { get; private set; }
 
@@ -57,7 +59,7 @@ namespace Xfrogcn.BinaryFormatter
         {
             TypeMap = typeMap;
             RuntimePropertyType = runtimePropertyType;
-            Position = parameterInfo.Position;
+            Position = parameterInfo?.Position ?? 0;
             NameAsUtf8Bytes = matchingProperty.NameAsUtf8Bytes!;
             Options = options;
             ShouldDeserialize = true;

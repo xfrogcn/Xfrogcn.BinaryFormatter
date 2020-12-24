@@ -52,13 +52,18 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
             if (success && !(arg == null && binaryParameterInfo.IgnoreDefaultValuesOnRead))
             {
-                ((object[])state.Current.CtorArgumentState!.Arguments)[binaryParameterInfo.Position] = arg!;
+                SetCtorArguments(ref state, binaryParameterInfo, ref arg);
             }
 
             return success;
         }
 
-        private bool TryRead<TArg>(
+        protected virtual void SetCtorArguments(ref ReadStack state, BinaryParameterInfo binaryParameterInfo, ref object arg)
+        {
+            ((object[])state.Current.CtorArgumentState!.Arguments)[binaryParameterInfo.Position] = arg!;
+        }
+
+        protected bool TryRead<TArg>(
             ref ReadStack state,
             ref BinaryReader reader,
             BinaryParameterInfo binaryParameterInfo,
