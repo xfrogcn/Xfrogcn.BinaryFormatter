@@ -38,14 +38,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 converterType = typeof(ArrayConverter<,>);
                 elementType = typeToConvert.GetElementType();
             }
-            // Dictionary<TKey, TValue> or deriving from Dictionary<TKey, TValue>
-            //else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericBaseClass(typeof(Dictionary<,>))) != null)
-            //{
-            //    genericArgs = actualTypeToConvert.GetGenericArguments();
-            //    converterType = typeof(DictionaryOfTKeyTValueConverter<,,>);
-            //    dictionaryKeyType = genericArgs[0];
-            //    elementType = genericArgs[1];
-            //}
             // Immutable dictionaries from System.Collections.Immutable, e.g. ImmutableDictionary<TKey, TValue>
             else if (typeToConvert.IsImmutableDictionaryType())
             {
@@ -62,14 +54,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 dictionaryKeyType = genericArgs[0];
                 elementType = genericArgs[1];
             }
-            //// 
-            //else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericInterface(typeof(IEnumerable<KeyValuePair<,>>))) != null)
-            //{
-            //    genericArgs = actualTypeToConvert.GetGenericArguments();
-            //  //  converterType = typeof(IReadOnlyDictionaryOfTKeyTValueConverter<,,>);
-            //    dictionaryKeyType = genericArgs[0];
-            //    elementType = genericArgs[1];
-            //}
             // Immutable non-dictionaries from System.Collections.Immutable, e.g. ImmutableStack<T>
             else if (typeToConvert.IsImmutableEnumerableType())
             {
@@ -139,12 +123,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             // Check for non-generics after checking for generics.
             else if (typeof(IDictionary).IsAssignableFrom(typeToConvert))
             {
-                if (typeToConvert == typeof(IDictionary))
-                {
-                 //   return s_converterForIDictionary;
-                }
-
-             //   converterType = typeof(IDictionaryConverter<>);
+                converterType = typeof(IDictionaryConverter<>);
             }
             else if (typeof(IList).IsAssignableFrom(typeToConvert))
             {
