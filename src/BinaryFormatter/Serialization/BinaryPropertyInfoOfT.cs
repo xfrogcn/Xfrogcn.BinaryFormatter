@@ -77,6 +77,13 @@ namespace Xfrogcn.BinaryFormatter
 
                         break;
                     }
+                case MethodInfo methodInfo:
+                    {
+                        HasGetter = true;
+                        HasSetter = false;
+                        Get = options.MemberAccessorStrategy.CreateMethodGetter<T>(methodInfo);
+                        break;
+                    }
 
                 default:
                     {

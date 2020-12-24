@@ -202,6 +202,15 @@ namespace Xfrogcn.BinaryFormatter
                         // Non-public fields should not be included for (de)serialization.
                     }
                 }
+
+                var methods = converter.GetAdditionalDataMethod();
+                if (methods != null)
+                {
+                    foreach(var m in methods)
+                    {
+                        CacheMember(currentType, m.ReturnType, m, cache, ref ignoredMembers);
+                    }
+                }
             }
 
             BinaryPropertyInfo[] cacheArray;

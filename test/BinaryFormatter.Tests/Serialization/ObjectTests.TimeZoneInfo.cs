@@ -31,5 +31,13 @@ namespace Xfrogcn.BinaryFormatter.Tests
                 );
             await Test(a, (b) => Assert.Equal(a, b));
         }
+
+        [Fact(DisplayName = "Object_TimeZoneInfo")]
+        public async Task Object_TimeZoneInfo()
+        {
+
+            var a = TimeZoneInfo.Local;
+            await Test(a, (b) => Assert.Equal(a, b));
+        }
     }
 }

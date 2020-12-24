@@ -462,6 +462,52 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         public override Action<object, TProperty> CreateFieldSetter<TProperty>(FieldInfo fieldInfo) =>
             CreateDelegate<Action<object, TProperty>>(CreateFieldSetter(fieldInfo, typeof(TProperty)));
 
+
+        public override Func<object, TProperty> CreateMethodGetter<TProperty>(MethodInfo methodInfo)
+        {
+            Type declaringType = methodInfo.DeclaringType;
+            Debug.Assert(declaringType != null);
+
+            Type declaredFieldType = methodInfo.ReturnType;
+            Type runtimeFieldType = typeof(TProperty);
+
+            var dynamicMethod = new DynamicMethod(
+                methodInfo.Name,
+                methodInfo.ReturnType,
+                new[] { TypeMap.ObjectType },
+                typeof(ReflectionEmitMemberAccessor).Module,
+                skipVisibility: true);
+
+            ILGenerator generator = dynamicMethod.GetILGenerator();
+
+            generator.Emit(OpCodes.Ldarg_0);
+            generator.Emit(
+                declaringType.IsValueType
+                    ? OpCodes.Unbox
+                    : OpCodes.Castclass,
+                declaringType);
+            if (declaringType.IsValueType)
+            {
+                generator.Emit(OpCodes.Call, methodInfo);
+            }
+            else
+            {
+                generator.Emit(OpCodes.Callvirt, methodInfo);
+            }
+
+
+            if (declaredFieldType.IsValueType && declaredFieldType != runtimeFieldType)
+            {
+                generator.Emit(OpCodes.Box, declaredFieldType);
+            }
+
+            generator.Emit(OpCodes.Ret);
+
+            return CreateDelegate<Func<object, TProperty>>(dynamicMethod);
+
+        }
+        
+
         private static DynamicMethod CreateFieldSetter(FieldInfo fieldInfo, Type runtimeFieldType)
         {
             Type declaringType = fieldInfo.DeclaringType;
@@ -489,6 +535,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
             return dynamicMethod;
         }
+
+
 
         private static DynamicMethod CreateGetterMethod(string memberName, Type memberType) =>
             new DynamicMethod(

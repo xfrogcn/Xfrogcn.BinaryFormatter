@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -45,6 +46,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         internal abstract BinaryParameterInfo CreateBinaryParameterInfo();
 
         internal abstract Type ElementType { get; }
+
+
+        public virtual MethodInfo[] GetAdditionalDataMethod() => null;
 
         /// <summary>
         /// 设置类型的元数据

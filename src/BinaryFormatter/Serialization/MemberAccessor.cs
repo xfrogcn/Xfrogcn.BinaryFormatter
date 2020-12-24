@@ -33,6 +33,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         public abstract Func<object, TProperty> CreateFieldGetter<TProperty>(FieldInfo fieldInfo);
 
+        public abstract Func<object, TProperty> CreateMethodGetter<TProperty>(MethodInfo methodInfo);
+
         public abstract Action<object, TProperty> CreateFieldSetter<TProperty>(FieldInfo fieldInfo);
     }
 }
