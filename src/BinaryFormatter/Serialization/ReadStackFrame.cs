@@ -20,6 +20,8 @@ namespace Xfrogcn.BinaryFormatter
         // Stores the non-string dictionary keys for continuation.
         public object DictionaryKey;
 
+        public Dictionary<string, object> PropertyValueCache;
+
         // Validation state.
         public int OriginalDepth;
         public BinaryTokenType OriginalTokenType;
@@ -133,6 +135,7 @@ namespace Xfrogcn.BinaryFormatter
             EnumerableIndexBytes = 0;
             EnumerableLength = 0;
             EnumerableIndex = 0;
+            PropertyValueCache = null;
             EndProperty();
         }
     }

@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 
 namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
-    internal sealed class TransitionTimeConverter : LargeObjectWithParameterizedConstructorConverter<TimeZoneInfo.TransitionTime>
+    internal sealed class AdjustmentRuleConverter : LargeObjectWithParameterizedConstructorConverter<TimeZoneInfo.AdjustmentRule>
     {
         internal override bool ConstructorIsParameterized => false;
         public override bool CanConvert(Type typeToConvert)
         {
-            return typeToConvert == typeof(TimeZoneInfo.TransitionTime);
+            return typeToConvert == typeof(TimeZoneInfo.AdjustmentRule);
         }
 
         protected override void SetCtorArguments(ref ReadStack state, BinaryParameterInfo binaryParameterInfo, ref object arg)
@@ -22,20 +19,13 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         protected override object CreateObject(ref ReadStackFrame frame)
         {
             var args = frame.PropertyValueCache;
-            bool isFixedDateRule = (bool)args[nameof(TimeZoneInfo.TransitionTime.IsFixedDateRule)];
-            if (isFixedDateRule)
-            {
-                return TimeZoneInfo.TransitionTime.CreateFixedDateRule(
-                    (DateTime)args[nameof(TimeZoneInfo.TransitionTime.TimeOfDay)],
-                    (int)args[nameof(TimeZoneInfo.TransitionTime.Month)],
-                    (int)args[nameof(TimeZoneInfo.TransitionTime.Day)]
-                    );
-            }
-            return TimeZoneInfo.TransitionTime.CreateFloatingDateRule(
-                (DateTime)args[nameof(TimeZoneInfo.TransitionTime.TimeOfDay)],
-                    (int)args[nameof(TimeZoneInfo.TransitionTime.Month)],
-                    (int)args[nameof(TimeZoneInfo.TransitionTime.Day)],
-                    (DayOfWeek)args[nameof(TimeZoneInfo.TransitionTime.DayOfWeek)]
+
+            return TimeZoneInfo.AdjustmentRule.CreateAdjustmentRule(
+                (DateTime)args[nameof(TimeZoneInfo.AdjustmentRule.DateStart)],
+                (DateTime)args[nameof(TimeZoneInfo.AdjustmentRule.DateEnd)],
+                (TimeSpan)args[nameof(TimeZoneInfo.AdjustmentRule.DaylightDelta)],
+                (TimeZoneInfo.TransitionTime)args[nameof(TimeZoneInfo.AdjustmentRule.DaylightTransitionStart)],
+                (TimeZoneInfo.TransitionTime)args[nameof(TimeZoneInfo.AdjustmentRule.DaylightTransitionEnd)]
                 );
         }
 
@@ -70,9 +60,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 }
             }
 
-            
 
-            if(state.Current.CtorArgumentState == null)
+
+            if (state.Current.CtorArgumentState == null)
             {
                 state.Current.CtorArgumentState = new ArgumentState();
             }
@@ -83,7 +73,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             base.SetTypeMetadata(typeInfo, typeMap, options);
-            typeInfo.Type = TypeEnum.TransitionTime;
+            typeInfo.Type = TypeEnum.AdjustmentRule;
             typeInfo.FullName = null;
         }
     }
