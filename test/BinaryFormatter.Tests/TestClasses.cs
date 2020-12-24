@@ -100,4 +100,6 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
         public TestCtorA Temp { get; }
     }
+
+   
 }

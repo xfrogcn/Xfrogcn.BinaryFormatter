@@ -637,11 +637,19 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         internal virtual bool WriteKey(BinaryWriter writer, TKey key, BinarySerializerOptions options, ref WriteStack state)
         {
             _keyConverter = _keyConverter ?? GetKeyConverter(typeof(TKey), options);
-            if (state.Current.PropertyState < StackFramePropertyState.WriteKey)
+            if(state.Current.PropertyState < StackFramePropertyState.WriteKeySeq)
             {
                 writer.WritePropertyStringSeq();
+                state.Current.PropertyState = StackFramePropertyState.WriteKeySeq;
+            }
+            if (state.Current.PropertyState < StackFramePropertyState.WriteKey)
+            {
                 bool success = _keyConverter.TryWriteAsObject(writer, key, options, ref state);
-                state.Current.PropertyState = StackFramePropertyState.WriteKey;
+                if (success)
+                {
+                    state.Current.PropertyState = StackFramePropertyState.WriteKey;
+                }
+               
                 return success;
             }
 
@@ -651,10 +659,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         internal virtual bool WriteValue(BinaryWriter writer, TValue value, BinarySerializerOptions options, ref WriteStack state)
         {
             _valueConverter = _valueConverter ?? GetValueConverter(state.Current.BinaryClassInfo.ElementClassInfo);
-            if(state.Current.PropertyState < StackFramePropertyState.WriteValue)
+            if (state.Current.PropertyState < StackFramePropertyState.WriteValue)
             {
-                state.Current.PropertyState = StackFramePropertyState.WriteValue;
-                return _valueConverter.TryWriteAsObject(writer, value, options, ref state);
+                bool success = _valueConverter.TryWriteAsObject(writer, value, options, ref state);
+                if (success)
+                {
+                    state.Current.PropertyState = StackFramePropertyState.WriteValue;
+                }
+                return success;
             }
             return true;
         }

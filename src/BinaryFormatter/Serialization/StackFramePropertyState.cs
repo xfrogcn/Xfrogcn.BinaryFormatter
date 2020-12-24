@@ -18,6 +18,7 @@ namespace Xfrogcn.BinaryFormatter
         ReadValueIsEnd, // Determine if we are done reading.
         TryReadTypeSeq,
         TryRead,    // Perform the actual call to the converter's TryRead().
+        WriteKeySeq,
         WriteKey,
         WriteValue
     }
