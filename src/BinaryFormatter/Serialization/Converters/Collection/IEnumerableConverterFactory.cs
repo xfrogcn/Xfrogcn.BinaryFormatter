@@ -62,14 +62,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 dictionaryKeyType = genericArgs[0];
                 elementType = genericArgs[1];
             }
-            // IReadOnlyDictionary<TKey, TValue> or deriving from IReadOnlyDictionary<TKey, TValue>
-            else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericInterface(typeof(IReadOnlyDictionary<,>))) != null)
-            {
-                genericArgs = actualTypeToConvert.GetGenericArguments();
-              //  converterType = typeof(IReadOnlyDictionaryOfTKeyTValueConverter<,,>);
-                dictionaryKeyType = genericArgs[0];
-                elementType = genericArgs[1];
-            }
+            //// 
+            //else if ((actualTypeToConvert = typeToConvert.GetCompatibleGenericInterface(typeof(IEnumerable<KeyValuePair<,>>))) != null)
+            //{
+            //    genericArgs = actualTypeToConvert.GetGenericArguments();
+            //  //  converterType = typeof(IReadOnlyDictionaryOfTKeyTValueConverter<,,>);
+            //    dictionaryKeyType = genericArgs[0];
+            //    elementType = genericArgs[1];
+            //}
             // Immutable non-dictionaries from System.Collections.Immutable, e.g. ImmutableStack<T>
             else if (typeToConvert.IsImmutableEnumerableType())
             {
@@ -129,6 +129,12 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             {
                 converterType = typeof(IEnumerableOfTWithAddMethodConverter<,>);
                 elementType = actualTypeToConvert.GetGenericArguments()[0];
+                if(elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+                {
+                    converterType = typeof(IEnumerableKeyValuePairConverter<,,>);
+                    dictionaryKeyType = elementType.GetTypeGenericArguments()[0];
+                    elementType = elementType.GetTypeGenericArguments()[1];
+                }
             }
             // Check for non-generics after checking for generics.
             else if (typeof(IDictionary).IsAssignableFrom(typeToConvert))

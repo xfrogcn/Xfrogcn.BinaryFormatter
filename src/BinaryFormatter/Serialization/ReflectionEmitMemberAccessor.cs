@@ -208,6 +208,63 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             return dynamicMethod;
         }
 
+        public override Action<TCollection, TKey, TValue> CreateDictionaryAddMethod<TCollection, TKey, TValue>()
+        {
+            Type collectionType = typeof(TCollection);
+            Type keyType = typeof(TKey);
+            Type valueType = typeof(TValue);
+            MethodInfo realMethod = collectionType.GetMethod(
+                "Add",
+                new Type[] { keyType, valueType });
+            if (realMethod != null)
+            {
+                var dynamicMethod = new DynamicMethod(
+                realMethod.Name,
+                typeof(void),
+                new[] { collectionType, keyType, valueType },
+                typeof(ReflectionEmitMemberAccessor).Module,
+                skipVisibility: true);
+
+                ILGenerator generator = dynamicMethod.GetILGenerator();
+
+                generator.Emit(OpCodes.Ldarg_0);
+                generator.Emit(OpCodes.Ldarg_1);
+                generator.Emit(OpCodes.Ldarg_2);
+                generator.Emit(OpCodes.Callvirt, realMethod);
+                generator.Emit(OpCodes.Ret);
+
+                return CreateDelegate<Action<TCollection, TKey, TValue>>(dynamicMethod);
+            }
+
+            realMethod = collectionType.GetMethod(
+                "Add",
+                new Type[] { typeof(KeyValuePair<TKey,TValue>) });
+            if (realMethod != null)
+            {
+                var dynamicMethod = new DynamicMethod(
+               realMethod.Name,
+               typeof(void),
+               new[] { collectionType, typeof(KeyValuePair<TKey,TValue>) },
+               typeof(ReflectionEmitMemberAccessor).Module,
+               skipVisibility: true);
+
+                ILGenerator generator = dynamicMethod.GetILGenerator();
+
+                generator.Emit(OpCodes.Ldarg_0);
+                generator.Emit(OpCodes.Ldarg_1);
+                generator.Emit(OpCodes.Callvirt, realMethod);
+                generator.Emit(OpCodes.Ret);
+
+                var addMethod = CreateDelegate<Action<TCollection, KeyValuePair<TKey,TValue>>>(dynamicMethod);
+
+                return (dic, key, value) =>
+                {
+                    addMethod(dic, new KeyValuePair<TKey, TValue>(key, value));
+                };
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// 创建不可变集合类型对应的CreateRange构造方法
