@@ -20,30 +20,8 @@ namespace Xfrogcn.BinaryFormatter.Tests
         public async Task Test_IDictionary_Hashtable(int len)
         {
             Hashtable a = new Hashtable();
-          //  a[0] = 0;
+            a[0] = 0;
             a[createComplexCtorC(len)] = createComplexCtorC(len);
-            //CheckIEnumerableOfIEnumerable(a, (a, b) =>
-            //{
-            //    DictionaryEntry d1 = (DictionaryEntry)a;
-            //    DictionaryEntry d2 = (DictionaryEntry)b;
-            //    if (d1.Key is TestCtorA k1)
-            //    {
-            //        checkCtorCProc(k1)(d2.Key as TestCtorA);
-            //    }
-            //    else
-            //    {
-            //        Assert.Equal(d1.Key, d2.Key);
-            //    }
-            //    if (d1.Value is TestCtorA v1)
-            //    {
-            //        checkCtorCProc(v1)(d2.Value as TestCtorA);
-            //    }
-            //    else
-            //    {
-            //        Assert.Equal(d1.Value, d2.Value);
-            //    }
-            //}
-
             await Test(a, b=>
             {
                 Assert.Equal(a.Count, b.Count);

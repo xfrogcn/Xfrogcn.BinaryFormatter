@@ -157,6 +157,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 }
 
                 if (reader.CurrentTypeInfo.Type == TypeEnum.Nullable || 
+                    // 当Nullable读取需要请求更多数据时，通过此判断进入
+                    //（此时Converter可能已经读取了Nullable的实际类型，reader的当前类型信息已经发生了变化）
                     (state.Current.BinaryClassInfo!=null && 
                     state.Current.PropertyState> StackFramePropertyState.None && 
                     state.Current.BinaryPropertyInfo!=null && 
