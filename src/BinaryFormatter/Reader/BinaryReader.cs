@@ -436,37 +436,29 @@ namespace Xfrogcn.BinaryFormatter
 
         internal bool ReadStartToken()
         {
-            if (!RequestData(1))
+            if (!RequestData(5))
             {
                 return false;
             }
 
             byte objType = _buffer[_consumed];
+            ValueSpan = _buffer.Slice(_consumed + 1, 4);
+            _consumed += 5;
+
             if (objType == 0x00)
             {
                 //正常
                 _tokenType = BinaryTokenType.StartObject;
-                _consumed++;
-                return true;
             }
             else if (objType == 0xFF)
             {
-                // 引用
-                if(!RequestData(5))
-                {
-                    return false;
-                }
-
                 _tokenType = BinaryTokenType.ObjectRef;
-                ValueSpan = _buffer.Slice(_consumed + 1, 4);
-                _consumed += 5;
-                return true;
             }
             else
             {
                 ThrowHelper.ThrowBinaryReaderException(ref this, ExceptionResource.ExpectedBinaryTokens);
             }
-            return false;
+            return true;
         }
 
         internal bool ReadEndArrayToken()

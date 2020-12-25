@@ -180,6 +180,7 @@ namespace Xfrogcn.BinaryFormatter
                     Current.BinaryClassInfo = binaryClassInfo;
                     Current.BinaryPropertyInfo = binaryClassInfo.PropertyInfoForClassInfo;
                     Current.BinaryTypeInfo = typeInfo;
+                    
                     Current.TypeMap = TypeMap;
                 }
             }

@@ -20,13 +20,13 @@ namespace Xfrogcn.BinaryFormatter
                 // 写引用及引用序号
                 writer.WriteByteValue(0xFF);
                 writer.WriteUInt32Value(seq);
-                
                 return true;
             }
             else
             {
                 // 标记为非引用
                 writer.WriteByteValue(0x00);
+                writer.WriteUInt32Value(seq);
                 return false;
             }
             

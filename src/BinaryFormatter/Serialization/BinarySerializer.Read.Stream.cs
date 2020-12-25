@@ -174,7 +174,7 @@ namespace Xfrogcn.BinaryFormatter
                 {
                     clearMax = bytesInBuffer;
                 }
-
+                Debug.WriteLine(bytesInBuffer);
                 TValue value = ReadCore<TValue>(
                     ref readerState,
                     isFinalBlock,

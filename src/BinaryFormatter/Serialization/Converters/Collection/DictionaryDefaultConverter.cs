@@ -357,6 +357,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                             TKey key = (TKey)state.Current.DictionaryKey!;
                             Add(key, element, options, ref state);
+                            
+                        }
+
+                        if(state.Current.PropertyState< StackFramePropertyState.ReadValueIsEnd)
+                        {
                             state.Current.EndElement();
                         }
 

@@ -156,7 +156,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     return true;
                 }
 
-                if (reader.CurrentTypeInfo.Type == TypeEnum.Nullable)
+                if (reader.CurrentTypeInfo.Type == TypeEnum.Nullable || 
+                    (state.Current.BinaryClassInfo!=null && 
+                    state.Current.PropertyState> StackFramePropertyState.None && 
+                    state.Current.BinaryPropertyInfo!=null && 
+                    state.TypeMap.GetTypeInfo(state.Current.BinaryPropertyInfo.TypeSeq).Type == TypeEnum.Nullable))
                 {
                     state.Push(reader.CurrentTypeInfo);
                     bool isSuccess = OnTryRead(ref reader, typeToConvert, options, ref state, out value);

@@ -36,11 +36,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 alreadyExists = true;
                 RefItem item = _objectToReferenceIdMap[value];
                 item.RefCount++;
-                if (item.Seq == 0)
-                {
-                    item.Seq = _referenceCount;
-                    _referenceCount++;
-                }
+                //if (item.Seq == 0)
+                //{
+                //    item.Seq = _referenceCount;
+                //    _referenceCount++;
+                //}
                 return item.Seq;
             }
             else
@@ -50,13 +50,15 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 {
                     RefCount = 0,
                     Value = value,
-                    Seq = 0,
+                    Seq = _referenceCount,
                     Offset = offset
                 };
-               // _referenceIdToObjectMap.Add(seq, item);
+               
+                // _referenceIdToObjectMap.Add(seq, item);
                 _objectToReferenceIdMap.Add(value, item);
+                _referenceCount++;
                 alreadyExists = false;
-                return 0;
+                return item.Seq;
             }
             
         }

@@ -20,7 +20,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
         public async Task Test_IDictionary_Hashtable(int len)
         {
             Hashtable a = new Hashtable();
-            a[0] = 0;
+          //  a[0] = 0;
             a[createComplexCtorC(len)] = createComplexCtorC(len);
             //CheckIEnumerableOfIEnumerable(a, (a, b) =>
             //{
