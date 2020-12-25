@@ -4,13 +4,8 @@ using System.Reflection;
 
 namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
-    internal sealed class TimeZoneInfoConverter : LargeObjectWithParameterizedConstructorConverter<TimeZoneInfo>
+    internal sealed class TimeZoneInfoConverter : ObjectWithCustomerCreatorConverter<TimeZoneInfo>
     {
-        internal override bool ConstructorIsParameterized => false;
-        public override bool CanConvert(Type typeToConvert)
-        {
-            return typeToConvert == typeof(TimeZoneInfo);
-        }
 
         public override MethodInfo[] GetAdditionalDataMethod()
         {
@@ -18,70 +13,41 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             return new MethodInfo[] { mi };
         }
 
-        protected override void SetCtorArguments(ref ReadStack state, BinaryParameterInfo binaryParameterInfo, ref object arg)
-        {
-            state.Current.PropertyValueCache[binaryParameterInfo.NameAsString] = arg!;
-        }
+
 
         protected override object CreateObject(ref ReadStackFrame frame)
         {
             var args = frame.PropertyValueCache;
-
-            return TimeZoneInfo.AdjustmentRule.CreateAdjustmentRule(
-                (DateTime)args[nameof(TimeZoneInfo.AdjustmentRule.DateStart)],
-                (DateTime)args[nameof(TimeZoneInfo.AdjustmentRule.DateEnd)],
-                (TimeSpan)args[nameof(TimeZoneInfo.AdjustmentRule.DaylightDelta)],
-                (TimeZoneInfo.TransitionTime)args[nameof(TimeZoneInfo.AdjustmentRule.DaylightTransitionStart)],
-                (TimeZoneInfo.TransitionTime)args[nameof(TimeZoneInfo.AdjustmentRule.DaylightTransitionEnd)]
+            return TimeZoneInfo.CreateCustomTimeZone(
+                (string)args[nameof(TimeZoneInfo.Id)],
+                (TimeSpan)args[nameof(TimeZoneInfo.BaseUtcOffset)],
+                (string)args[nameof(TimeZoneInfo.DisplayName)],
+                (string)args[nameof(TimeZoneInfo.StandardName)],
+                (string)args[nameof(TimeZoneInfo.DaylightName)],
+                (TimeZoneInfo.AdjustmentRule[])args[nameof(TimeZoneInfo.GetAdjustmentRules)]
                 );
         }
 
-        protected override void InitializeConstructorArgumentCaches(ref ReadStack state, BinarySerializerOptions options)
-        {
-            BinaryClassInfo classInfo = state.Current.BinaryClassInfo;
-
-            if (classInfo.ParameterCache == null)
-            {
-                var parameterCache = new Dictionary<string, BinaryParameterInfo>(
-                6, StringComparer.OrdinalIgnoreCase);
-
-                foreach (BinaryPropertyInfo pi in classInfo.PropertyCacheArray)
-                {
-                    var par = pi.ConverterBase.CreateBinaryParameterInfo();
-                    par.Initialize(
-                        pi.TypeMap,
-                        pi.RuntimePropertyType,
-                        null,
-                        pi,
-                        state.Options
-                        );
-                    par.NameAsString = pi.NameAsString;
-
-                    parameterCache.Add(pi.NameAsString, par);
-                }
-
-                if (classInfo.ParameterCache == null)
-                {
-                    classInfo.ParameterCache = parameterCache;
-                    classInfo.ParameterCount = parameterCache.Count;
-                }
-            }
-
-
-
-            if (state.Current.CtorArgumentState == null)
-            {
-                state.Current.CtorArgumentState = new ArgumentState();
-            }
-
-            state.Current.PropertyValueCache = new Dictionary<string, object>();
-        }
-
+    
         public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             base.SetTypeMetadata(typeInfo, typeMap, options);
             typeInfo.Type = TypeEnum.TimeZoneInfo;
             typeInfo.FullName = null;
+        }
+
+        protected override void InitializeCreatorArgumentCaches(ref ReadStack state, BinarySerializerOptions options)
+        {
+            // 设置属性
+            BinaryClassInfo classInfo = state.Current.BinaryClassInfo;
+            if (state.Current.PropertyValueCache == null)
+            {
+                for (int i = 0; i < classInfo.PropertyCacheArray.Length; i++)
+                {
+                    classInfo.PropertyCacheArray[i].ShouldDeserialize = true;
+                }
+                state.Current.PropertyValueCache = new Dictionary<string, object>();
+            }
         }
     }
 }

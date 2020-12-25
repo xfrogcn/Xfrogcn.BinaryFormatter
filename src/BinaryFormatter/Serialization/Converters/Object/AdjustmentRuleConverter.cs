@@ -3,18 +3,8 @@ using System.Collections.Generic;
 
 namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
-    internal sealed class AdjustmentRuleConverter : LargeObjectWithParameterizedConstructorConverter<TimeZoneInfo.AdjustmentRule>
+    internal sealed class AdjustmentRuleConverter : ObjectWithCustomerCreatorConverter<TimeZoneInfo.AdjustmentRule>
     {
-        internal override bool ConstructorIsParameterized => false;
-        public override bool CanConvert(Type typeToConvert)
-        {
-            return typeToConvert == typeof(TimeZoneInfo.AdjustmentRule);
-        }
-
-        protected override void SetCtorArguments(ref ReadStack state, BinaryParameterInfo binaryParameterInfo, ref object arg)
-        {
-            state.Current.PropertyValueCache[binaryParameterInfo.NameAsString] = arg!;
-        }
 
         protected override object CreateObject(ref ReadStackFrame frame)
         {
@@ -29,52 +19,27 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 );
         }
 
-        protected override void InitializeConstructorArgumentCaches(ref ReadStack state, BinarySerializerOptions options)
-        {
-            BinaryClassInfo classInfo = state.Current.BinaryClassInfo;
-
-            if (classInfo.ParameterCache == null)
-            {
-                var parameterCache = new Dictionary<string, BinaryParameterInfo>(
-                6, StringComparer.OrdinalIgnoreCase);
-
-                foreach (BinaryPropertyInfo pi in classInfo.PropertyCacheArray)
-                {
-                    var par = pi.ConverterBase.CreateBinaryParameterInfo();
-                    par.Initialize(
-                        pi.TypeMap,
-                        pi.RuntimePropertyType,
-                        null,
-                        pi,
-                        state.Options
-                        );
-                    par.NameAsString = pi.NameAsString;
-
-                    parameterCache.Add(pi.NameAsString, par);
-                }
-
-                if (classInfo.ParameterCache == null)
-                {
-                    classInfo.ParameterCache = parameterCache;
-                    classInfo.ParameterCount = parameterCache.Count;
-                }
-            }
-
-
-
-            if (state.Current.CtorArgumentState == null)
-            {
-                state.Current.CtorArgumentState = new ArgumentState();
-            }
-
-            state.Current.PropertyValueCache = new Dictionary<string, object>();
-        }
+        
 
         public override void SetTypeMetadata(BinaryTypeInfo typeInfo, TypeMap typeMap, BinarySerializerOptions options)
         {
             base.SetTypeMetadata(typeInfo, typeMap, options);
             typeInfo.Type = TypeEnum.AdjustmentRule;
             typeInfo.FullName = null;
+        }
+
+        protected override void InitializeCreatorArgumentCaches(ref ReadStack state, BinarySerializerOptions options)
+        {
+            // 设置属性
+            BinaryClassInfo classInfo = state.Current.BinaryClassInfo;
+            if (state.Current.PropertyValueCache == null)
+            {
+                for (int i = 0; i < classInfo.PropertyCacheArray.Length; i++)
+                {
+                    classInfo.PropertyCacheArray[i].ShouldDeserialize = true;
+                }
+                state.Current.PropertyValueCache = new Dictionary<string, object>();
+            }
         }
     }
 }

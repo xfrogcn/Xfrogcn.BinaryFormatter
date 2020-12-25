@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Xfrogcn.BinaryFormatter.Serialization;
 
 namespace Xfrogcn.BinaryFormatter
 {
@@ -49,6 +50,8 @@ namespace Xfrogcn.BinaryFormatter
 
         public long BytesConsumed;
 
+        public ReferenceResolver ReferenceResolver;
+
         internal void ResolveTypes(BinarySerializerOptions options)
         {
             Options = options;
@@ -77,12 +80,15 @@ namespace Xfrogcn.BinaryFormatter
 
             Current.BinaryTypeInfo = TypeMap.GetTypeInfo(type);
             Current.TypeMap = TypeMap;
-            
-            //bool preserveReferences = options.ReferenceHandler != null;
-            //if (preserveReferences)
-            //{
-            //    ReferenceResolver = options.ReferenceHandler!.CreateResolver(writing: false);
-            //}
+
+            if (options.ReferenceHandler != null)
+            {
+                ReferenceResolver = options.ReferenceHandler!.CreateResolver(writing: false);
+            }
+            else
+            {
+                ReferenceResolver = new ObjectReferenceResolver();
+            }
 
             SupportContinuation = supportContinuation;
             //UseFastPath = !supportContinuation && !preserveReferences;

@@ -298,8 +298,10 @@ namespace Xfrogcn.BinaryFormatter
         public abstract void SetExtensionDictionaryAsObject(object obj, object extensionDict);
 
         public bool ShouldSerialize { get; private set; }
-        public bool ShouldDeserialize { get; private set; }
+        public bool ShouldDeserialize { get; internal set; }
         public bool IsIgnored { get; private set; }
+
+
 
     }
 }

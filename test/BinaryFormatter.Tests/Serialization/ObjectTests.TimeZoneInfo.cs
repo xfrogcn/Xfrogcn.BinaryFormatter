@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Xunit;
 using static System.TimeZoneInfo;
+using System.Linq;
 
 namespace Xfrogcn.BinaryFormatter.Tests
 {
@@ -37,7 +38,43 @@ namespace Xfrogcn.BinaryFormatter.Tests
         {
 
             var a = TimeZoneInfo.Local;
-            await Test(a, (b) => Assert.Equal(a, b));
+           
+   
+            //await Test(a, (b) =>
+            //{
+            //    Assert.Equal(a.Id, b.Id);
+            //    Assert.Equal(a.BaseUtcOffset, b.BaseUtcOffset);
+            //    Assert.Equal(a.DisplayName, b.DisplayName);
+            //    Assert.Equal(a.StandardName, b.StandardName);
+            //    Assert.Equal(a.DaylightName, b.DaylightName);
+            //    Assert.Equal(a.SupportsDaylightSavingTime, b.SupportsDaylightSavingTime);
+            //    Assert.Equal(a.GetAdjustmentRules().Length, b.GetAdjustmentRules().Length);
+            //});
+
+            //a = TimeZoneInfo.Utc;
+            //await Test(a, (b) =>
+            //{
+            //    Assert.Equal(a.Id, b.Id);
+            //    Assert.Equal(a.BaseUtcOffset, b.BaseUtcOffset);
+            //    Assert.Equal(a.DisplayName, b.DisplayName);
+            //    Assert.Equal(a.StandardName, b.StandardName);
+            //    Assert.Equal(a.DaylightName, b.DaylightName);
+            //    Assert.Equal(a.SupportsDaylightSavingTime, b.SupportsDaylightSavingTime);
+            //    Assert.Equal(a.GetAdjustmentRules().Length, b.GetAdjustmentRules().Length);
+            //});
+
+            var zones = TimeZoneInfo.GetSystemTimeZones();
+            a = zones.OrderByDescending(z => z.GetAdjustmentRules().Length).First();
+            await Test(a, (b) =>
+            {
+                Assert.Equal(a.Id, b.Id);
+                Assert.Equal(a.BaseUtcOffset, b.BaseUtcOffset);
+                Assert.Equal(a.DisplayName, b.DisplayName);
+                Assert.Equal(a.StandardName, b.StandardName);
+                Assert.Equal(a.DaylightName, b.DaylightName);
+                Assert.Equal(a.SupportsDaylightSavingTime, b.SupportsDaylightSavingTime);
+                Assert.Equal(a.GetAdjustmentRules().Length, b.GetAdjustmentRules().Length);
+            });
         }
     }
 }
