@@ -1,11 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ReferenceResolverCallback = System.ValueTuple<object, object, System.Action<object, object>>;
 
 namespace Xfrogcn.BinaryFormatter.Serialization
 {
     public class ObjectReferenceResolver : ReferenceResolver
     {
         private uint _referenceCount;
+
+        enum RefState
+        {
+            None,
+            Start,
+            Created
+        }
 
         class RefItem
         {
@@ -16,12 +24,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             public ulong Offset { get; set; }
 
             public uint Seq { get; set; }
+
+            public RefState State { get; set; }
         }
 
       //  private readonly Dictionary<uint, RefItem> _referenceIdToObjectMap;
         private readonly Dictionary<object, RefItem> _objectToReferenceIdMap;
-
-        
+        // 回调 所需引用
+        private readonly List<ReferenceResolverCallback> ResolverCallback = new List<ReferenceResolverCallback>();
 
         public ObjectReferenceResolver()
         {
