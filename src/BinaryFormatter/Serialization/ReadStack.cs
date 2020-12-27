@@ -27,12 +27,16 @@ namespace Xfrogcn.BinaryFormatter
 
         internal BinarySerializerOptions Options { get; set; }
 
+        
+
         public ReadStackFrame Current;
 
         public bool IsContinuation => _continuationCount != 0;
         public bool IsLastContinuation => _continuationCount == _count;
 
         private int _count;
+
+
 
         private List<ReadStackFrame> _previous;
 

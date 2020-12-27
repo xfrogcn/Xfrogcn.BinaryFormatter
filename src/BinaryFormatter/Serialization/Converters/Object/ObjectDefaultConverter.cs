@@ -87,20 +87,34 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         return false;
                     }
 
-                    if (reader.TokenType == BinaryTokenType.StartObject)
+
+                    RefState refState = BinarySerializer.ReadReferenceForObject(this, ref state, ref reader, out object refValue);
+                    if (refState == RefState.None)
                     {
                         state.Current.ObjectState = StackFrameObjectState.StartToken;
                     }
-                    else if (reader.TokenType == BinaryTokenType.ObjectRef)
+                    else if (refState == RefState.Created)
                     {
-                        // 检查Resolver中是否存在对应id的实例，如果有则直接使用，否则跳转读取
-
-
-                        state.Current.ObjectState = StackFrameObjectState.GotoRef;
-
+                        state.Current.ObjectState = StackFrameObjectState.CreatedObject;
+                        value = (T)refValue;
+                    }
+                    else
+                    {
                         value = default;
                         return false;
                     }
+
+                    //if (reader.TokenType == BinaryTokenType.StartObject)
+                    //{
+                    //    state.Current.ObjectState = StackFrameObjectState.StartToken;
+                    //}
+                    //else if (reader.TokenType == BinaryTokenType.ObjectRef)
+                    //{
+                    //    // 检查Resolver中是否存在对应id的实例，如果有则直接使用，否则跳转读取
+
+
+                        
+                    //}
                 }
 
 
@@ -136,6 +150,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                        // ThrowHelper.ThrowNotSupportedException_DeserializeNoConstructor(state.Current.BinaryClassInfo.Type, ref reader, ref state);
                     }
                     obj = state.Current.BinaryClassInfo.CreateObject();
+                    state.ReferenceResolver.AddReferenceObject(state.Current.RefId, obj);
                     //if( state.TypeMap.GetType( state.Current.BinaryTypeInfo.Seq) == state.Current.BinaryPropertyInfo.ConverterBase.TypeToConvert)
                     //{
                     //    obj = state.Current.BinaryPropertyInfo.RuntimeClassInfo.CreateObject();

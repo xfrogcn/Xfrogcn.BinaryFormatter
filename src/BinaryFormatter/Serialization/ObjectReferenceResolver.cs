@@ -8,12 +8,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
     {
         private uint _referenceCount;
 
-        enum RefState
-        {
-            None,
-            Start,
-            Created
-        }
+
 
         class RefItem
         {
@@ -28,14 +23,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             public RefState State { get; set; }
         }
 
-      //  private readonly Dictionary<uint, RefItem> _referenceIdToObjectMap;
+        private readonly Dictionary<uint, RefItem> _referenceIdToObjectMap;
         private readonly Dictionary<object, RefItem> _objectToReferenceIdMap;
         // 回调 所需引用
         private readonly List<ReferenceResolverCallback> ResolverCallback = new List<ReferenceResolverCallback>();
 
         public ObjectReferenceResolver()
         {
-        //    _referenceIdToObjectMap = new Dictionary<uint, RefItem>();
+            _referenceIdToObjectMap = new Dictionary<uint, RefItem>();
             _objectToReferenceIdMap = new Dictionary<object, RefItem>();
         }
 
@@ -73,14 +68,45 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             
         }
 
-        public override void AddReference(uint seq, ulong offset)
+        public override void AddReference(uint seq)
         {
-            throw new System.NotImplementedException();
+            RefItem ri = null;
+            _referenceIdToObjectMap.TryGetValue(seq, out ri);
+            if (ri == null)
+            {
+                ri = new RefItem()
+                {
+                    Seq = seq,
+                    State = RefState.Start,
+                    RefCount = 0
+                };
+                _referenceIdToObjectMap.Add(seq, ri);
+            }
+           
         }
 
         public override Dictionary<uint, ulong> GetReferenceOffsetMap()
         {
             return new Dictionary<uint, ulong>(_objectToReferenceIdMap.Where(kv => kv.Value.RefCount > 1).Select(kv => new KeyValuePair<uint, ulong>(kv.Value.Seq, kv.Value.Offset)));
+        }
+
+        public override RefState TryGetReference(uint seq, out object value)
+        {
+            RefItem ri = _referenceIdToObjectMap[seq];
+            if (ri == null)
+            {
+                value = default;
+                return RefState.None;
+            }
+            value = ri.Value;
+            return ri.State;
+        }
+
+        public override void AddReferenceObject(uint seq, object value)
+        {
+            RefItem ri = _referenceIdToObjectMap[seq];
+            ri.State = RefState.Created;
+            ri.Value = value;
         }
     }
 }

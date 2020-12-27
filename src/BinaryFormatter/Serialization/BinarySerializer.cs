@@ -33,6 +33,34 @@ namespace Xfrogcn.BinaryFormatter
         }
 
 
+        internal static RefState ReadReferenceForObject(
+            BinaryConverter binaryConverter,
+            ref ReadStack state,
+            ref BinaryReader reader,
+            out object value)
+        {
+            if (reader.TokenType == BinaryTokenType.StartObject)
+            {
+                uint refSeq = BitConverter.ToUInt32(reader.ValueSpan);
+                state.ReferenceResolver.AddReference(refSeq);
+                value = default;
+                state.Current.RefId = refSeq;
+                return RefState.None;
+            }
+            else if (reader.TokenType == BinaryTokenType.ObjectRef)
+            {
+                uint refSeq = BitConverter.ToUInt32(reader.ValueSpan);
+                state.Current.RefId = refSeq;
+                return state.ReferenceResolver.TryGetReference(refSeq, out value);
+            }
+            else
+            {
+                ThrowHelper.ThrowBinaryReaderException(ref reader, ExceptionResource.InvalidByte);
+            }
+            value = default;
+            return RefState.None;
+        }
+
         internal static BinaryPropertyInfo LookupProperty(
             object obj,
             ReadOnlySpan<byte> unescapedPropertyName,

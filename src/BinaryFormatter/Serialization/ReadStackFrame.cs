@@ -37,6 +37,7 @@ namespace Xfrogcn.BinaryFormatter
         public byte EnumerableIndexBytes;
         public ulong EnumerableLength;
         public ulong EnumerableIndex;
+        internal uint RefId;
 
         public StackFrameObjectState ObjectState; // State tracking the current object.
 
