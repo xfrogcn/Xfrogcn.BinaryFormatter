@@ -18,8 +18,22 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         protected override object CreateObject(ref ReadStackFrame frame)
         {
             var args = frame.PropertyValueCache;
+            string id = (string)args[nameof(TimeZoneInfo.Id)];
+
+            try
+            {
+                TimeZoneInfo ti = TimeZoneInfo.FindSystemTimeZoneById(id);
+                if (ti != null)
+                {
+                    return ti;
+                }
+            }
+            catch (TimeZoneNotFoundException)
+            {
+
+            }
             return TimeZoneInfo.CreateCustomTimeZone(
-                (string)args[nameof(TimeZoneInfo.Id)],
+                id,
                 (TimeSpan)args[nameof(TimeZoneInfo.BaseUtcOffset)],
                 (string)args[nameof(TimeZoneInfo.DisplayName)],
                 (string)args[nameof(TimeZoneInfo.StandardName)],

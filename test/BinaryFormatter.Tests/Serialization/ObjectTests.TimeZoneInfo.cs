@@ -65,7 +65,8 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
             var zones = TimeZoneInfo.GetSystemTimeZones();
             a = zones.OrderByDescending(z => z.GetAdjustmentRules().Length).First();
-            var rules = a.GetAdjustmentRules();
+
+            
             await Test(a, (b) =>
             {
                 Assert.Equal(a.Id, b.Id);
