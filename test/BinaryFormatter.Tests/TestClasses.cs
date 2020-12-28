@@ -114,4 +114,32 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
         public T B { get; set; }
     }
+
+    class SelfRefWithCtorA
+    {
+        [BinaryFormatter.Serialization.BinaryConstructor]
+        public SelfRefWithCtorA(string a)
+        {
+            A = a;
+        }
+
+        public string A { get; set; }
+
+        public SelfRefWithCtorA Self { get; set; }
+    }
+
+    class TestRefWithCtor
+    {
+        [BinaryFormatter.Serialization.BinaryConstructor]
+        public TestRefWithCtor(string a)
+        {
+            A = a;
+        }
+
+        public string A { get; set; }
+
+        public TestRefWithCtor Parent { get; set; }
+
+        public TestRefWithCtor Child { get; set; }
+    }
 }
