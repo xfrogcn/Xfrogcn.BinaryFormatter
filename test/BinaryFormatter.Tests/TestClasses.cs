@@ -102,4 +102,16 @@ namespace Xfrogcn.BinaryFormatter.Tests
     }
 
    
+    class TestSelfRefA
+    {
+        public string A { get; set; }
+        public TestSelfRefA Self { get; set; }
+    }
+
+    class TestRef<T>
+    {
+        public T A { get; set; }
+
+        public T B { get; set; }
+    }
 }

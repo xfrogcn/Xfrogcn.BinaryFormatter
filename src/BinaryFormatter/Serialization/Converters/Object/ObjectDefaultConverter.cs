@@ -96,7 +96,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     else if (refState == RefState.Created)
                     {
                         state.Current.ObjectState = StackFrameObjectState.CreatedObject;
-                        value = (T)refValue;
+                        state.Current.ReturnValue = refValue;
                     }
                     else
                     {

@@ -140,20 +140,36 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         return false;
                     }
 
-                    if (reader.TokenType == BinaryTokenType.StartObject)
+                    RefState refState = BinarySerializer.ReadReferenceForObject(this, ref state, ref reader, out object refValue);
+                    if (refState == RefState.None)
                     {
                         state.Current.ObjectState = StackFrameObjectState.StartToken;
                     }
-                    else if (reader.TokenType == BinaryTokenType.ObjectRef)
+                    else if (refState == RefState.Created)
                     {
-                        // 检查Resolver中是否存在对应id的实例，如果有则直接使用，否则跳转读取
-
-
-                        state.Current.ObjectState = StackFrameObjectState.GotoRef;
-
+                        state.Current.ObjectState = StackFrameObjectState.ReadElements;
+                        state.Current.ReturnValue = refValue;
+                    }
+                    else
+                    {
                         value = default;
                         return false;
                     }
+
+                    //if (reader.TokenType == BinaryTokenType.StartObject)
+                    //{
+                    //    state.Current.ObjectState = StackFrameObjectState.StartToken;
+                    //}
+                    //else if (reader.TokenType == BinaryTokenType.ObjectRef)
+                    //{
+                    //    // 检查Resolver中是否存在对应id的实例，如果有则直接使用，否则跳转读取
+
+
+                    //    state.Current.ObjectState = StackFrameObjectState.GotoRef;
+
+                    //    value = default;
+                    //    return false;
+                    //}
                 }
 
                 // Handle the metadata properties.
@@ -372,6 +388,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                     // 转实际类型
                     ConvertCollection(ref state, options);
+                    state.ReferenceResolver.AddReferenceObject(state.Current.RefId, state.Current.ReturnValue);
                 }
 
                 if (state.Current.ObjectState < StackFrameObjectState.ReadProperties)

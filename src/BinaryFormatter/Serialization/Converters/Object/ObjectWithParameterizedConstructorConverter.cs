@@ -76,21 +76,37 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         value = default;
                         return false;
                     }
-                    if (reader.TokenType == BinaryTokenType.StartObject)
+                    RefState refState = BinarySerializer.ReadReferenceForObject(this, ref state, ref reader, out object refValue);
+                    if (refState == RefState.None)
                     {
                         state.Current.ObjectState = StackFrameObjectState.StartToken;
+                        BeginRead(ref state, ref reader, options);
+                        // 初始化中可能会修改状态对象
+                        argumentState = state.Current.CtorArgumentState!;
                     }
-                    else if (reader.TokenType == BinaryTokenType.ObjectRef)
+                    else if (refState == RefState.Created)
                     {
-                        // 检查Resolver中是否存在对应id的实例，如果有则直接使用，否则跳转读取
-                        state.Current.ObjectState = StackFrameObjectState.GotoRef;
-
+                        state.Current.ObjectState = StackFrameObjectState.CreatedObject;
+                        state.Current.ReturnValue = refValue;
+                    }
+                    else
+                    {
                         value = default;
                         return false;
                     }
-                    BeginRead(ref state, ref reader, options);
-                    // 初始化中可能会修改状态对象
-                    argumentState = state.Current.CtorArgumentState!;
+                    //if (reader.TokenType == BinaryTokenType.StartObject)
+                    //{
+                    //    state.Current.ObjectState = StackFrameObjectState.StartToken;
+                    //}
+                    //else if (reader.TokenType == BinaryTokenType.ObjectRef)
+                    //{
+                    //    // 检查Resolver中是否存在对应id的实例，如果有则直接使用，否则跳转读取
+                    //    state.Current.ObjectState = StackFrameObjectState.GotoRef;
+
+                    //    value = default;
+                    //    return false;
+                    //}
+
                 }
 
                 // 读取构造参数
@@ -99,8 +115,15 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     value = default;
                     return false;
                 }
-
-                obj = CreateObject(ref state.Current);
+                if( state.Current.ObjectState < StackFrameObjectState.CreatedObject)
+                {
+                    obj = CreateObject(ref state.Current);
+                    state.ReferenceResolver.AddReferenceObject(state.Current.RefId, obj);
+                }
+                else
+                {
+                    obj = state.Current.ReturnValue;
+                }
 
                 if (argumentState.FoundPropertyCount > 0)
                 {
