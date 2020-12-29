@@ -51,7 +51,12 @@ namespace Xfrogcn.BinaryFormatter
             {
                 uint refSeq = BitConverter.ToUInt32(reader.ValueSpan);
                 state.Current.RefId = refSeq;
-                return state.ReferenceResolver.TryGetReference(refSeq, out value);
+                var refState = state.ReferenceResolver.TryGetReference(refSeq, out value);
+                if(refState == RefState.Start)
+                {
+                    value = new ReferenceID() { RefSeq = refSeq };
+                }
+                return refState;
             }
             else
             {
@@ -93,7 +98,7 @@ namespace Xfrogcn.BinaryFormatter
 
                     if (createExtensionProperty)
                     {
-                        CreateDataExtensionProperty(obj, dataExtProperty);
+                        CreateDataExtensionProperty(ref state, obj, dataExtProperty);
                     }
 
                     binaryPropertyInfo = dataExtProperty;
@@ -106,6 +111,7 @@ namespace Xfrogcn.BinaryFormatter
         }
 
         internal static void CreateDataExtensionProperty(
+            ref ReadStack state,
          object obj,
          BinaryPropertyInfo binaryPropertyInfo)
         {
@@ -132,7 +138,7 @@ namespace Xfrogcn.BinaryFormatter
                 }
 
                 extensionData = binaryPropertyInfo.RuntimeClassInfo.CreateObject();
-                binaryPropertyInfo.SetExtensionDictionaryAsObject(obj, extensionData);
+                binaryPropertyInfo.SetExtensionDictionaryAsObject(ref state, obj, extensionData);
             }
 
             // We don't add the value to the dictionary here because we need to support the read-ahead functionality for Streams.

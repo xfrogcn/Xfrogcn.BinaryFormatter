@@ -127,7 +127,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         /// <returns>The value that was converted.</returns>
         public abstract T Read(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options);
 
-        internal bool TryRead(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options, ref ReadStack state, out T value)
+        internal bool TryRead(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options, ref ReadStack state, out ReferenceID refId, out T value)
         {
             //if (state.Current.BinaryPropertyInfo != null && state.Current.BinaryPropertyInfo.ClassType != ClassType)
             //{
@@ -137,7 +137,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             //{
             //    throw new Exception();
             //}
-           
+            refId = default;
 
             if (ClassType == ClassType.Value)
             {
@@ -351,6 +351,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     // No need to clear state.Current.* since a stack pop will occur.
                 }
             }
+
+            if(success && state.Current.RefState == RefState.Start)
+            {
+                refId = (ReferenceID)state.Current.ReturnValue;
+            }
           //  if (!isPolymorphic)
          //   {
                 state.Pop(success);
@@ -361,7 +366,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         internal override sealed bool TryReadAsObject(ref BinaryReader reader, BinarySerializerOptions options, ref ReadStack state, out object value)
         {
-            bool success = TryRead(ref reader, TypeToConvert, options, ref state, out T typedValue);
+            bool success = TryRead(ref reader, TypeToConvert, options, ref state,out ReferenceID  refId, out T typedValue);
             value = typedValue;
             return success;
         }

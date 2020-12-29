@@ -182,7 +182,7 @@ namespace Xfrogcn.BinaryFormatter
             }
             else
             {
-                success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out value);
+                success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out ReferenceID refId, out value);
             }
 
             if (!success)
@@ -376,8 +376,8 @@ namespace Xfrogcn.BinaryFormatter
             }
             else
             {
-                success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out T typedValue);
-                value = typedValue;
+                success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out ReferenceID refId, out T typedValue);
+                value = (object)refId ?? typedValue;
             }
 
             if (!success)
@@ -392,10 +392,27 @@ namespace Xfrogcn.BinaryFormatter
         }
 
 
-        public override void SetExtensionDictionaryAsObject(object obj, object extensionDict)
+        public override void SetExtensionDictionaryAsObject(ref ReadStack state, object obj, object extensionDict)
         {
             Debug.Assert(HasSetter);
-            T typedValue = (T)extensionDict!;
+            T typedValue = default;
+            if ( extensionDict is ReferenceID refId)
+            {
+                RefState refState = state.ReferenceResolver.TryGetReference(refId.RefSeq, out object tmpObj);
+                if(refState == RefState.Created)
+                {
+                    typedValue = (T)tmpObj;
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            else
+            {
+                typedValue = (T)extensionDict!;
+            }
+           
             Set!(obj, typedValue);
         }
     }

@@ -91,7 +91,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             }
             else
             {
-                success = converter.TryRead(ref reader, info.RuntimePropertyType, info.Options!, ref state, out value);
+                success = converter.TryRead(ref reader, info.RuntimePropertyType, info.Options!, ref state, out ReferenceID refId, out value);
             }
 
             arg = value == null && binaryParameterInfo.IgnoreDefaultValuesOnRead

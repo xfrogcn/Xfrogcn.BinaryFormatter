@@ -98,6 +98,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 value = default;
                 return RefState.None;
             }
+            
             value = ri.Value;
             return ri.State;
         }

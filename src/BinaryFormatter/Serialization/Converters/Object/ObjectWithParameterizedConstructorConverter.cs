@@ -84,16 +84,13 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         // 初始化中可能会修改状态对象
                         argumentState = state.Current.CtorArgumentState!;
                     }
-                    else if (refState == RefState.Created)
+                    else 
                     {
                         state.Current.ObjectState = StackFrameObjectState.CreatedObject;
                         state.Current.ReturnValue = refValue;
+                        state.Current.RefState = refState;
                     }
-                    else
-                    {
-                        value = default;
-                        return false;
-                    }
+                    
                     //if (reader.TokenType == BinaryTokenType.StartObject)
                     //{
                     //    state.Current.ObjectState = StackFrameObjectState.StartToken;
@@ -135,7 +132,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                         if (dataExtKey == null)
                         {
-                            binaryPropertyInfo.SetExtensionDictionaryAsObject(obj, propValue);
+                            binaryPropertyInfo.SetExtensionDictionaryAsObject(ref state, obj, propValue);
                         }
                         else
                         {
@@ -174,8 +171,14 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
             EndRead(ref state);
 
-            value = (T)obj;
-
+            if (state.Current.RefState != RefState.Start)
+            {
+                value = (T)obj;
+            }
+            else
+            {
+                value = default;
+            }
             return true;
         }
 

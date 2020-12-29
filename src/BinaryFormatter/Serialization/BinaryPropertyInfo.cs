@@ -295,7 +295,7 @@ namespace Xfrogcn.BinaryFormatter
 
         public Type RuntimePropertyType { get; private set; }
 
-        public abstract void SetExtensionDictionaryAsObject(object obj, object extensionDict);
+        public abstract void SetExtensionDictionaryAsObject(ref ReadStack state, object obj, object extensionDict);
 
         public bool ShouldSerialize { get; private set; }
         public bool ShouldDeserialize { get; internal set; }

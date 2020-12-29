@@ -30,6 +30,7 @@ namespace Xfrogcn.BinaryFormatter
         public object ReturnValue; // The current return value used for re-entry.
         public BinaryClassInfo BinaryClassInfo;
         public BinaryTypeInfo BinaryTypeInfo;
+        public RefState RefState;
 
         public BinaryClassInfo PolymorphicBinaryClassInfo;
         public BinaryTypeInfo PolymorphicBinaryTypeInfo;
@@ -137,6 +138,7 @@ namespace Xfrogcn.BinaryFormatter
             EnumerableLength = 0;
             EnumerableIndex = 0;
             PropertyValueCache = null;
+            RefState = RefState.None;
             EndProperty();
         }
     }

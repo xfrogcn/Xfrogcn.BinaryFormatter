@@ -246,7 +246,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                             TElement element = default;
                             if(converter is BinaryConverter<TElement> typedConverter)
                             {
-                                if (!typedConverter.TryRead(ref reader, typeof(TElement), options, ref state, out element))
+                                if (!typedConverter.TryRead(ref reader, typeof(TElement), options, ref state, out ReferenceID refId, out element))
                                 {
                                     value = default;
                                     return false;

@@ -280,7 +280,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                             TKey key = default;
                             if (converter is BinaryConverter<TKey> typedConverter)
                             {
-                                if (!typedConverter.TryRead(ref reader, typeof(TKey), options, ref state, out key))
+                                if (!typedConverter.TryRead(ref reader, typeof(TKey), options, ref state, out ReferenceID refId, out key))
                                 {
                                     value = default;
                                     return false;
@@ -352,7 +352,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                             TValue element = default;
                             if (converter is BinaryConverter<TValue> typedConverter)
                             {
-                                if (!typedConverter.TryRead(ref reader, typeof(TKey), options, ref state, out element))
+                                if (!typedConverter.TryRead(ref reader, typeof(TKey), options, ref state, out ReferenceID refId, out element))
                                 {
                                     value = default;
                                     return false;

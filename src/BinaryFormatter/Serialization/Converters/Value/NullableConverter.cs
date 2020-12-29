@@ -35,7 +35,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             }
             
 
-            if (!_converter.TryRead(ref reader, typeof(T), options, ref state, out T typedValue))
+            if (!_converter.TryRead(ref reader, typeof(T), options, ref state, out ReferenceID refId, out T typedValue))
             {
                 value = default;
                 return false;
