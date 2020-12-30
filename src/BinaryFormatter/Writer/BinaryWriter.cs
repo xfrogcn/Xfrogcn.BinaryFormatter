@@ -257,6 +257,37 @@ namespace Xfrogcn.BinaryFormatter
             _tokenType = tokenType;
         }
 
+        internal void WriteMetadata(ref WriteStack state, Type primaryType)
+        {
+            long startPosition = BytesCommitted + BytesPending;
+
+            var typeList = state.GetTypeList();
+            WriteByteValue(BinarySerializerConstants.MetadataBlock_TypeInfo);
+            WriteTypeInfos(typeList, state.TypeMap.GetTypeSeq(primaryType));
+
+            var refMap = state.ReferenceResolver.GetReferenceOffsetMap();
+            if (refMap.Count > 0)
+            {
+                WriteByteValue(BinarySerializerConstants.MetadataBlock_RefMap);
+                WriteReferenceMap(refMap);
+            }
+
+            WriteByteValue(BinarySerializerConstants.MetadataBlock_End);
+
+            long endPosition = BytesCommitted + BytesPending;
+            WriteUInt32Value((uint)(endPosition - startPosition));
+        }
+
+        internal void WriteReferenceMap(Dictionary<uint, ulong> map)
+        {
+            WriteUInt16Value((ushort)map.Count);
+            foreach(var kv in map)
+            {
+                WriteUInt32Value(kv.Key);
+                WriteUInt64Value(kv.Value);
+            }
+        }
+
         internal void WriteTypeInfos(IList<BinaryTypeInfo> typeList, ushort primaryTypeSeq)
         {
             //元数据
@@ -270,8 +301,6 @@ namespace Xfrogcn.BinaryFormatter
 
             // 主类型
             WriteUInt16Value(primaryTypeSeq);
-            long endPosition = BytesCommitted + BytesPending;
-            WriteUInt32Value((uint)(endPosition - startPosition));
         }
 
         internal void WritePropertyStringSeq()

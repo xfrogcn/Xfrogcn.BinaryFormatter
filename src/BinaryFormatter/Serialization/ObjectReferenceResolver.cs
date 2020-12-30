@@ -89,7 +89,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         public override Dictionary<uint, ulong> GetReferenceOffsetMap()
         {
-            return new Dictionary<uint, ulong>(_objectToReferenceIdMap.Where(kv => kv.Value.RefCount > 1).Select(kv => new KeyValuePair<uint, ulong>(kv.Value.Seq, kv.Value.Offset)));
+            return new Dictionary<uint, ulong>(_objectToReferenceIdMap.Where(kv => kv.Value.RefCount > 0).Select(kv => new KeyValuePair<uint, ulong>(kv.Value.Seq, kv.Value.Offset)));
         }
 
         public override RefState TryGetReference(uint seq, out object value)

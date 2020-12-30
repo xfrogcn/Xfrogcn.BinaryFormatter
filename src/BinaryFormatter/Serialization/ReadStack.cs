@@ -19,6 +19,8 @@ namespace Xfrogcn.BinaryFormatter
 
         internal TypeMap TypeMap { get; set; }
 
+        internal Dictionary<uint, ulong> RefMap { get; set; }
+
         internal ushort PrimaryTypeSeq { get; set; }
 
         internal Type PrimaryType { get; set; }

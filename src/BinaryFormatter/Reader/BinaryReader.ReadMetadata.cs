@@ -19,8 +19,52 @@ namespace Xfrogcn.BinaryFormatter
 
         internal void ReadMetadata(ref ReadStack state)
         {
-            state.TypeMap = new TypeMap(ReadTypeList());
-            state.PrimaryTypeSeq = ReadUInt16Value();
+            while (true)
+            {
+                byte blockType = ReadByteValue();
+                if( blockType == BinarySerializerConstants.MetadataBlock_End)
+                {
+                    break;
+                }
+
+                switch (blockType)
+                {
+                    case BinarySerializerConstants.MetadataBlock_TypeInfo:
+                        {
+                            state.TypeMap = new TypeMap(ReadTypeList());
+                            state.PrimaryTypeSeq = ReadUInt16Value();
+                            break;
+                        }
+                    case BinarySerializerConstants.MetadataBlock_RefMap:
+                        {
+                            state.RefMap = ReadRefMap();
+                            break;
+                        }
+                    default:
+                        break;
+                }
+
+            }
+            
+            
+        }
+
+        internal Dictionary<uint, ulong> ReadRefMap()
+        {
+            uint count = ReadUInt16Value();
+            var map = new Dictionary<uint, ulong>();
+            if (count == 0)
+            {
+                return map;
+            }
+
+            for(int i = 0; i < count; i++)
+            {
+                uint k = ReadUInt32Value();
+                ulong v = ReadUInt64Value();
+                map.Add(k, v);
+            }
+            return map;
         }
 
         internal BinaryTypeInfo[] ReadTypeList()

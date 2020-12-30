@@ -26,6 +26,10 @@
         internal const byte EndDictionaryKey = 0xFF;
         internal const byte DictionaryKeySeq = 0x80;
 
+        internal const byte MetadataBlock_TypeInfo = 0x00;
+        internal const byte MetadataBlock_RefMap = 0x01;
+        internal const byte MetadataBlock_End = 0xFF;
+
         internal const int MaxWriterDepth = 1_000;
 
         public const int RemoveFlagsBitMask = 0x7FFFFFFF;
