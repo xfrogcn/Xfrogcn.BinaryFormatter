@@ -1,4 +1,6 @@
-﻿using BenchmarkDotNet.Running;
+﻿using System;
+using System.Threading.Tasks;
+using BenchmarkDotNet.Running;
 
 namespace Xfrogcn.BinaryFormatter.Benchmark
 {
@@ -8,9 +10,7 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
         {
             BinaryVsJson vs = new BinaryVsJson();
             vs.SizeTest();
-            
             var summary = BenchmarkRunner.Run<BinaryVsJson>();
-
             summary = BenchmarkRunner.Run<DeserializeBenchmark>();
         }
     }

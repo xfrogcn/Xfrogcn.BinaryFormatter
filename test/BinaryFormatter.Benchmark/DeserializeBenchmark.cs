@@ -80,6 +80,7 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
         [Benchmark]
         public async Task Json()
         {
+            _jsonStream.Position = 0;
             await System.Text.Json.JsonSerializer.DeserializeAsync<TestApiResponse<TestApiRecordItem>>(_jsonStream);
         }
 
@@ -87,6 +88,7 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
         [Benchmark]
         public async Task XfrogcnBinary()
         {
+            _binaryStream.Position = 0;
             await Xfrogcn.BinaryFormatter.BinarySerializer.DeserializeAsync(_binaryStream);
         }
 
@@ -94,6 +96,7 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
         [Benchmark]
         public void SystemBinaryFormatter()
         {
+            _sbStream.Position = 0;
             BF formatter = new BF();
             formatter.Deserialize(_sbStream);
         }

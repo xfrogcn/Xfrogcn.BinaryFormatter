@@ -24,7 +24,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
             object b1 = await BinarySerializer.DeserializeAsync(ms, options);
             check((T)b1);
 
-            byte[] bytes = BinarySerializer.SerializeToBytes<T>(input, options);
+            byte[] bytes = BinarySerializer.Serialize<T>(input, options);
             T b2 = BinarySerializer.Deserialize<T>(bytes, options);
             check(b2);
 
