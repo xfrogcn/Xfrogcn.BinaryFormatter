@@ -122,9 +122,40 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         public override bool AddReferenceCallback(object instance, object propertyValue, Func<object, object, bool> action)
         {
-            
             if(instance.IsRefId() || propertyValue.IsRefId())
             {
+                uint? insRefId = null;
+                uint? propRefId = null;
+                if( instance is ReferenceID insId)
+                {
+                    RefState s = TryGetReference(insId.RefSeq, out object tmpObj);
+                    if (s == RefState.Created)
+                    {
+                        instance = tmpObj;
+                    }
+                    else
+                    {
+                        insRefId = insId.RefSeq;
+                    }
+                }
+                if(propertyValue is ReferenceID propId)
+                {
+                    RefState s = TryGetReference(propId.RefSeq, out object tmpObj);
+                    if (s == RefState.Created)
+                    {
+                        propertyValue = tmpObj;
+                    }
+                    else
+                    {
+                        propRefId = propId.RefSeq;
+                    }
+                }
+
+                if( !insRefId.HasValue && !propRefId.HasValue)
+                {
+                    return action(instance, propertyValue);
+                }
+                
                 Func<bool> callback = () =>
                 {
                     object actualInstance;
@@ -158,13 +189,13 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     return action(actualInstance, actualPropValue);
                 };
 
-                if( instance is ReferenceID insId)
+                if( insRefId.HasValue)
                 {
-                    AddReferenceCallback(insId.RefSeq, callback);
+                    AddReferenceCallback(insRefId.Value, callback);
                 }
-                if( propertyValue is ReferenceID propId)
+                if( propRefId.HasValue )
                 {
-                    AddReferenceCallback(propId.RefSeq, callback);
+                    AddReferenceCallback(propRefId.Value, callback);
                 }
 
                 return true;
