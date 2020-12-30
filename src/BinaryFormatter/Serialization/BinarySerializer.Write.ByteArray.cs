@@ -11,7 +11,7 @@ namespace Xfrogcn.BinaryFormatter
         /// <param name="value"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static byte[] SerializeToBytes<TValue>(
+        public static byte[] Serialize<TValue>(
             TValue value,
             BinarySerializerOptions options = null)
         {
