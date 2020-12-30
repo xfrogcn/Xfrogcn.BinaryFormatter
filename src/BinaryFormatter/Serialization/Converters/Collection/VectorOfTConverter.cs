@@ -31,33 +31,46 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
         protected override bool OnWriteResume(BinaryWriter writer, Vector<TElement> value, BinarySerializerOptions options, ref WriteStack state)
         {
-            int index = state.Current.EnumeratorIndex;
-
             BinaryConverter<TElement> elementConverter = options.GetConverter(typeof(TElement)) as BinaryConverter<TElement>;
-            
 
-            for (; index < Vector<TElement>.Count; index++)
+            if (!state.SupportContinuation)
             {
-                if (!state.Current.ProcessedEnumerableIndex)
+                int index = 0;
+                for (; index < Vector<TElement>.Count; index++)
                 {
                     state.Current.WriteEnumerableIndex(index, writer);
-                    state.Current.ProcessedEnumerableIndex = true;
+                    elementConverter.TryWrite(writer, value[index], options, ref state);
                 }
 
-                TElement element = value[index];
-                if (!elementConverter.TryWrite(writer, element, options, ref state))
+            }
+            else
+            {
+                int index = state.Current.EnumeratorIndex;
+                for (; index < Vector<TElement>.Count; index++)
                 {
-                    state.Current.EnumeratorIndex = index;
-                    return false;
+                    if (!state.Current.ProcessedEnumerableIndex)
+                    {
+                        state.Current.WriteEnumerableIndex(index, writer);
+                        state.Current.ProcessedEnumerableIndex = true;
+                    }
+
+                    TElement element = value[index];
+                    if (!elementConverter.TryWrite(writer, element, options, ref state))
+                    {
+                        state.Current.EnumeratorIndex = index;
+                        return false;
+                    }
+
+                    state.Current.ProcessedEnumerableIndex = false;
+
+                    if (ShouldFlush(writer, ref state))
+                    {
+                        state.Current.EnumeratorIndex = ++index;
+                        return false;
+                    }
                 }
 
-                state.Current.ProcessedEnumerableIndex = false;
 
-                if (ShouldFlush(writer, ref state))
-                {
-                    state.Current.EnumeratorIndex = ++index;
-                    return false;
-                }
             }
 
 

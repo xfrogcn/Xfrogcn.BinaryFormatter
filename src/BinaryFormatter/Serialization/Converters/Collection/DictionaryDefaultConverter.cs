@@ -517,10 +517,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 return true;
             }
 
-            if (state.Current.ObjectState < StackFrameWriteObjectState.WriteStartToken)
+            if (!state.SupportContinuation)
             {
-                state.Current.ObjectState = StackFrameWriteObjectState.WriteStartToken;
-                state.Current.ProcessedStartToken = true;
+                writer.WriteStartDictionary();
 
                 if (BinarySerializer.WriteReferenceForObject(this, dictionary, ref state, writer))
                 {
@@ -528,50 +527,16 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     return true;
                 }
 
-                //if (options.ReferenceHandler == null)
-                //{
-                //    writer.WriteStartArray();
-                //}
-                //else
-                //{
-                //    MetadataPropertyName metadata = JsonSerializer.WriteReferenceForCollection(this, value, ref state, writer);
-                //    if (metadata == MetadataPropertyName.Ref)
-                //    {
-                //        return true;
-                //    }
-
-                //    state.Current.MetadataPropertyName = metadata;
-                //}
-
                 state.Current.DeclaredBinaryPropertyInfo = state.Current.BinaryClassInfo.ElementClassInfo!.PropertyInfoForClassInfo;
 
-                writer.WriteStartDictionary();
-              //  long len = GetLength(value, options, ref state);
-               // state.Current.EnumerableIndexBytes = writer.WriteEnumerableLength(len);
-            }
+                OnWriteResume(writer, dictionary, options, ref state);
 
-            if (state.Current.ObjectState < StackFrameWriteObjectState.WriteElements)
-            {
-                bool success = OnWriteResume(writer, dictionary, options, ref state);
-                if (!success)
-                {
-                    return false;
-                }
-                state.Current.ObjectState = StackFrameWriteObjectState.WriteElements;
+
                 state.Current.EnumeratorIndex = 0;
                 state.Current.EndProperty();
-            }
 
-            if(state.Current.ObjectState < StackFrameWriteObjectState.WriteElementsEnd)
-            {
-                state.Current.ObjectState = StackFrameWriteObjectState.WriteElementsEnd;
                 writer.WriteKeyEnd();
-            }
 
-
-
-            if (state.Current.ObjectState < StackFrameWriteObjectState.WriteProperties)
-            {
                 var binaryClassInfo = state.Current.BinaryClassInfo;
                 Debug.Assert(binaryClassInfo != null);
 
@@ -584,74 +549,127 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     propertyCount = propertyCacheArray.Length;
                 }
 
-                while (propertyCount > state.Current.EnumeratorIndex)
+                for (int i = 0; i < propertyCount; i++)
                 {
-                    BinaryPropertyInfo binaryPropertyInfo = propertyCacheArray![state.Current.EnumeratorIndex];
+                    BinaryPropertyInfo binaryPropertyInfo = propertyCacheArray![i];
                     state.Current.DeclaredBinaryPropertyInfo = binaryPropertyInfo;
 
                     if (binaryPropertyInfo.ShouldSerialize)
                     {
                         if (binaryPropertyInfo == dataExtensionProperty)
                         {
-                            //if (!binaryPropertyInfo.GetMemberAndWriteJsonExtensionData(objectValue!, ref state, writer))
-                            //{
-                            //    return false;
-                            //}
+                            // TODO: 扩展属性
                         }
                         else
                         {
                             if (!binaryPropertyInfo.GetMemberAndWriteBinary(dictionary!, ref state, writer))
                             {
-                                Debug.Assert(binaryPropertyInfo.ConverterBase.ClassType != ClassType.Value);
                                 return false;
                             }
                         }
                     }
 
                     state.Current.EndProperty();
-                    state.Current.EnumeratorIndex++;
+                }
 
-                    if (ShouldFlush(writer, ref state))
+                writer.WriteEndDictionary();
+
+            }
+            else
+            {
+                if (state.Current.ObjectState < StackFrameWriteObjectState.WriteStartToken)
+                {
+                    state.Current.ObjectState = StackFrameWriteObjectState.WriteStartToken;
+                    state.Current.ProcessedStartToken = true;
+
+                    writer.WriteStartDictionary();
+
+                    if (BinarySerializer.WriteReferenceForObject(this, dictionary, ref state, writer))
+                    {
+                        writer.WriteEndArray();
+                        return true;
+                    }
+
+
+                    state.Current.DeclaredBinaryPropertyInfo = state.Current.BinaryClassInfo.ElementClassInfo!.PropertyInfoForClassInfo;
+
+                }
+
+                if (state.Current.ObjectState < StackFrameWriteObjectState.WriteElements)
+                {
+                    bool success = OnWriteResume(writer, dictionary, options, ref state);
+                    if (!success)
                     {
                         return false;
                     }
+                    state.Current.ObjectState = StackFrameWriteObjectState.WriteElements;
+                    state.Current.EnumeratorIndex = 0;
+                    state.Current.EndProperty();
                 }
 
-                state.Current.ObjectState = StackFrameWriteObjectState.WriteProperties;
+                if (state.Current.ObjectState < StackFrameWriteObjectState.WriteElementsEnd)
+                {
+                    state.Current.ObjectState = StackFrameWriteObjectState.WriteElementsEnd;
+                    writer.WriteKeyEnd();
+                }
+
+                if (state.Current.ObjectState < StackFrameWriteObjectState.WriteProperties)
+                {
+                    var binaryClassInfo = state.Current.BinaryClassInfo;
+                    Debug.Assert(binaryClassInfo != null);
+
+                    BinaryPropertyInfo dataExtensionProperty = binaryClassInfo.DataExtensionProperty;
+
+                    int propertyCount = 0;
+                    BinaryPropertyInfo[] propertyCacheArray = binaryClassInfo.PropertyCacheArray;
+                    if (propertyCacheArray != null)
+                    {
+                        propertyCount = propertyCacheArray.Length;
+                    }
+
+                    while (propertyCount > state.Current.EnumeratorIndex)
+                    {
+                        BinaryPropertyInfo binaryPropertyInfo = propertyCacheArray![state.Current.EnumeratorIndex];
+                        state.Current.DeclaredBinaryPropertyInfo = binaryPropertyInfo;
+
+                        if (binaryPropertyInfo.ShouldSerialize)
+                        {
+                            if (binaryPropertyInfo == dataExtensionProperty)
+                            {
+                                // TODO: 扩展属性
+                            }
+                            else
+                            {
+                                if (!binaryPropertyInfo.GetMemberAndWriteBinary(dictionary!, ref state, writer))
+                                {
+                                    Debug.Assert(binaryPropertyInfo.ConverterBase.ClassType != ClassType.Value);
+                                    return false;
+                                }
+                            }
+                        }
+
+                        state.Current.EndProperty();
+                        state.Current.EnumeratorIndex++;
+
+                        if (ShouldFlush(writer, ref state))
+                        {
+                            return false;
+                        }
+                    }
+
+                    state.Current.ObjectState = StackFrameWriteObjectState.WriteProperties;
+                }
+
+                if (state.Current.ObjectState < StackFrameWriteObjectState.WriteEndToken)
+                {
+                    writer.WriteEndDictionary();
+                    state.Current.ProcessedEndToken = true;
+                    state.Current.ObjectState = StackFrameWriteObjectState.WriteEndToken;
+                }
+
             }
 
-            if (state.Current.ObjectState < StackFrameWriteObjectState.WriteEndToken)
-            {
-                writer.WriteEndDictionary();
-                state.Current.ProcessedEndToken = true;
-                state.Current.ObjectState = StackFrameWriteObjectState.WriteEndToken;
-            }
 
-            //if (!state.Current.ProcessedStartToken)
-            //{
-            //    state.Current.ProcessedStartToken = true;
-            //    writer.WriteStartObject();
-
-            //    if (options.ReferenceHandler != null)
-            //    {
-            //        if (BinarySerializer.WriteReferenceForObject(this, dictionary, ref state, writer) == MetadataPropertyName.Ref)
-            //        {
-            //            return true;
-            //        }
-            //    }
-
-            //    state.Current.DeclaredJsonPropertyInfo = state.Current.JsonClassInfo.ElementClassInfo!.PropertyInfoForClassInfo;
-            //}
-
-            //bool success = OnWriteResume(writer, dictionary, options, ref state);
-            //if (success)
-            //{
-            //    if (!state.Current.ProcessedEndToken)
-            //    {
-            //        state.Current.ProcessedEndToken = true;
-            //        writer.WriteEndObject();
-            //    }
-            //}
 
             return true;
         }
@@ -659,21 +677,30 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         internal virtual bool WriteKey(BinaryWriter writer, TKey key, BinarySerializerOptions options, ref WriteStack state)
         {
             _keyConverter = _keyConverter ?? GetKeyConverter(typeof(TKey), options);
-            if(state.Current.PropertyState < StackFramePropertyState.WriteKeySeq)
+            if (!state.SupportContinuation)
             {
                 writer.WritePropertyStringSeq();
-                state.Current.PropertyState = StackFramePropertyState.WriteKeySeq;
+                _keyConverter.TryWriteAsObject(writer, key, options, ref state);
             }
-            if (state.Current.PropertyState < StackFramePropertyState.WriteKey)
+            else
             {
-                bool success = _keyConverter.TryWriteAsObject(writer, key, options, ref state);
-                if (success)
+                if (state.Current.PropertyState < StackFramePropertyState.WriteKeySeq)
                 {
-                    state.Current.PropertyState = StackFramePropertyState.WriteKey;
+                    writer.WritePropertyStringSeq();
+                    state.Current.PropertyState = StackFramePropertyState.WriteKeySeq;
                 }
-               
-                return success;
+                if (state.Current.PropertyState < StackFramePropertyState.WriteKey)
+                {
+                    bool success = _keyConverter.TryWriteAsObject(writer, key, options, ref state);
+                    if (success)
+                    {
+                        state.Current.PropertyState = StackFramePropertyState.WriteKey;
+                    }
+
+                    return success;
+                }
             }
+            
 
             return true;
         }
@@ -681,15 +708,23 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         internal virtual bool WriteValue(BinaryWriter writer, TValue value, BinarySerializerOptions options, ref WriteStack state)
         {
             _valueConverter = _valueConverter ?? GetValueConverter(state.Current.BinaryClassInfo.ElementClassInfo);
-            if (state.Current.PropertyState < StackFramePropertyState.WriteValue)
+            if (!state.SupportContinuation)
             {
-                bool success = _valueConverter.TryWriteAsObject(writer, value, options, ref state);
-                if (success)
-                {
-                    state.Current.PropertyState = StackFramePropertyState.WriteValue;
-                }
-                return success;
+                _valueConverter.TryWriteAsObject(writer, value, options, ref state);
             }
+            else
+            {
+                if (state.Current.PropertyState < StackFramePropertyState.WriteValue)
+                {
+                    bool success = _valueConverter.TryWriteAsObject(writer, value, options, ref state);
+                    if (success)
+                    {
+                        state.Current.PropertyState = StackFramePropertyState.WriteValue;
+                    }
+                    return success;
+                }
+            }
+            
             return true;
         }
 

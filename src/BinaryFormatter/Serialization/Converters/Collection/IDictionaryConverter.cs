@@ -48,28 +48,43 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
             BinaryConverter<object> keyConverter = _keyConverter ??= GetKeyConverter(KeyType, options);
             BinaryConverter<object> valueConverter = _valueConverter ??= GetValueConverter(state.Current.BinaryClassInfo.ElementClassInfo!);
-            do
+            if (!state.SupportContinuation)
             {
-                if (ShouldFlush(writer, ref state))
+                do
                 {
-                    state.Current.CollectionEnumerator = enumerator;
-                    return false;
-                }
+                    WriteKey(writer, enumerator.Key, options, ref state);
+                    WriteValue(writer, enumerator.Value, options, ref state);
 
-                if (!WriteKey(writer, enumerator.Key, options, ref state))
+                    state.Current.EndDictionaryElement();
+                } while (enumerator.MoveNext());
+
+            }
+            else
+            {
+                do
                 {
-                    state.Current.CollectionEnumerator = enumerator;
-                    return false;
-                }
+                    if (ShouldFlush(writer, ref state))
+                    {
+                        state.Current.CollectionEnumerator = enumerator;
+                        return false;
+                    }
 
-                if (!WriteValue(writer, enumerator.Value, options, ref state))
-                {
-                    state.Current.CollectionEnumerator = enumerator;
-                    return false;
-                }
+                    if (!WriteKey(writer, enumerator.Key, options, ref state))
+                    {
+                        state.Current.CollectionEnumerator = enumerator;
+                        return false;
+                    }
 
-                state.Current.EndDictionaryElement();
-            } while (enumerator.MoveNext());
+                    if (!WriteValue(writer, enumerator.Value, options, ref state))
+                    {
+                        state.Current.CollectionEnumerator = enumerator;
+                        return false;
+                    }
+
+                    state.Current.EndDictionaryElement();
+                } while (enumerator.MoveNext());
+
+            }
 
             return true;
         }

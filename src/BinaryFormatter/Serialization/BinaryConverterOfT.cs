@@ -405,24 +405,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 
                 Type type = value.GetType();
                 
-                //// 空object对象
-                //if (type == BinaryClassInfo.ObjectType)
-                //{
-                //    if (type != typeof(T))
-                //    {
-                //        typeSeq = state.PushType(type);
-                //    }
-                //    writer.WriteTypeSeq(typeSeq);
-                //    if(BinarySerializer.WriteReferenceForObject(this, value, ref state, writer))
-                //    {
-                //        writer.WriteEndObject();
-                //        return true;
-                //    }
-                    
-                //    //writer.WriteStartObject();
-                //    writer.WriteEndObject();
-                //    return true;
-                //}
 
                 if (type != TypeToConvert && IsInternalConverter)
                 {

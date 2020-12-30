@@ -37,30 +37,48 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             int index = state.Current.EnumeratorIndex;
             BinaryConverter<object> elementConverter = GetElementConverter(ref state);
 
-            for (; index < list.Count; index++)
+            if (!state.SupportContinuation)
             {
-                if (!state.Current.ProcessedEnumerableIndex)
+                for (; index < list.Count; index++)
                 {
                     state.Current.WriteEnumerableIndex(index, writer);
-                    state.Current.ProcessedEnumerableIndex = true;
+
+                    object element = list[index];
+                    elementConverter.TryWrite(writer, element, options, ref state);
+
+                    state.Current.PolymorphicBinaryPropertyInfo = null;
                 }
 
-                object element = list[index];
-                if (!elementConverter.TryWrite(writer, element, options, ref state))
-                {
-                    state.Current.EnumeratorIndex = index;
-                    return false;
-                }
-
-                state.Current.PolymorphicBinaryPropertyInfo = null;
-                state.Current.ProcessedEnumerableIndex = false;
-
-                if (ShouldFlush(writer, ref state))
-                {
-                    state.Current.EnumeratorIndex = ++index;
-                    return false;
-                }
             }
+            else
+            {
+                for (; index < list.Count; index++)
+                {
+                    if (!state.Current.ProcessedEnumerableIndex)
+                    {
+                        state.Current.WriteEnumerableIndex(index, writer);
+                        state.Current.ProcessedEnumerableIndex = true;
+                    }
+
+                    object element = list[index];
+                    if (!elementConverter.TryWrite(writer, element, options, ref state))
+                    {
+                        state.Current.EnumeratorIndex = index;
+                        return false;
+                    }
+
+                    state.Current.PolymorphicBinaryPropertyInfo = null;
+                    state.Current.ProcessedEnumerableIndex = false;
+
+                    if (ShouldFlush(writer, ref state))
+                    {
+                        state.Current.EnumeratorIndex = ++index;
+                        return false;
+                    }
+                }
+
+            }
+
 
             return true;
         }

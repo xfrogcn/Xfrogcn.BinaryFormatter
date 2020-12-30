@@ -384,10 +384,54 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             if (!state.SupportContinuation)
             {
 
+                writer.WriteStartObject();
+
+                if (BinarySerializer.WriteReferenceForObject(this, objectValue, ref state, writer))
+                {
+                    writer.WriteEndObject();
+                    return true;
+                }
+
+
+                var binaryClassInfo = state.Current.BinaryClassInfo;
+                BinaryPropertyInfo dataExtensionProperty = binaryClassInfo.DataExtensionProperty;
+
+                int propertyCount = 0;
+                BinaryPropertyInfo[] propertyCacheArray = binaryClassInfo.PropertyCacheArray;
+                if (propertyCacheArray != null)
+                {
+                    propertyCount = propertyCacheArray.Length;
+                }
+
+                for (int i = 0; i < propertyCount; i++)
+                {
+                    BinaryPropertyInfo binaryPropertyInfo = propertyCacheArray![i];
+                    state.Current.DeclaredBinaryPropertyInfo = binaryPropertyInfo;
+
+                    if (binaryPropertyInfo.ShouldSerialize)
+                    {
+                        if (binaryPropertyInfo == dataExtensionProperty)
+                        {
+                            // TODO: 扩展属性
+                        }
+                        else
+                        {
+
+                            if (!binaryPropertyInfo.GetMemberAndWriteBinary(objectValue!, ref state, writer))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
+                    state.Current.EndProperty();
+                }
+                
+                writer.WriteEndObject();
             }
             else
             {
-                if(!state.Current.ProcessedStartToken)
+                if (!state.Current.ProcessedStartToken)
                 {
                     state.Current.ProcessedStartToken = true;
                     writer.WriteStartObject();
@@ -414,19 +458,16 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 {
                     BinaryPropertyInfo binaryPropertyInfo = propertyCacheArray![state.Current.EnumeratorIndex];
                     state.Current.DeclaredBinaryPropertyInfo = binaryPropertyInfo;
-                    
+
                     if (binaryPropertyInfo.ShouldSerialize)
                     {
                         if (binaryPropertyInfo == dataExtensionProperty)
                         {
-                            //if (!binaryPropertyInfo.GetMemberAndWriteJsonExtensionData(objectValue!, ref state, writer))
-                            //{
-                            //    return false;
-                            //}
+                            // TODO: 扩展属性
                         }
                         else
                         {
-                           
+
                             if (!binaryPropertyInfo.GetMemberAndWriteBinary(objectValue!, ref state, writer))
                             {
                                 Debug.Assert(binaryPropertyInfo.ConverterBase.ClassType != ClassType.Value);

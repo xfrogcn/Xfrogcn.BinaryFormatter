@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 {
@@ -28,32 +26,48 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
             BinaryConverter<TElement> elementConverter = GetElementConverter(ref state);
 
-            for (; index < array.Length; index++)
+            if (!state.SupportContinuation)
             {
-                if (!state.Current.ProcessedEnumerableIndex)
+                for (; index < array.Length; index++)
                 {
                     state.Current.WriteEnumerableIndex(index, writer);
-                    state.Current.ProcessedEnumerableIndex = true;
-                }
+                    elementConverter.TryWrite(writer, array[index], options, ref state);
 
-                TElement element = array[index];
-                if (!elementConverter.TryWrite(writer, element, options, ref state))
-                {
-                    state.Current.EnumeratorIndex = index;
-                    return false;
-                }
-
-                // 列表状态下，每个写每个元素时独立的，故需清理多态属性
-                state.Current.PolymorphicBinaryPropertyInfo = null;
-                state.Current.ProcessedEnumerableIndex = false;
-
-                if (ShouldFlush(writer, ref state))
-                {
-                    state.Current.EnumeratorIndex = ++index;
-                    return false;
+                    // 列表状态下，每个写每个元素时独立的，故需清理多态属性
+                    state.Current.PolymorphicBinaryPropertyInfo = null;
                 }
             }
- 
+            else
+            {
+                for (; index < array.Length; index++)
+                {
+                    if (!state.Current.ProcessedEnumerableIndex)
+                    {
+                        state.Current.WriteEnumerableIndex(index, writer);
+                        state.Current.ProcessedEnumerableIndex = true;
+                    }
+
+                    TElement element = array[index];
+                    if (!elementConverter.TryWrite(writer, element, options, ref state))
+                    {
+                        state.Current.EnumeratorIndex = index;
+                        return false;
+                    }
+
+                    // 列表状态下，每个写每个元素时独立的，故需清理多态属性
+                    state.Current.PolymorphicBinaryPropertyInfo = null;
+                    state.Current.ProcessedEnumerableIndex = false;
+
+                    if (ShouldFlush(writer, ref state))
+                    {
+                        state.Current.EnumeratorIndex = ++index;
+                        return false;
+                    }
+                }
+
+            }
+
+
 
             return true;
         }

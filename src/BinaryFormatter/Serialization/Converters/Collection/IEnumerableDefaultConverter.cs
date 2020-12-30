@@ -407,6 +407,66 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             {
                 success = true;
             }
+            else if (!state.SupportContinuation)
+            {
+                writer.WriteStartArray();
+
+                if (BinarySerializer.WriteReferenceForObject(this, value, ref state, writer))
+                {
+                    writer.WriteEndArray();
+                    return true;
+                }
+
+                state.Current.DeclaredBinaryPropertyInfo = state.Current.BinaryClassInfo.ElementClassInfo!.PropertyInfoForClassInfo;
+
+
+                long len = GetLength(value, options, ref state);
+                state.Current.EnumerableIndexBytes = writer.WriteEnumerableLength(len);
+
+
+                OnWriteResume(writer, value, options, ref state);
+
+
+                state.Current.EnumeratorIndex = 0;
+                state.Current.EndProperty();
+
+                var binaryClassInfo = state.Current.BinaryClassInfo;
+
+                BinaryPropertyInfo dataExtensionProperty = binaryClassInfo.DataExtensionProperty;
+
+                int propertyCount = 0;
+                BinaryPropertyInfo[] propertyCacheArray = binaryClassInfo.PropertyCacheArray;
+                if (propertyCacheArray != null)
+                {
+                    propertyCount = propertyCacheArray.Length;
+                }
+
+                for (int i = 0; i < propertyCount; i++)
+                {
+                    BinaryPropertyInfo binaryPropertyInfo = propertyCacheArray![i];
+                    state.Current.DeclaredBinaryPropertyInfo = binaryPropertyInfo;
+
+                    if (binaryPropertyInfo.ShouldSerialize)
+                    {
+                        if (binaryPropertyInfo == dataExtensionProperty)
+                        {
+                            // TODO: 扩展属性
+                        }
+                        else
+                        {
+                            if (!binaryPropertyInfo.GetMemberAndWriteBinary(value!, ref state, writer))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
+                    state.Current.EndProperty();
+                }
+
+
+                writer.WriteEndArray();
+            }
             else
             {
                 if (state.Current.ObjectState < StackFrameWriteObjectState.WriteStartToken)
@@ -420,20 +480,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         return true;
                     }
 
-                    //if (options.ReferenceHandler == null)
-                    //{
-                    //    writer.WriteStartArray();
-                    //}
-                    //else
-                    //{
-                    //    MetadataPropertyName metadata = JsonSerializer.WriteReferenceForCollection(this, value, ref state, writer);
-                    //    if (metadata == MetadataPropertyName.Ref)
-                    //    {
-                    //        return true;
-                    //    }
-
-                    //    state.Current.MetadataPropertyName = metadata;
-                    //}
 
                     state.Current.DeclaredBinaryPropertyInfo = state.Current.BinaryClassInfo.ElementClassInfo!.PropertyInfoForClassInfo;
 
@@ -443,7 +489,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 }
 
 
-                if( state.Current.ObjectState < StackFrameWriteObjectState.WriteElements)
+                if (state.Current.ObjectState < StackFrameWriteObjectState.WriteElements)
                 {
                     success = OnWriteResume(writer, value, options, ref state);
                     if (!success)
@@ -454,10 +500,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     state.Current.EnumeratorIndex = 0;
                     state.Current.EndProperty();
                 }
-               
 
-               
-                if(state.Current.ObjectState < StackFrameWriteObjectState.WriteProperties)
+
+
+                if (state.Current.ObjectState < StackFrameWriteObjectState.WriteProperties)
                 {
                     var binaryClassInfo = state.Current.BinaryClassInfo;
                     Debug.Assert(binaryClassInfo != null);
@@ -480,10 +526,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         {
                             if (binaryPropertyInfo == dataExtensionProperty)
                             {
-                                //if (!binaryPropertyInfo.GetMemberAndWriteJsonExtensionData(objectValue!, ref state, writer))
-                                //{
-                                //    return false;
-                                //}
+                                // TODO: 扩展属性
                             }
                             else
                             {
@@ -507,7 +550,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     state.Current.ObjectState = StackFrameWriteObjectState.WriteProperties;
                 }
 
-                if(state.Current.ObjectState < StackFrameWriteObjectState.WriteEndToken)
+                if (state.Current.ObjectState < StackFrameWriteObjectState.WriteEndToken)
                 {
                     writer.WriteEndArray();
                     state.Current.ProcessedEndToken = true;

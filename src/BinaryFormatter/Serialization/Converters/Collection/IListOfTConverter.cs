@@ -41,43 +41,43 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             int index = state.Current.EnumeratorIndex;
             BinaryConverter<TElement> elementConverter = GetElementConverter(ref state);
 
-            //if (elementConverter.CanUseDirectReadOrWrite && state.Current.NumberHandling == null)
-            //{
-            //    // Fast path that avoids validation and extra indirection.
-            //    for (; index < list.Count; index++)
-            //    {
-            //        elementConverter.Write(writer, list[index], options);
-            //    }
-            //}
-            //else
-            //{
-
-            for (; index < list.Count; index++)
+            if (!state.SupportContinuation)
             {
-                if (!state.Current.ProcessedEnumerableIndex)
+                for (; index < list.Count; index++)
                 {
                     state.Current.WriteEnumerableIndex(index, writer);
-                    state.Current.ProcessedEnumerableIndex = true;
-                }
-
-                TElement element = list[index];
-                if (!elementConverter.TryWrite(writer, element, options, ref state))
-                {
-                    state.Current.EnumeratorIndex = index;
-                    return false;
-                }
-
-                state.Current.PolymorphicBinaryPropertyInfo = null;
-                state.Current.ProcessedEnumerableIndex = false;
-
-                if (ShouldFlush(writer, ref state))
-                {
-                    state.Current.EnumeratorIndex = ++index;
-                    return false;
+                    elementConverter.TryWrite(writer, list[index], options, ref state);
+                    state.Current.PolymorphicBinaryPropertyInfo = null;
                 }
             }
+            else
+            {
+                for (; index < list.Count; index++)
+                {
+                    if (!state.Current.ProcessedEnumerableIndex)
+                    {
+                        state.Current.WriteEnumerableIndex(index, writer);
+                        state.Current.ProcessedEnumerableIndex = true;
+                    }
 
-            //}
+                    TElement element = list[index];
+                    if (!elementConverter.TryWrite(writer, element, options, ref state))
+                    {
+                        state.Current.EnumeratorIndex = index;
+                        return false;
+                    }
+
+                    state.Current.PolymorphicBinaryPropertyInfo = null;
+                    state.Current.ProcessedEnumerableIndex = false;
+
+                    if (ShouldFlush(writer, ref state))
+                    {
+                        state.Current.EnumeratorIndex = ++index;
+                        return false;
+                    }
+                }
+
+            }
 
             return true;
         }
