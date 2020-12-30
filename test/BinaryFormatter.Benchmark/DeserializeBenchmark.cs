@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Configs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,24 +8,42 @@ using BF = System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;
 
 namespace Xfrogcn.BinaryFormatter.Benchmark
 {
-    [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
-    [CategoriesColumn]
-    public class BinaryVsJson
+    public class DeserializeBenchmark
     {
         internal TestApiResponse<TestApiRecordItem> data;
         private const int ListCount = 15;
-        
-        public BinaryVsJson()
+        private byte[] _jsonBytes;
+        private byte[] _binaryBytes;
+        private Stream _jsonStream;
+        private Stream _binaryStream;
+        private Stream _sbStream;
+
+        public DeserializeBenchmark()
         {
             data = new TestApiResponse<TestApiRecordItem>();
             data.Message = "SUCCESS";
             data.TotalCount = 3000;
             data.Items = new List<TestApiRecordItem>();
 
-            for(int i = 0; i < ListCount; i++)
+            for (int i = 0; i < ListCount; i++)
             {
                 data.Items.Add(createItem());
             }
+
+            _jsonBytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(data);
+            _binaryBytes = Xfrogcn.BinaryFormatter.BinarySerializer.Serialize(data);
+
+            _jsonStream = new MemoryStream();
+            System.Text.Json.JsonSerializer.SerializeAsync(_jsonStream, data).Wait();
+            _jsonStream.Position = 0;
+            _binaryStream = new MemoryStream();
+            Xfrogcn.BinaryFormatter.BinarySerializer.SerializeAsync(_binaryStream, data).Wait();
+            _binaryStream.Position = 0;
+
+            _sbStream = new MemoryStream();
+            BF formatter = new BF();
+            formatter.Serialize(_sbStream, data);
+            _sbStream.Position = 0;
         }
 
         private TestApiRecordItem createItem()
@@ -39,7 +56,7 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
                 ProductName = new string('B', 50),
                 Discount = r.Next(0, 100) / 100F,
                 Price = r.Next(100, 50000),
-                Address  = new string('C',500),
+                Address = new string('C', 500),
                 Id = Guid.NewGuid(),
                 Category = new CategoryItem()
                 {
@@ -48,7 +65,7 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
                     Name = "Name"
                 },
                 Status = ProductStatus.Normal,
-                Stock  =r.Next(0,1000),
+                Stock = r.Next(0, 1000),
                 Properties = new Dictionary<string, string>()
                 {
                     { "P1", "Test property P1" },
@@ -58,59 +75,43 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
             return item;
         }
 
+
         [BenchmarkCategory("Stream")]
         [Benchmark]
         public async Task Json()
         {
-            MemoryStream ms = new MemoryStream();
-            await System.Text.Json.JsonSerializer.SerializeAsync(ms, data);
+            await System.Text.Json.JsonSerializer.DeserializeAsync<TestApiResponse<TestApiRecordItem>>(_jsonStream);
         }
 
         [BenchmarkCategory("Stream")]
         [Benchmark]
         public async Task XfrogcnBinary()
         {
-            MemoryStream ms = new MemoryStream();
-            await Xfrogcn.BinaryFormatter.BinarySerializer.SerializeAsync(ms, data);
+            await Xfrogcn.BinaryFormatter.BinarySerializer.DeserializeAsync(_binaryStream);
         }
 
         [BenchmarkCategory("Stream")]
         [Benchmark]
         public void SystemBinaryFormatter()
         {
-            MemoryStream ms = new MemoryStream();
             BF formatter = new BF();
-            formatter.Serialize(ms, data);
+            formatter.Deserialize(_sbStream);
         }
 
-        //-----------
+
+
         [BenchmarkCategory("Bytes")]
         [Benchmark]
         public void Json_Bytes()
         {
-            var bytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(data);
+            System.Text.Json.JsonSerializer.Deserialize<TestApiResponse<TestApiRecordItem>>(_jsonBytes);
         }
 
         [BenchmarkCategory("Bytes")]
         [Benchmark]
         public void XfrogcnBinary_Bytes()
         {
-            var bytes = Xfrogcn.BinaryFormatter.BinarySerializer.Serialize(data);
-        }
-
-
-        public void SizeTest()
-        {
-            var bytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(data);
-            Console.WriteLine($"JSON: {bytes.Length}");
-
-            bytes = Xfrogcn.BinaryFormatter.BinarySerializer.Serialize(data);
-            Console.WriteLine($"XfrogcnBinary: {bytes.Length}");
-
-            MemoryStream ms = new MemoryStream();
-            BF formatter = new BF();
-            formatter.Serialize(ms, data);
-            Console.WriteLine($"SystemBinaryFormatter: {ms.Length}");
+            Xfrogcn.BinaryFormatter.BinarySerializer.Deserialize(_binaryBytes);
         }
     }
 }

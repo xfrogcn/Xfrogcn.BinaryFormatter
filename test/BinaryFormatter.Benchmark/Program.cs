@@ -10,6 +10,8 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
             vs.SizeTest();
             
             var summary = BenchmarkRunner.Run<BinaryVsJson>();
+
+            summary = BenchmarkRunner.Run<DeserializeBenchmark>();
         }
     }
 }
