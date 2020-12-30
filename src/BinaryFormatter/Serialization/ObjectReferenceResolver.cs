@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ReferenceResolverCallback = System.ValueTuple<object, object, System.Action<object, object>>;
 
@@ -26,12 +27,13 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         private readonly Dictionary<uint, RefItem> _referenceIdToObjectMap;
         private readonly Dictionary<object, RefItem> _objectToReferenceIdMap;
         // 回调 所需引用
-        private readonly List<ReferenceResolverCallback> ResolverCallback = new List<ReferenceResolverCallback>();
+        private readonly Dictionary<uint, List<Func<bool>>> _refCallback;
 
         public ObjectReferenceResolver()
         {
             _referenceIdToObjectMap = new Dictionary<uint, RefItem>();
             _objectToReferenceIdMap = new Dictionary<object, RefItem>();
+            _refCallback = new Dictionary<uint, List<Func<bool>>>();
         }
 
         public override uint GetReference(object value, ulong offset, out bool alreadyExists)
@@ -108,6 +110,84 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             RefItem ri = _referenceIdToObjectMap[seq];
             ri.State = RefState.Created;
             ri.Value = value;
+            if(_refCallback.ContainsKey(seq))
+            {
+                List<Func<bool>> callback = _refCallback[seq];
+                for(int i = 0; i < callback.Count; i++)
+                {
+                    callback[i]();
+                }
+            }
+        }
+
+        public override bool AddReferenceCallback(object instance, object propertyValue, Func<object, object, bool> action)
+        {
+            
+            if(instance.IsRefId() || propertyValue.IsRefId())
+            {
+                Func<bool> callback = () =>
+                {
+                    object actualInstance;
+                    object actualPropValue;
+                    if (instance is ReferenceID insId)
+                    {
+                        RefState s = TryGetReference(insId.RefSeq, out actualInstance);
+                        if(s!= RefState.Created)
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        actualInstance = instance;
+                    }
+
+                    if (propertyValue is ReferenceID propId)
+                    {
+                        RefState s = TryGetReference(propId.RefSeq, out actualPropValue);
+                        if (s != RefState.Created)
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        actualPropValue = propertyValue;
+                    }
+
+                    return action(actualInstance, actualPropValue);
+                };
+
+                if( instance is ReferenceID insId)
+                {
+                    AddReferenceCallback(insId.RefSeq, callback);
+                }
+                if( propertyValue is ReferenceID propId)
+                {
+                    AddReferenceCallback(propId.RefSeq, callback);
+                }
+
+                return true;
+            }
+
+
+            return action(instance, propertyValue);
+        }
+
+        protected virtual void AddReferenceCallback(uint seq, Func<bool> action)
+        {
+            List<Func<bool>> callback = null;
+            if (_refCallback.ContainsKey(seq))
+            {
+                callback = _refCallback[seq];
+            }
+            else
+            {
+                callback = new List<Func<bool>>();
+                _refCallback[seq] = callback;
+            }
+
+            callback.Add(action);
         }
     }
 }

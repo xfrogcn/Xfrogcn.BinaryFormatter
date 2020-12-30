@@ -395,25 +395,13 @@ namespace Xfrogcn.BinaryFormatter
         public override void SetExtensionDictionaryAsObject(ref ReadStack state, object obj, object extensionDict)
         {
             Debug.Assert(HasSetter);
-            T typedValue = default;
-            if ( extensionDict is ReferenceID refId)
-            {
-                RefState refState = state.ReferenceResolver.TryGetReference(refId.RefSeq, out object tmpObj);
-                if(refState == RefState.Created)
-                {
-                    typedValue = (T)tmpObj;
-                }
-                else
-                {
-                    throw new Exception();
-                }
-            }
-            else
-            {
-                typedValue = (T)extensionDict!;
-            }
+            state.ReferenceResolver.AddReferenceCallback(obj, extensionDict, (ins, prop) =>
+             {
+                 Set!(ins, (T)prop);
+                 return true;
+             });
            
-            Set!(obj, typedValue);
+            
         }
     }
 }

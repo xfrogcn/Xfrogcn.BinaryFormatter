@@ -131,14 +131,19 @@ namespace Xfrogcn.BinaryFormatter.Tests
     class TestRefWithCtor
     {
         [BinaryFormatter.Serialization.BinaryConstructor]
-        public TestRefWithCtor(string a)
+        public TestRefWithCtor(TestRefWithCtor parent)
         {
-            A = a;
+            Parent = parent;
+            if(parent != null)
+            {
+                parent.Child = this;
+            }
+            
         }
 
         public string A { get; set; }
 
-        public TestRefWithCtor Parent { get; set; }
+        public TestRefWithCtor Parent { get; }
 
         public TestRefWithCtor Child { get; set; }
     }

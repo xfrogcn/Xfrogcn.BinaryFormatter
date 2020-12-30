@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Xfrogcn.BinaryFormatter;
+using Xfrogcn.BinaryFormatter.Serialization;
 
 namespace System
 {
@@ -129,6 +130,16 @@ namespace System
             }
 
             return type.IsAssignableFrom(from);
+        }
+
+        public static bool IsRefId(this object instance)
+        {
+            if(instance == null)
+            {
+                return false;
+            }
+
+            return instance is ReferenceID;
         }
     }
 }
