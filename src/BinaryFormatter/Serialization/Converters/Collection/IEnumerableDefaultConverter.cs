@@ -41,54 +41,181 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
             if (state.UseFastPath)
             {
-                //// Fast path that avoids maintaining state variables and dealing with preserved references.
 
-                //if (reader.TokenType != JsonTokenType.StartArray)
-                //{
-                //    ThrowHelper.ThrowJsonException_DeserializeUnableToConvertValue(TypeToConvert);
-                //}
+                // 刚进入对象读取
+                if (reader.CurrentTypeInfo == null || reader.CurrentTypeInfo.SerializeType != ClassType.Enumerable)
+                {
+                    ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(TypeToConvert);
+                }
 
-                //CreateCollection(ref reader, ref state, options);
+                // 读取引用标记
+                reader.AheadReadStartToken();
 
-                //JsonConverter<TElement> elementConverter = GetElementConverter(elementClassInfo);
-                //if (elementConverter.CanUseDirectReadOrWrite && state.Current.NumberHandling == null)
-                //{
-                //    // Fast path that avoids validation and extra indirection.
-                //    while (true)
-                //    {
-                //        reader.ReadWithVerify();
-                //        if (reader.TokenType == JsonTokenType.EndArray)
-                //        {
-                //            break;
-                //        }
 
-                //        // Obtain the CLR value from the JSON and apply to the object.
-                //        TElement element = elementConverter.Read(ref reader, elementConverter.TypeToConvert, options);
-                //        Add(element!, ref state);
-                //    }
-                //}
-                //else
-                //{
-                //    // Process all elements.
-                //    while (true)
-                //    {
-                //        reader.ReadWithVerify();
-                //        if (reader.TokenType == JsonTokenType.EndArray)
-                //        {
-                //            break;
-                //        }
+                RefState refState = BinarySerializer.ReadReferenceForObject(this, ref state, ref reader, out object refValue);
+                if (refState == RefState.None)
+                {
+                    state.Current.ObjectState = StackFrameObjectState.StartToken;
 
-                //        // Get the value from the converter and add it.
-                //        elementConverter.TryRead(ref reader, typeof(TElement), options, ref state, out TElement element);
-                //        Add(element!, ref state);
-                //    }
-                //}
+                    // 读取枚举集合索引的字节长度（根据总长度，可能为1、2、4、8字节长度）
+
+                    // 读取枚举长度
+                    reader.AheadReadBytes(1);
+                    state.Current.EnumerableIndexBytes = reader.ValueSpan[0];
+
+                    // 读取枚举集合的总长度
+                    reader.AheadReadBytes(state.Current.EnumerableIndexBytes);
+
+                    state.Current.EnumerableLength = reader.GetEnumerableLength(reader.ValueSpan);
+                    state.Current.EnumerableIndex = 0;
+
+
+                    CreateCollection(ref reader, ref state, options, state.Current.EnumerableLength);
+                    state.Current.BinaryPropertyInfo = state.Current.BinaryClassInfo.ElementClassInfo!.PropertyInfoForClassInfo;
+
+                    BinaryConverter<TElement> elementConverter = GetElementConverter(elementClassInfo);
+                    BinaryConverter converter = elementConverter;
+
+                    // Process all elements.
+                    while (state.Current.EnumerableIndex < state.Current.EnumerableLength)
+                    {
+                        // ReadName --> 读取索引
+
+                        reader.AheadReadBytes(state.Current.EnumerableIndexBytes);
+
+                        // 读取项的类型
+                        reader.AheadReadTypeSeq();
+
+                        if (reader.TokenType == BinaryTokenType.Null)
+                        {
+                            Add(default, ref state);
+                            state.Current.EndElement();
+                            continue;
+                        }
+
+                        if (elementConverter.CanBePolymorphic)
+                        {
+                            Type t = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
+                            if (state.Current.PropertyPolymorphicConverter != null && t == state.Current.PropertyPolymorphicConverter.TypeToConvert)
+                            {
+                                converter = state.Current.PropertyPolymorphicConverter;
+                            }
+                            else if (t != elementConverter.TypeToConvert)
+                            {
+                                converter = options.GetConverter(t);
+                                state.Current.PropertyPolymorphicConverter = converter;
+                                state.Current.PolymorphicBinaryClassInfo = options.GetOrAddClass(t);
+                            }
+                            else
+                            {
+                                converter = elementConverter;
+                                state.Current.PropertyPolymorphicConverter = null;
+                                state.Current.PolymorphicBinaryClassInfo = null;
+                            }
+                        }
+
+
+
+
+                        TElement element = default;
+                        if (converter is BinaryConverter<TElement> typedConverter)
+                        {
+                            typedConverter.TryRead(ref reader, typeof(TElement), options, ref state, out ReferenceID refId, out element);
+                        }
+                        else
+                        {
+                            converter.TryReadAsObject(ref reader, options, ref state, out object ntElement);
+                            element = (TElement)ntElement;
+                        }
+
+                        Add(element!, ref state);
+
+                        state.Current.EndElement();
+
+                    }
+
+                    state.Current.EndProperty();
+
+                    // 转实际类型
+                    ConvertCollection(ref state, options);
+                    state.ReferenceResolver.AddReferenceObject(state.Current.RefId, state.Current.ReturnValue);
+
+
+                }
+                else if (refState == RefState.Created)
+                {
+                    state.Current.ObjectState = StackFrameObjectState.ReadElements;
+                    state.Current.ReturnValue = refValue;
+                }
+                else
+                {
+                    value = default;
+                    return false;
+                }
+
+                while (true)
+                {
+                    // 读取属性索引 
+                    reader.AheadReadPropertyName();
+
+                    BinaryPropertyInfo binaryPropertyInfo;
+
+                    if (reader.TokenType == BinaryTokenType.EndObject)
+                    {
+                        break;
+                    }
+
+                    Debug.Assert(reader.TokenType == BinaryTokenType.PropertyName);
+                    ushort propertySeq = reader.CurrentPropertySeq;
+                    BinaryMemberInfo mi = state.GetMemberInfo(propertySeq);
+                    Debug.Assert(mi != null);
+
+                    binaryPropertyInfo = BinarySerializer.LookupProperty(
+                        state.Current.ReturnValue,
+                        mi.NameAsUtf8Bytes,
+                        ref state,
+                        out bool useExtensionProperty);
+
+                    state.Current.UseExtensionProperty = useExtensionProperty;
+
+                    // binaryPropertyInfo = state.LookupProperty(mi.NameAsString);
+                    state.Current.BinaryPropertyInfo = binaryPropertyInfo;
+                    state.Current.PropertyPolymorphicConverter = null;
+                    if (binaryPropertyInfo == null)
+                    {
+                        state.Current.EndProperty();
+                        continue;
+                    }
+
+                    if (!binaryPropertyInfo.ShouldDeserialize)
+                    {
+                        if (!reader.TrySkip(options))
+                        {
+                            value = default;
+                            return false;
+                        }
+
+                        state.Current.EndProperty();
+                        continue;
+                    }
+
+                    // Obtain the CLR value from the Binary and set the member.
+                    if (!state.Current.UseExtensionProperty)
+                    {
+                        binaryPropertyInfo.ReadBinaryAndSetMember(state.Current.ReturnValue, ref state, ref reader);
+                    }
+                    else
+                    {
+                        // TODO 扩展属性
+                    }
+                    state.Current.EndProperty();
+
+                }
+
             }
             else
             {
                 // Slower path that supports continuation and preserved references.
-
-                bool preserveReferences = options.ReferenceHandler != null;
                 if (state.Current.ObjectState == StackFrameObjectState.None)
                 {
                     // 刚进入对象读取
@@ -121,26 +248,12 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         return false;
                     }
 
-                    //if (reader.TokenType == BinaryTokenType.StartObject)
-                    //{
-                    //    state.Current.ObjectState = StackFrameObjectState.StartToken;
-                    //}
-                    //else if (reader.TokenType == BinaryTokenType.ObjectRef)
-                    //{
-                    //    // 检查Resolver中是否存在对应id的实例，如果有则直接使用，否则跳转读取
-
-
-                    //    state.Current.ObjectState = StackFrameObjectState.GotoRef;
-
-                    //    value = default;
-                    //    return false;
-                    //}
                 }
 
-                
+
 
                 // 读取枚举集合索引的字节长度（根据总长度，可能为1、2、4、8字节长度）
-                if(state.Current.ObjectState < StackFrameObjectState.ReadEnumerableLengthBytes)
+                if (state.Current.ObjectState < StackFrameObjectState.ReadEnumerableLengthBytes)
                 {
                     // 读取枚举长度
                     if (!reader.ReadBytes(1))
@@ -173,10 +286,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     state.Current.ObjectState = StackFrameObjectState.CreatedObject;
                 }
 
-
-
-
-
                 if (state.Current.ObjectState < StackFrameObjectState.ReadElements)
                 {
                     BinaryConverter<TElement> elementConverter = GetElementConverter(elementClassInfo);
@@ -186,7 +295,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     while (state.Current.EnumerableIndex < state.Current.EnumerableLength)
                     {
                         // ReadName --> 读取索引
-                        if(state.Current.PropertyState < StackFramePropertyState.ReadName)
+                        if (state.Current.PropertyState < StackFramePropertyState.ReadName)
                         {
                             if (!reader.ReadBytes(state.Current.EnumerableIndexBytes))
                             {
@@ -244,7 +353,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         if (state.Current.PropertyState < StackFramePropertyState.TryRead)
                         {
                             TElement element = default;
-                            if(converter is BinaryConverter<TElement> typedConverter)
+                            if (converter is BinaryConverter<TElement> typedConverter)
                             {
                                 if (!typedConverter.TryRead(ref reader, typeof(TElement), options, ref state, out ReferenceID refId, out element))
                                 {
@@ -254,12 +363,12 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                             }
                             else
                             {
-                                if(!converter.TryReadAsObject(ref reader, options, ref state, out object ntElement))
+                                if (!converter.TryReadAsObject(ref reader, options, ref state, out object ntElement))
                                 {
                                     value = default;
                                     return false;
                                 }
-                                element =(TElement)ntElement;
+                                element = (TElement)ntElement;
                             }
 
                             Add(element!, ref state);
@@ -277,7 +386,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     state.ReferenceResolver.AddReferenceObject(state.Current.RefId, state.Current.ReturnValue);
                 }
 
-                if(state.Current.ObjectState< StackFrameObjectState.ReadProperties)
+                if (state.Current.ObjectState < StackFrameObjectState.ReadProperties)
                 {
                     while (true)
                     {
@@ -377,7 +486,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                             state.Current.EndProperty();
                         }
 
-                       
+
                     }
 
                     state.Current.ObjectState = StackFrameObjectState.ReadProperties;

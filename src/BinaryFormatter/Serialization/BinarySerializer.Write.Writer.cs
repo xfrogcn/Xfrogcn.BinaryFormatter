@@ -12,7 +12,7 @@ namespace Xfrogcn.BinaryFormatter
             Serialize<TValue>(writer, value, typeof(TValue), options);
         }
 
-        private static void Serialize<TValue>(BinaryWriter writer, in TValue value, Type type, BinarySerializerOptions options)
+        private static void Serialize<TValue>(BinaryWriter writer, in TValue value, Type inputType, BinarySerializerOptions options)
         {
             if (options == null)
             {
@@ -24,7 +24,22 @@ namespace Xfrogcn.BinaryFormatter
                 throw new ArgumentNullException(nameof(writer));
             }
 
-            WriteCore<TValue>(writer, value, type, options);
+            // 写入头
+            writer.WriteHeader();
+            if (value == null)
+            {
+                writer.Flush();
+                return;
+            }
+            if (value != null)
+            {
+                inputType = value.GetType();
+            }
+
+            WriteStack state = default;
+            WriteCore<TValue>(writer, value, inputType, ref state, options);
+            writer.WriteMetadata(ref state, inputType);
+            writer.Flush();
         }
     }
 }

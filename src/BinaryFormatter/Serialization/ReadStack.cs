@@ -97,7 +97,7 @@ namespace Xfrogcn.BinaryFormatter
             }
 
             SupportContinuation = supportContinuation;
-            //UseFastPath = !supportContinuation && !preserveReferences;
+            UseFastPath = !supportContinuation;
         }
 
 

@@ -147,6 +147,9 @@
   <data name="DepthTooLarge" xml:space="preserve">
     <value>CurrentDepth ({0}) is equal to or larger than the maximum allowed depth of {1}. Cannot write the next Binary object or array.</value>
   </data>
+  <data name="DeserializeNoConstructor" xml:space="preserve">
+    <value>Deserialization of types without a parameterless constructor, a singular parameterized constructor, or a parameterized constructor annotated with '{0}' is not supported. Type '{1}'.</value>
+  </data>
   <data name="DeserializeUnableToConvertValue" xml:space="preserve">
     <value>The Binary value could not be converted to {0}.</value>
   </data>
@@ -200,6 +203,9 @@
   </data>
   <data name="SerializationNotSupportedType" xml:space="preserve">
     <value>The type '{0}' is not supported.</value>
+  </data>
+  <data name="SerializeInvalidFormat" xml:space="preserve">
+    <value>The Binary data format error</value>
   </data>
   <data name="SerializerConverterFactoryReturnsNull" xml:space="preserve">
     <value>The converter '{0}' cannot return a null value.</value>

@@ -151,6 +151,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Deserialization of types without a parameterless constructor, a singular parameterized constructor, or a parameterized constructor annotated with &apos;{0}&apos; is not supported. Type &apos;{1}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string DeserializeNoConstructor {
+            get {
+                return ResourceManager.GetString("DeserializeNoConstructor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The Binary value could not be converted to {0}. 的本地化字符串。
         /// </summary>
         internal static string DeserializeUnableToConvertValue {
@@ -309,6 +318,15 @@ namespace Xfrogcn.BinaryFormatter.Resources {
         internal static string SerializationNotSupportedType {
             get {
                 return ResourceManager.GetString("SerializationNotSupportedType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The Binary data format error 的本地化字符串。
+        /// </summary>
+        internal static string SerializeInvalidFormat {
+            get {
+                return ResourceManager.GetString("SerializeInvalidFormat", resourceCulture);
             }
         }
         

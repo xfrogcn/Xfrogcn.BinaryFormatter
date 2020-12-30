@@ -1,8 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Xfrogcn.BinaryFormatter.Serialization;
 
 namespace Xfrogcn.BinaryFormatter
 {
@@ -33,7 +29,24 @@ namespace Xfrogcn.BinaryFormatter
             {
                 using (var writer = new BinaryWriter(output, options))
                 {
-                    WriteCore<TValue>(writer, value, inputType, options);
+                    // 写入头
+                    writer.WriteHeader();
+                    if (value == null)
+                    {
+                        writer.Flush();
+                        return output.WrittenMemory.ToArray();
+                    }
+                    if (value != null)
+                    {
+                        inputType = value!.GetType();
+                    }
+
+                    WriteStack state = default;
+                    WriteCore<TValue>(writer, value, inputType, ref state, options);
+
+                    writer.WriteMetadata(ref state, inputType);
+                    writer.Flush();
+
                 }
 
                 return output.WrittenMemory.ToArray();

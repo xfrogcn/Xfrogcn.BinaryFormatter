@@ -208,9 +208,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 // For performance, only perform validation on internal converters on debug builds.
                 if (IsInternalConverter)
                 {
-
                     value = Read(ref reader, typeToConvert, options);
-
                 }
                 else
                 // #endif

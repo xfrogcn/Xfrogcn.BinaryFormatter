@@ -60,66 +60,218 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
             if (state.UseFastPath)
             {
-                // Fast path that avoids maintaining state variables and dealing with preserved references.
 
-                if (reader.TokenType != BinaryTokenType.StartObject)
+                // 刚进入对象读取
+                if (reader.CurrentTypeInfo == null || reader.CurrentTypeInfo.SerializeType != ClassType.Dictionary)
                 {
                     ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(TypeToConvert);
                 }
 
-                CreateCollection(ref reader, ref state);
+                // 读取引用标记
+                reader.ReadStartToken();
 
-                BinaryConverter<TValue> valueConverter = _valueConverter ??= GetValueConverter(elementClassInfo);
-                //if (valueConverter.CanUseDirectReadOrWrite && state.Current.NumberHandling == null)
-                //{
-                //    // Process all elements.
-                //    while (true)
-                //    {
-                //        // Read the key name.
-                //        reader.ReadWithVerify();
+                RefState refState = BinarySerializer.ReadReferenceForObject(this, ref state, ref reader, out object refValue);
+                if (refState == RefState.None)
+                {
+                    state.Current.ObjectState = StackFrameObjectState.StartToken;
+                    CreateCollection(ref reader, ref state);
+                  
+                    while (true)
+                    {
+                        reader.AheadReadDictionaryKeySeq();
 
-                //        if (reader.TokenType == JsonTokenType.EndObject)
-                //        {
-                //            break;
-                //        }
+                        if (reader.TokenType == BinaryTokenType.EndDictionaryKey)
+                        {
+                            break;
+                        }
 
-                //        // Read method would have thrown if otherwise.
-                //        Debug.Assert(reader.TokenType == JsonTokenType.PropertyName);
 
-                //        TKey key = ReadDictionaryKey(ref reader, ref state);
+                        BinaryConverter converter = _keyConverter;
+                        reader.AheadReadTypeSeq();
 
-                //        // Read the value and add.
-                //        reader.ReadWithVerify();
-                //        TValue element = valueConverter.Read(ref reader, s_valueType, options);
-                //        Add(key, element!, options, ref state);
-                //    }
-                //}
-                //else
-                //{
-                    // TODO
-                    // Process all elements.
-                    //while (true)
-                    //{
-                    //    // Read the key name.
-                    //    reader.ReadWithVerify();
+                        if (reader.TokenType == BinaryTokenType.Null)
+                        {
+                            state.Current.DictionaryKey = default(TKey);
+                        }
+                        else
+                        {
+                            _keyConverter = _keyConverter ?? GetKeyConverter(typeof(TKey), options);
+                            if (_keyConverter.CanBePolymorphic)
+                            {
+                                Type t = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
+                                if (state.Current.PropertyPolymorphicConverter != null && t == state.Current.PropertyPolymorphicConverter.TypeToConvert)
+                                {
+                                    converter = state.Current.PropertyPolymorphicConverter;
+                                }
+                                else if (t != _keyConverter.TypeToConvert)
+                                {
+                                    converter = options.GetConverter(t);
+                                    state.Current.PropertyPolymorphicConverter = converter;
+                                    state.Current.PolymorphicBinaryClassInfo = options.GetOrAddClass(t);
+                                }
+                                else
+                                {
+                                    converter = _keyConverter;
+                                    state.Current.PropertyPolymorphicConverter = null;
+                                    state.Current.PolymorphicBinaryClassInfo = null;
+                                }
+                            }
 
-                    //    if (reader.TokenType == JsonTokenType.EndObject)
-                    //    {
-                    //        break;
-                    //    }
+                        }
 
-                    //    // Read method would have thrown if otherwise.
-                    //    Debug.Assert(reader.TokenType == JsonTokenType.PropertyName);
 
-                    //    TKey key = ReadDictionaryKey(ref reader, ref state);
 
-                    //    reader.ReadWithVerify();
+                        TKey key = default;
+                        if (converter is BinaryConverter<TKey> typedConverter)
+                        {
+                            typedConverter.TryRead(ref reader, typeof(TKey), options, ref state, out ReferenceID refId, out key);
 
-                    //    // Get the value from the converter and add it.
-                    //    valueConverter.TryRead(ref reader, s_valueType, options, ref state, out TValue element);
-                    //    Add(key, element!, options, ref state);
-                    //}
-                //}
+                        }
+                        else
+                        {
+                            converter.TryReadAsObject(ref reader, options, ref state, out object ntElement);
+                            key = (TKey)ntElement;
+                        }
+
+                        state.Current.DictionaryKey = key;
+                        state.Current.PropertyPolymorphicConverter = null;
+
+
+                        converter = _valueConverter;
+                        reader.AheadReadTypeSeq();
+
+                        if (reader.TokenType == BinaryTokenType.Null)
+                        {
+                            Add((TKey)state.Current.DictionaryKey, default, options, ref state);
+                        }
+                        else
+                        {
+                            _valueConverter = _valueConverter ?? GetValueConverter(elementClassInfo);
+                            if (_valueConverter.CanBePolymorphic)
+                            {
+                                Type t = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
+                                if (state.Current.PropertyPolymorphicConverter != null && t == state.Current.PropertyPolymorphicConverter.TypeToConvert)
+                                {
+                                    converter = state.Current.PropertyPolymorphicConverter;
+                                }
+                                else if (t != _valueConverter.TypeToConvert)
+                                {
+                                    converter = options.GetConverter(t);
+                                    state.Current.PropertyPolymorphicConverter = converter;
+                                    state.Current.PolymorphicBinaryClassInfo = options.GetOrAddClass(t);
+                                }
+                                else
+                                {
+                                    converter = _valueConverter;
+                                    state.Current.PropertyPolymorphicConverter = null;
+                                    state.Current.PolymorphicBinaryClassInfo = null;
+                                }
+                            }
+
+                        }
+
+
+
+                        TValue element = default;
+                        if (converter is BinaryConverter<TValue> valueTypedConverter)
+                        {
+                            valueTypedConverter.TryRead(ref reader, typeof(TKey), options, ref state, out ReferenceID refId, out element);
+                        }
+                        else
+                        {
+                            converter.TryReadAsObject(ref reader, options, ref state, out object ntElement);
+                            element = (TValue)ntElement;
+                        }
+
+                        state.Current.PropertyPolymorphicConverter = null;
+
+                        Add(key, element, options, ref state);
+
+                        state.Current.EndElement();
+                    }
+
+
+                    state.Current.EndProperty();
+
+                    // 转实际类型
+                    ConvertCollection(ref state, options);
+                    state.ReferenceResolver.AddReferenceObject(state.Current.RefId, state.Current.ReturnValue);
+                }
+                else if (refState == RefState.Created)
+                {
+                    state.Current.ReturnValue = refValue;
+                }
+                else
+                {
+                    value = default;
+                    return false;
+                }
+
+
+                while (true)
+                {
+                    // 读取属性索引 
+                    reader.AheadReadPropertyName();
+
+                    BinaryPropertyInfo binaryPropertyInfo;
+
+                    if (reader.TokenType == BinaryTokenType.EndObject)
+                    {
+                        break;
+                    }
+
+                    Debug.Assert(reader.TokenType == BinaryTokenType.PropertyName);
+                    ushort propertySeq = reader.CurrentPropertySeq;
+                    BinaryMemberInfo mi = state.GetMemberInfo(propertySeq);
+                    Debug.Assert(mi != null);
+
+                    binaryPropertyInfo = BinarySerializer.LookupProperty(
+                        state.Current.ReturnValue,
+                        mi.NameAsUtf8Bytes,
+                        ref state,
+                        out bool useExtensionProperty);
+
+                    state.Current.UseExtensionProperty = useExtensionProperty;
+
+                    // binaryPropertyInfo = state.LookupProperty(mi.NameAsString);
+                    state.Current.BinaryPropertyInfo = binaryPropertyInfo;
+                    state.Current.PropertyPolymorphicConverter = null;
+                    if (binaryPropertyInfo == null)
+                    {
+                        state.Current.EndProperty();
+                        continue;
+                    }
+
+
+
+                    if (!binaryPropertyInfo.ShouldDeserialize)
+                    {
+                        if (!reader.TrySkip(options))
+                        {
+                            value = default;
+                            return false;
+                        }
+
+                        state.Current.EndProperty();
+                        continue;
+                    }
+
+
+
+                    // Obtain the CLR value from the Binary and set the member.
+                    if (!state.Current.UseExtensionProperty)
+                    {
+                        binaryPropertyInfo.ReadBinaryAndSetMember(state.Current.ReturnValue, ref state, ref reader);
+                    }
+                    else
+                    {
+                        // TODO 扩展属性
+                        state.Current.EndProperty();
+                    }
+                }
+
+                state.Current.ObjectState = StackFrameObjectState.ReadProperties;
+
             }
             else
             {
@@ -172,26 +324,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     //}
                 }
 
-                // Handle the metadata properties.
-                //bool preserveReferences = options.ReferenceHandler != null;
-                //if (preserveReferences && state.Current.ObjectState < StackFrameObjectState.PropertyValue)
-                //{
-                //    if (JsonSerializer.ResolveMetadataForJsonObject<TCollection>(ref reader, ref state, options))
-                //    {
-                //        if (state.Current.ObjectState == StackFrameObjectState.ReadRefEndObject)
-                //        {
-                //            // This will never throw since it was previously validated in ResolveMetadataForJsonObject.
-                //            value = (TCollection)state.Current.ReturnValue!;
-                //            return true;
-                //        }
-                //    }
-                //    else
-                //    {
-                //        value = default;
-                //        return false;
-                //    }
-                //}
-
 
                 // Create the dictionary.
                 if (state.Current.ObjectState < StackFrameObjectState.CreatedObject)
@@ -211,7 +343,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     {
                         if (state.Current.PropertyState < StackFramePropertyState.ReadKeySeq)
                         {
-                            
+
                             // Read the key name.
                             if (!reader.ReadDictionaryKeySeq())
                             {
@@ -219,7 +351,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                                 return false;
                             }
 
-                            if(reader.TokenType == BinaryTokenType.EndDictionaryKey)
+                            if (reader.TokenType == BinaryTokenType.EndDictionaryKey)
                             {
                                 break;
                             }
@@ -237,7 +369,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                                 return false;
                             }
 
-                            if( reader.TokenType == BinaryTokenType.Null)
+                            if (reader.TokenType == BinaryTokenType.Null)
                             {
                                 state.Current.DictionaryKey = default(TKey);
                                 state.Current.PropertyState = StackFramePropertyState.ReadKey;
@@ -302,7 +434,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         }
 
                         converter = _valueConverter;
-                        if(state.Current.PropertyState < StackFramePropertyState.ReadValueTypeSeq)
+                        if (state.Current.PropertyState < StackFramePropertyState.ReadValueTypeSeq)
                         {
                             if (!reader.ReadTypeSeq())
                             {
@@ -342,7 +474,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                             }
                         }
-                        else if(state.Current.PropertyPolymorphicConverter != null)
+                        else if (state.Current.PropertyPolymorphicConverter != null)
                         {
                             converter = state.Current.PropertyPolymorphicConverter;
                         }
@@ -373,10 +505,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                             TKey key = (TKey)state.Current.DictionaryKey!;
                             Add(key, element, options, ref state);
-                            
+
                         }
 
-                        if(state.Current.PropertyState< StackFramePropertyState.ReadValueIsEnd)
+                        if (state.Current.PropertyState < StackFramePropertyState.ReadValueIsEnd)
                         {
                             state.Current.EndElement();
                         }

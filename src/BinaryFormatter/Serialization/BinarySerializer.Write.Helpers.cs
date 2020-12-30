@@ -12,6 +12,7 @@ namespace Xfrogcn.BinaryFormatter
             BinaryWriter writer,
             in TValue value,
             Type inputType,
+            ref WriteStack state,
             BinarySerializerOptions options)
         {
             Debug.Assert(writer != null);
@@ -21,7 +22,6 @@ namespace Xfrogcn.BinaryFormatter
                 inputType = value!.GetType();
             }
 
-            WriteStack state = default;
             BinaryConverter binaryConverter = state.Initialize(inputType, options, supportContinuation: false);
 
             bool success = WriteCore(binaryConverter, writer, value, options, ref state);

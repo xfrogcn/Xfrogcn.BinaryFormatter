@@ -283,89 +283,6 @@ namespace Xfrogcn.BinaryFormatter
                 return ReadFirstToken();
             }
             return true;
-        //    bool retVal = false;
-        //    ValueSpan = default;
-
-        //    if (!HasMoreData())
-        //    {
-        //        goto Done;
-        //    }
-
-        //    byte first = _buffer[_consumed];
-
-        //    TokenStartIndex = _consumed;
-
-        //    if (_tokenType == BinaryTokenType.None)
-        //    {
-        //        goto ReadFirstToken;
-        //    }
-
-
-        //    if (_tokenType == BinaryTokenType.StartObject)
-        //    {
-        //        //if (first == JsonConstants.CloseBrace)
-        //        //{
-        //        //    EndObject();
-        //        //}
-        //        //else
-        //        //{
-        //        //    if (first != JsonConstants.Quote)
-        //        //    {
-        //        //        ThrowHelper.ThrowJsonReaderException(ref this, ExceptionResource.ExpectedStartOfPropertyNotFound, first);
-        //        //    }
-
-        //        //    int prevConsumed = _consumed;
-        //        //    long prevPosition = _bytePositionInLine;
-        //        //    long prevLineNumber = _lineNumber;
-        //        //    retVal = ConsumePropertyName();
-        //        //    if (!retVal)
-        //        //    {
-        //        //        // roll back potential changes
-        //        //        _consumed = prevConsumed;
-        //        //        _tokenType = JsonTokenType.StartObject;
-        //        //        _bytePositionInLine = prevPosition;
-        //        //        _lineNumber = prevLineNumber;
-        //        //    }
-        //        //    goto Done;
-        //        //}
-        //    }
-        //    else if (_tokenType == BinaryTokenType.StartArray)
-        //    {
-        //        //if (first == JsonConstants.CloseBracket)
-        //        //{
-        //        //    EndArray();
-        //        //}
-        //        //else
-        //        //{
-        //        //    retVal = ConsumeValue(first);
-        //        //    goto Done;
-        //        //}
-        //    }
-        //    else if (_tokenType == BinaryTokenType.PropertyName)
-        //    {
-        //        //retVal = ConsumeValue(first);
-        //        goto Done;
-        //    }
-        //    else if(_tokenType == BinaryTokenType.TypeSeq)
-        //    {
-        //        retVal = true;
-        //        goto Done;
-        //    }
-        //    else
-        //    {
-        //        retVal = true;
-        //        //retVal = ConsumeNextTokenOrRollback(first);
-        //        goto Done;
-        //    }
-
-        //    retVal = true;
-
-        //Done:
-        //    return retVal;
-
-        //ReadFirstToken:
-        //    retVal = ReadFirstToken();
-        //    goto Done;
         }
 
         private bool ReadFirstToken()
@@ -507,21 +424,7 @@ namespace Xfrogcn.BinaryFormatter
             return false;
         }
 
-        public void Rollback(int len)
-        {
-            _consumed -= len;
-            Debug.Assert(_consumed >= 0);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool HasMoreData()
-        {
-            if (_consumed >= (uint)_buffer.Length)
-            {
-                return false;
-            }
-            return true;
-        }
+   
 
         private bool RequestData(int len)
         {

@@ -404,5 +404,23 @@ namespace Xfrogcn.BinaryFormatter
         {
             ThrowNotSupportedException(state, reader, new NotSupportedException(string.Format(Strings.CannotPopulateCollection, type)));
         }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowBinaryException_InvalidBinaryFormat()
+        {
+            var ex = new BinaryException(string.Format(Strings.SerializeInvalidFormat));
+            ex.AppendPathInformation = false;
+            throw ex;
+        }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowNotSupportedException_DeserializeNoConstructor(Type type, ref BinaryReader reader, ref ReadStack state)
+        {
+            string message;
+            message = string.Format(Strings.DeserializeNoConstructor, nameof(BinaryConstructorAttribute), type);
+            ThrowNotSupportedException(state, reader, new NotSupportedException(message));
+        }
     }
 }

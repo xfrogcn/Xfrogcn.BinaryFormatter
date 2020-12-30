@@ -83,15 +83,14 @@ namespace Xfrogcn.BinaryFormatter
             // 读取头
             if (stream.Length < 4)
             {
-                //
-                throw new Exception();
+                ThrowHelper.ThrowBinaryException_InvalidBinaryFormat();
             }
 
             byte[] headerBytes =  new byte[4];
             await stream.ReadAsync(headerBytes, 0, 4).ConfigureAwait(false);
             if(headerBytes[0]!= (byte)'X' || headerBytes[1] != (byte)'B' || headerBytes[2] != (byte)'F')
             {
-                throw new Exception();
+                ThrowHelper.ThrowBinaryException_InvalidBinaryFormat();
             }
 
             state.Version = headerBytes[3];
@@ -110,7 +109,7 @@ namespace Xfrogcn.BinaryFormatter
             uint mapPosition = BitConverter.ToUInt32(headerBytes);
             if (mapPosition >= stream.Length)
             {
-                throw new Exception();
+                ThrowHelper.ThrowBinaryException_InvalidBinaryFormat();
             }
 
             
