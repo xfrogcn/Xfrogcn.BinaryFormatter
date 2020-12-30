@@ -24,8 +24,15 @@ namespace Xfrogcn.BinaryFormatter.Tests
             object b1 = await BinarySerializer.DeserializeAsync(ms, options);
             check((T)b1);
 
+            byte[] bytes = BinarySerializer.SerializeToBytes<T>(input, options);
+
         }
 
+
+        public async Task Test<T>(T input, BinarySerializerOptions options = null)
+        {
+            await Test<T>(input, b => Assert.Equal(input, b), options);
+        }
 
         internal Action<TestCtorA> checkCtorCProc(TestCtorA a)
         {

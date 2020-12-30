@@ -8,7 +8,28 @@ namespace Xfrogcn.BinaryFormatter
 {
    public static partial class BinarySerializer
     {
-         private static bool WriteCore<TValue>(
+        private static void WriteCore<TValue>(
+            BinaryWriter writer,
+            in TValue value,
+            Type inputType,
+            BinarySerializerOptions options)
+        {
+            Debug.Assert(writer != null);
+
+            if (value != null )
+            {
+                inputType = value!.GetType();
+            }
+
+            WriteStack state = default;
+            BinaryConverter binaryConverter = state.Initialize(inputType, options, supportContinuation: false);
+
+            bool success = WriteCore(binaryConverter, writer, value, options, ref state);
+            Debug.Assert(success);
+        }
+
+
+        private static bool WriteCore<TValue>(
             BinaryConverter binaryConverter,
             BinaryWriter writer,
             in TValue value,

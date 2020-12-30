@@ -34,21 +34,6 @@ namespace Xfrogcn.BinaryFormatter.Tests
             Max = long.MaxValue
         }
 
-        private async Task Test<T>(T input)
-        {
-            MemoryStream ms = new MemoryStream();
-            await BinarySerializer.SerializeAsync(ms, input);
-
-            ms.Position = 0;
-
-            T b =  await BinarySerializer.DeserializeAsync<T>(ms);
-            Assert.Equal(input, b);
-
-            ms.Position = 0;
-            object b1 = await BinarySerializer.DeserializeAsync(ms);
-            Assert.Equal(input, (T)b1);
-        }
-
         [InlineData(TestByteEnum.None)]
         [InlineData(TestByteEnum.One)]
         [InlineData(TestByteEnum.Two)]

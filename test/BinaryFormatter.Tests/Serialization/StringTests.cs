@@ -8,7 +8,7 @@ using Xunit;
 namespace Xfrogcn.BinaryFormatter.Tests
 {
     [Trait("", "内置类型")]
-    public class StringTests
+    public class StringTests : SerializerTestsBase
     {
         [InlineData("")]
         [InlineData(null)]
@@ -17,17 +17,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [Theory(DisplayName = "String")]
         public async Task Test1(string input)
         {
-            MemoryStream ms = new MemoryStream();
-            await BinarySerializer.SerializeAsync(ms, input);
-
-            ms.Position = 0;
-
-            string str = await BinarySerializer.DeserializeAsync<string>(ms);
-            Assert.Equal(input, str);
-
-            ms.Position = 0;
-            str = (await BinarySerializer.DeserializeAsync(ms)) as string;
-            Assert.Equal(input, str);
+            await Test(input);
 
         }
 
@@ -44,17 +34,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
                 DefaultBufferSize = 1
             };
             string input = new string('A', 1024 * len);
-            MemoryStream ms = new MemoryStream();
-            await BinarySerializer.SerializeAsync(ms, input);
-
-            ms.Position = 0;
-
-            string str = await BinarySerializer.DeserializeAsync<string>(ms, options);
-            Assert.Equal(input, str);
-
-            ms.Position = 0;
-            str = (await BinarySerializer.DeserializeAsync(ms, options)) as string;
-            Assert.Equal(input, str);
+            await Test(input, options);
         }
     }
 }
