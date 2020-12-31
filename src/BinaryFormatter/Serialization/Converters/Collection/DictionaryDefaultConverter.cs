@@ -175,7 +175,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         TValue element = default;
                         if (converter is BinaryConverter<TValue> valueTypedConverter)
                         {
-                            valueTypedConverter.TryRead(ref reader, typeof(TKey), options, ref state, out ReferenceID refId, out element);
+                            valueTypedConverter.TryRead(ref reader, typeof(TValue), options, ref state, out ReferenceID refId, out element);
                         }
                         else
                         {
@@ -655,7 +655,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                 if (BinarySerializer.WriteReferenceForObject(this, dictionary, ref state, writer))
                 {
-                    writer.WriteEndArray();
+                    writer.WriteEndDictionary();
                     return true;
                 }
 
@@ -718,7 +718,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                     if (BinarySerializer.WriteReferenceForObject(this, dictionary, ref state, writer))
                     {
-                        writer.WriteEndArray();
+                        writer.WriteEndDictionary();
                         return true;
                     }
 

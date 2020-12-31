@@ -35,7 +35,7 @@ namespace Xfrogcn.BinaryFormatter
 
         private static Dictionary<Type, BinaryConverter> GetDefaultSimpleConverters()
         {
-            const int NumberOfSimpleConverters = 33;
+            const int NumberOfSimpleConverters = 34;
             var converters = new Dictionary<Type, BinaryConverter>(NumberOfSimpleConverters);
 
             // Use a dictionary for simple converters.
@@ -77,6 +77,7 @@ namespace Xfrogcn.BinaryFormatter
             Add(new TransitionTimeConverter());
             Add(new AdjustmentRuleConverter());
             Add(new TimeZoneInfoConverter());
+            Add(new NameValueCollectionConverter());
 
             Debug.Assert(NumberOfSimpleConverters == converters.Count);
 

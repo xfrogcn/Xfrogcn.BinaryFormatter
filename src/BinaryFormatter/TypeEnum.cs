@@ -61,6 +61,7 @@
         List = 101,
         KeyValuePair = 102,
         Dictionary = 103,
+        NameValueCollection = 104,
 
         Object = 126,
         Class = 127

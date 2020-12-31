@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using static System.TimeZoneInfo;
 using System.Reflection;
 using System.Linq;
+using System.Collections.Specialized;
 
 namespace Xfrogcn.BinaryFormatter
 {
@@ -56,6 +57,7 @@ namespace Xfrogcn.BinaryFormatter
 
                 { TypeEnum.KeyValuePair, typeof(KeyValuePair<,>) },
                 { TypeEnum.Dictionary, typeof(Dictionary<,>) },
+                { TypeEnum.NameValueCollection, typeof(NameValueCollection) },
 
                 { TypeEnum.Nullable, typeof(Nullable<>)  },
                 { TypeEnum.List, typeof(List<>) },
