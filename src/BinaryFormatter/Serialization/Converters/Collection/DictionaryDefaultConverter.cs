@@ -33,8 +33,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         // in order to avoid performance regression on already supported types.
         protected bool IsStringKey = typeof(TKey) == typeof(string);
 
-        protected BinaryConverter<TKey>? _keyConverter;
-        protected BinaryConverter<TValue>? _valueConverter;
+        protected BinaryConverter<TKey> _keyConverter;
+        protected BinaryConverter<TValue> _valueConverter;
 
         protected static BinaryConverter<TValue> GetValueConverter(BinaryClassInfo elementClassInfo)
         {

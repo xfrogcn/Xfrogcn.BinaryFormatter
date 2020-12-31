@@ -315,22 +315,22 @@ namespace Xfrogcn.BinaryFormatter
                 }
             }
 
-            static int GetCount(IEnumerable enumerable)
-            {
-                if (enumerable is ICollection collection)
-                {
-                    return collection.Count;
-                }
+            //static int GetCount(IEnumerable enumerable)
+            //{
+            //    if (enumerable is ICollection collection)
+            //    {
+            //        return collection.Count;
+            //    }
 
-                int count = 0;
-                IEnumerator enumerator = enumerable.GetEnumerator();
-                while (enumerator.MoveNext())
-                {
-                    count++;
-                }
+            //    int count = 0;
+            //    IEnumerator enumerator = enumerable.GetEnumerator();
+            //    while (enumerator.MoveNext())
+            //    {
+            //        count++;
+            //    }
 
-                return count;
-            }
+            //    return count;
+            //}
 
             static void AppendPropertyName(StringBuilder sb, string propertyName)
             {

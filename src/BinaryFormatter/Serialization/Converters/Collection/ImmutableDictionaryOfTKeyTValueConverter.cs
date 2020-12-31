@@ -22,7 +22,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         {
             BinaryClassInfo classInfo = state.Current.BinaryClassInfo;
 
-            Func<IEnumerable<KeyValuePair<TKey, TValue>>, TCollection> creator = (Func<IEnumerable<KeyValuePair<TKey, TValue>>, TCollection>?)classInfo.CreateObjectWithArgs;
+            Func<IEnumerable<KeyValuePair<TKey, TValue>>, TCollection> creator = (Func<IEnumerable<KeyValuePair<TKey, TValue>>, TCollection>)classInfo.CreateObjectWithArgs;
             if (creator == null)
             {
                 creator = options.MemberAccessorStrategy.CreateImmutableDictionaryCreateRangeDelegate<TKey,TValue, TCollection>();

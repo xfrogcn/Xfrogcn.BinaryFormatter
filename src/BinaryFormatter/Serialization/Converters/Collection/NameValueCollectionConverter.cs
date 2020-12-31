@@ -25,8 +25,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
         internal override bool OnTryRead(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options, ref ReadStack state, out NameValueCollection value)
         {
-            BinaryClassInfo elementClassInfo = state.Current.BinaryClassInfo.ElementClassInfo!;
-
+          
             _keyConverter = _keyConverter ?? (options.GetConverter(typeof(string)) as BinaryConverter<string>);
             _valueConverter = _valueConverter ?? (options.GetConverter(typeof(string)) as BinaryConverter<string>);
 
