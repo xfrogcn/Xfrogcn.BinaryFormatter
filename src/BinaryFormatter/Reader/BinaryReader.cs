@@ -14,7 +14,7 @@ namespace Xfrogcn.BinaryFormatter
         private ReadOnlySpan<byte> _buffer;
 
         private readonly bool _isFinalBlock;
-        private readonly bool _isInputSequence;
+        // private readonly bool _isInputSequence;
 
         // private long _lineNumber;
         // private long _bytePositionInLine;
@@ -61,8 +61,8 @@ namespace Xfrogcn.BinaryFormatter
         public int Version => _version;
 
         /// <summary>
-        /// Returns the total amount of bytes consumed by the <see cref="Utf8JsonReader"/> so far
-        /// for the current instance of the <see cref="Utf8JsonReader"/> with the given UTF-8 encoded input text.
+        /// Returns the total amount of bytes consumed by the <see cref="BinaryReader"/> so far
+        /// for the current instance of the <see cref="BinaryReader"/> with the given UTF-8 encoded input text.
         /// </summary>
         public long BytesConsumed
         {
@@ -81,72 +81,38 @@ namespace Xfrogcn.BinaryFormatter
         
         public long TokenStartIndex { get; private set; }
 
-        /// <summary>
-        /// Tracks the recursive depth of the nested objects / arrays within the JSON text
-        /// processed so far. This provides the depth of the current token.
-        /// </summary>
-        public int CurrentDepth
-        {
-            //get
-            //{
-            //    int readerDepth = _bitStack.CurrentDepth;
-            //    if (TokenType == JsonTokenType.StartArray || TokenType == JsonTokenType.StartObject)
-            //    {
-            //        Debug.Assert(readerDepth >= 1);
-            //        readerDepth--;
-            //    }
-            //    return readerDepth;
-            //}
-            get
-            {
-                return 0;
-            }
-        }
+       
 
         private TypeMap _typeMap;
 
-       // internal bool IsInArray => !_inObject;
-
+    
         public BinaryReader(ReadOnlySpan<byte> binaryData, bool isFinalBlock, BinaryReaderState state)
         {
             _buffer = binaryData;
 
             _isFinalBlock = isFinalBlock;
-            _isInputSequence = false;
+            //_isInputSequence = false;
             _typeSeq = state._typeSeq;
             _dicKeySeq = state._dicKeySeq;
             CurrentTypeInfo = state._typeInfo;
             CurrentPropertySeq = state._propertySeq;
             _typeMap = state._typeMap;
             _version = state._version;
-            //_lineNumber = state._lineNumber;
-            //_bytePositionInLine = state._bytePositionInLine;
-            // _inObject = default; //state._inObject;
-           // _isNotPrimitive = state._isNotPrimitive;
-            //_stringHasEscaping = state._stringHasEscaping;
-            //_trailingCommaBeforeComment = state._trailingCommaBeforeComment;
+           
             _tokenType = state._tokenType;
             _previousTokenType = state._previousTokenType;
-            //_readerOptions = state._readerOptions;
-            //if (_readerOptions.MaxDepth == 0)
-            //{
-            //    _readerOptions.MaxDepth = JsonReaderOptions.DefaultMaxDepth;  // If max depth is not set, revert to the default depth.
-            //}
-            //_bitStack = state._bitStack;
+            
 
             _consumed = 0;
             TokenStartIndex = 0;
             _totalConsumed = 0;
-            //_isLastSegment = _isFinalBlock;
             _isMultiSegment = false;
 
             ValueSpan = ReadOnlySpan<byte>.Empty;
 
-            //_currentPosition = default;
-            //_nextPosition = default;
+            
             _sequence = default;
-          // HasValueSequence = false;
-           // ValueSequence = ReadOnlySequence<byte>.Empty;
+         
         }
 
 

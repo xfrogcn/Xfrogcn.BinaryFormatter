@@ -81,7 +81,7 @@ namespace Xfrogcn.BinaryFormatter
             BinaryClassInfo binaryClassInfo = options.GetOrAddClass(type);
             Current.BinaryClassInfo = binaryClassInfo;
 
-            // The initial JsonPropertyInfo will be used to obtain the converter.
+            // The initial BinaryPropertyInfo will be used to obtain the converter.
             Current.BinaryPropertyInfo = binaryClassInfo.PropertyInfoForClassInfo;
 
             Current.BinaryTypeInfo = TypeMap.GetTypeInfo(type);
@@ -366,9 +366,8 @@ namespace Xfrogcn.BinaryFormatter
                     }
                     else
                     {
-                        // Attempt to get the JSON property name from the JsonPropertyInfo or JsonParameterInfo.
-                        //utf8PropertyName = frame.BinaryPropertyInfo.NameAsUtf8Bytes ??
-                        //    frame.CtorArgumentState?.JsonParameterInfo?.NameAsUtf8Bytes;
+                        utf8PropertyName = frame.BinaryPropertyInfo.NameAsUtf8Bytes ??
+                            frame.CtorArgumentState?.BinaryParameterInfo?.NameAsUtf8Bytes;
                     }
                 }
 

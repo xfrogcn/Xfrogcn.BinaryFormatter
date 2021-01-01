@@ -65,19 +65,10 @@ namespace Xfrogcn.BinaryFormatter
         {
             Debug.Assert(ex.Path == null);
 
-            string path = "";//state.JsonPath();
+            string path = state.BinaryPath();
             string message = ex.Message;
 
-            //// Insert the "Path" portion before "LineNumber" and "BytePositionInLine".
-            //int iPos = message.LastIndexOf(" LineNumber: ", StringComparison.InvariantCulture);
-            //if (iPos >= 0)
-            //{
-            //    message = $"{message.Substring(0, iPos)} Path: {path} |{message.Substring(iPos)}";
-            //}
-            //else
-            //{
-            //    message += $" Path: {path}.";
-            //}
+            
 
             throw new BinaryException(message, path, ex.BytePosition, ex);
         }
@@ -94,84 +85,82 @@ namespace Xfrogcn.BinaryFormatter
 
         public static void AddBinaryExceptionInformation(in ReadStack state, in BinaryReader reader, BinaryException ex)
         {
-           
+            long bytePosition = reader.CurrentState._bytePosition;
+            ex.BytePosition = bytePosition;
 
-            //long bytePositionInLine = reader.CurrentState._bytePositionInLine;
-            //ex.BytePositionInLine = bytePositionInLine;
+            string path = state.BinaryPath();
+            ex.Path = path;
 
-            //string path = state.JsonPath();
-            //ex.Path = path;
+            string message = ex._message;
 
-            //string? message = ex._message;
+            if (string.IsNullOrEmpty(message))
+            {
+                // Use a default message.
+                Type propertyType = state.Current.BinaryPropertyInfo?.RuntimePropertyType;
+                if (propertyType == null)
+                {
+                    propertyType = state.Current.BinaryClassInfo?.Type;
+                }
 
-            //if (string.IsNullOrEmpty(message))
-            //{
-            //    // Use a default message.
-            //    Type? propertyType = state.Current.JsonPropertyInfo?.RuntimePropertyType;
-            //    if (propertyType == null)
-            //    {
-            //        propertyType = state.Current.JsonClassInfo?.Type;
-            //    }
+                message = string.Format(Strings.DeserializeUnableToConvertValue, propertyType);
+                ex.AppendPathInformation = true;
+            }
 
-            //    message = SR.Format(SR.DeserializeUnableToConvertValue, propertyType);
-            //    ex.AppendPathInformation = true;
-            //}
-
-            //if (ex.AppendPathInformation)
-            //{
-            //    message += $" Path: {path} | LineNumber: {lineNumber} | BytePositionInLine: {bytePositionInLine}.";
-            //    ex.SetMessage(message);
-            //}
+            if (ex.AppendPathInformation)
+            {
+                message += $" Path: {path} | BytePosition: {bytePosition}.";
+                ex.SetMessage(message);
+            }
         }
 
         public static void AddBinaryExceptionInformation(in WriteStack state, BinaryException ex)
         {
-            //string path = state.PropertyPath();
-            //ex.Path = path;
+            string path = state.PropertyPath();
+            ex.Path = path;
 
-            //string? message = ex._message;
-            //if (string.IsNullOrEmpty(message))
-            //{
-            //    // Use a default message.
-            //    message = string.Format(Strings.SerializeUnableToSerialize);
-            //    ex.AppendPathInformation = true;
-            //}
+            string message = ex._message;
+            if (string.IsNullOrEmpty(message))
+            {
+                // Use a default message.
+                message = string.Format(Strings.SerializeUnableToSerialize);
+                ex.AppendPathInformation = true;
+            }
 
-            //if (ex.AppendPathInformation)
-            //{
-            //    message += $" Path: {path}.";
-            //    ex.SetMessage(message);
-            //}
+            if (ex.AppendPathInformation)
+            {
+                message += $" Path: {path}.";
+                ex.SetMessage(message);
+            }
         }
 
         [DoesNotReturn]
         public static void ThrowNotSupportedException(in WriteStack state, NotSupportedException ex)
         {
-            //string message = ex.Message;
+            string message = ex.Message;
 
-            //// The caller should check to ensure path is not already set.
-            //Debug.Assert(!message.Contains(" Path: "));
+            // The caller should check to ensure path is not already set.
+            Debug.Assert(!message.Contains(" Path: "));
 
-            //// Obtain the type to show in the message.
-            //Type propertyType = state.Current.DeclaredJsonPropertyInfo?.RuntimePropertyType;
-            //if (propertyType == null)
-            //{
-            //    propertyType = state.Current.JsonClassInfo.Type;
-            //}
+            // Obtain the type to show in the message.
+            Type propertyType = state.Current.DeclaredBinaryPropertyInfo?.RuntimePropertyType;
+            if (propertyType == null)
+            {
+                propertyType = state.Current.BinaryClassInfo.Type;
+            }
 
-            //if (!message.Contains(propertyType.ToString()))
-            //{
-            //    if (message.Length > 0)
-            //    {
-            //        message += " ";
-            //    }
+            if (!message.Contains(propertyType.ToString()))
+            {
+                if (message.Length > 0)
+                {
+                    message += " ";
+                }
 
-            //    message += string.Format(Strings.SerializationNotSupportedParentType, propertyType);
-            //}
+                message += string.Format(Strings.SerializationNotSupportedParentType, propertyType);
+            }
 
-            //message += $" Path: {state.PropertyPath()}.";
+            message += $" Path: {state.PropertyPath()}.";
 
-            //throw new NotSupportedException(message, ex);
+            throw new NotSupportedException(message, ex);
         }
 
         [DoesNotReturn]
@@ -179,30 +168,7 @@ namespace Xfrogcn.BinaryFormatter
         {
             string message = ex.Message;
 
-            //// The caller should check to ensure path is not already set.
-            //Debug.Assert(!message.Contains(" Path: "));
-
-            //// Obtain the type to show in the message.
-            //Type? propertyType = state.Current.JsonPropertyInfo?.RuntimePropertyType;
-            //if (propertyType == null)
-            //{
-            //    propertyType = state.Current.JsonClassInfo.Type;
-            //}
-
-            //if (!message.Contains(propertyType.ToString()))
-            //{
-            //    if (message.Length > 0)
-            //    {
-            //        message += " ";
-            //    }
-
-            //    message += SR.Format(SR.SerializationNotSupportedParentType, propertyType);
-            //}
-
-            //long lineNumber = reader.CurrentState._lineNumber;
-            //long bytePositionInLine = reader.CurrentState._bytePositionInLine;
-            //message += $" Path: {state.JsonPath()} | LineNumber: {lineNumber} | BytePositionInLine: {bytePositionInLine}.";
-
+            
             throw new NotSupportedException(message, ex);
         }
 

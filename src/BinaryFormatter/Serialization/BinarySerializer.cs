@@ -85,7 +85,7 @@ namespace Xfrogcn.BinaryFormatter
             // Increment PropertyIndex so GetProperty() checks the next property first when called again.
             state.Current.PropertyIndex++;
 
-            // For case insensitive and missing property support of JsonPath, remember the value on the temporary stack.
+            // For case insensitive and missing property support of BinaryPath, remember the value on the temporary stack.
             state.Current.BinaryPropertyName = utf8PropertyName;
 
             // Determine if we should use the extension property.

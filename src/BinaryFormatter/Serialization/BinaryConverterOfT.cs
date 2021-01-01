@@ -214,16 +214,16 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 // #endif
                 {
                     BinaryTokenType originalPropertyTokenType = reader.TokenType;
-                    int originalPropertyDepth = reader.CurrentDepth;
+                   // int originalPropertyDepth = reader.CurrentDepth;
                     long originalPropertyBytesConsumed = reader.BytesConsumed;
                     value = Read(ref reader, typeToConvert, options);
 
-                    VerifyRead(
-                        originalPropertyTokenType,
-                        originalPropertyDepth,
-                        originalPropertyBytesConsumed,
-                        isValueConverter: true,
-                        ref reader);
+                    //VerifyRead(
+                    //    originalPropertyTokenType,
+                    //    originalPropertyDepth,
+                    //    originalPropertyBytesConsumed,
+                    //    isValueConverter: true,
+                    //    ref reader);
                 }
 
                 //if (CanBePolymorphic && options.ReferenceHandler != null && value is BinaryElement element)
@@ -327,7 +327,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     state.Current.OriginalTokenType = reader.TokenType;
 
                     Debug.Assert(state.Current.OriginalDepth == 0);
-                    state.Current.OriginalDepth = reader.CurrentDepth;
+                   // state.Current.OriginalDepth = reader.CurrentDepth;
                 }
 
                 success = OnTryRead(ref reader, typeToConvert, options, ref state, out value);
@@ -525,10 +525,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     {
                         ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
                     }
-                    else if (depth != reader.CurrentDepth)
-                    {
-                        ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
-                    }
+                    //else if (depth != reader.CurrentDepth)
+                    //{
+                    //    ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
+                    //}
 
                     break;
 
@@ -537,10 +537,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     {
                         ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
                     }
-                    else if (depth != reader.CurrentDepth)
-                    {
-                        ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
-                    }
+                    //else if (depth != reader.CurrentDepth)
+                    //{
+                    //    ThrowHelper.ThrowBinaryException_SerializationConverterRead(this);
+                    //}
 
                     break;
 

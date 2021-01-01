@@ -56,8 +56,6 @@ namespace Xfrogcn.BinaryFormatter
             Add(new Int32Converter());
             Add(new Int64Converter());
             Add(new SingleConverter());
-            //Add(new JsonElementConverter());
-            //Add(new JsonDocumentConverter());
             //Add(new ObjectConverter());
             Add(new SByteConverter());
             Add(new StringConverter());

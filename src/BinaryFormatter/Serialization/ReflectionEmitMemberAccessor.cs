@@ -522,9 +522,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization
             generator.Emit(declaringType.IsValueType ? OpCodes.Unbox : OpCodes.Castclass, declaringType);
             generator.Emit(OpCodes.Ldarg_1);
 
-            // declaredFieldType: Type of the field
-            // runtimeFieldType:  <T> of JsonConverter / JsonPropertyInfo
-
             if (declaredFieldType != runtimeFieldType && declaredFieldType.IsValueType)
             {
                 generator.Emit(OpCodes.Unbox_Any, declaredFieldType);

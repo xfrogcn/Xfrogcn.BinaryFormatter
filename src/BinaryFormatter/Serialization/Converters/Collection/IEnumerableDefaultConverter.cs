@@ -474,13 +474,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                             }
                             else
                             {
-                                //if (!binaryPropertyInfo.ReadBinaryAndAddExtensionProperty(obj, ref state, ref reader))
-                                //{
-                                //    // No need to set 'value' here since JsonElement must be read in full.
-                                //    state.Current.ReturnValue = obj;
-                                //    value = default;
-                                //    return false;
-                                //}
+                                // TODO 扩展属性
                             }
 
                             state.Current.EndProperty();

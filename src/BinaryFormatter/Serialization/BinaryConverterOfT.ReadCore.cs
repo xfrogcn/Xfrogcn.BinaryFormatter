@@ -62,12 +62,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 //    }
                 //}
 
-                BinaryPropertyInfo jsonPropertyInfo = state.Current.BinaryClassInfo.PropertyInfoForClassInfo;
-                bool success = TryRead(ref reader, jsonPropertyInfo.RuntimePropertyType!, options, ref state, out ReferenceID refId, out T value);
+                BinaryPropertyInfo binaryPropertyInfo = state.Current.BinaryClassInfo.PropertyInfoForClassInfo;
+                bool success = TryRead(ref reader, binaryPropertyInfo.RuntimePropertyType!, options, ref state, out ReferenceID refId, out T value);
                 if (success)
                 {
-                    // Read any trailing whitespace. This will throw if JsonCommentHandling=Disallow.
-                    // Avoiding setting ReturnValue for the final block; reader.Read() returns 'false' even when this is the final block.
                     if (!reader.Read() && !reader.IsFinalBlock)
                     {
                         // This method will re-enter if so set `ReturnValue` which will be returned during re-entry.

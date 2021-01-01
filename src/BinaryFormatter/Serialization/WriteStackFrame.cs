@@ -133,7 +133,7 @@ namespace Xfrogcn.BinaryFormatter
             BinaryClassInfo classInfo = options.GetOrAddClass(type);
             
 
-            // Set for exception handling calculation of JsonPath.
+            // Set for exception handling calculation of BinaryPath.
             BinaryPropertyNameAsString = propertyName;
 
             PolymorphicBinaryPropertyInfo = classInfo.PropertyInfoForClassInfo;

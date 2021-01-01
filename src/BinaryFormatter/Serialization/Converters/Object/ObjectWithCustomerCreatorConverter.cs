@@ -13,118 +13,55 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         {
             object obj = default;
 
-            //if (state.UseFastPath)
-            //{
-            //    // Fast path that avoids maintaining state variables.
 
-            //    ReadOnlySpan<byte> originalSpan = reader.OriginalSpan;
+            // Slower path that supports continuation.
 
-            //    ReadConstructorArguments(ref state, ref reader, options);
-
-            //    obj = CreateObject(ref state.Current);
-
-            //    if (argumentState.FoundPropertyCount > 0)
-            //    {
-            //        Utf8JsonReader tempReader;
-
-            //        FoundProperty[]? properties = argumentState.FoundProperties;
-            //        Debug.Assert(properties != null);
-
-            //        for (int i = 0; i < argumentState.FoundPropertyCount; i++)
-            //        {
-            //            JsonPropertyInfo jsonPropertyInfo = properties[i].Item1;
-            //            long resumptionByteIndex = properties[i].Item3;
-            //            byte[]? propertyNameArray = properties[i].Item4;
-            //            string? dataExtKey = properties[i].Item5;
-
-            //            tempReader = new Utf8JsonReader(
-            //                originalSpan.Slice(checked((int)resumptionByteIndex)),
-            //                isFinalBlock: true,
-            //                state: properties[i].Item2);
-
-            //            Debug.Assert(tempReader.TokenType == JsonTokenType.PropertyName);
-
-            //            state.Current.JsonPropertyName = propertyNameArray;
-            //            state.Current.JsonPropertyInfo = jsonPropertyInfo;
-
-            //            bool useExtensionProperty = dataExtKey != null;
-
-            //            if (useExtensionProperty)
-            //            {
-            //                Debug.Assert(jsonPropertyInfo == state.Current.JsonClassInfo.DataExtensionProperty);
-            //                state.Current.JsonPropertyNameAsString = dataExtKey;
-            //                JsonSerializer.CreateDataExtensionProperty(obj, jsonPropertyInfo);
-            //            }
-
-            //            ReadPropertyValue(obj, ref state, ref tempReader, jsonPropertyInfo, useExtensionProperty);
-            //        }
-
-            //        ArrayPool<FoundProperty>.Shared.Return(argumentState.FoundProperties!, clearArray: true);
-            //        argumentState.FoundProperties = null;
-            //    }
-            //}
-            //else
+            if (state.Current.ObjectState == StackFrameObjectState.None)
             {
-                // Slower path that supports continuation.
-
-                if (state.Current.ObjectState == StackFrameObjectState.None)
-                {
-                    if (!reader.ReadStartToken())
-                    {
-                        value = default;
-                        return false;
-                    }
-
-                    RefState refState = BinarySerializer.ReadReferenceForObject(this, ref state, ref reader, out object refValue);
-                    if (refState == RefState.None)
-                    {
-                        state.Current.ObjectState = StackFrameObjectState.StartToken;
-                        BeginRead(ref state, ref reader, options);
-
-
-                    }
-                    else if (refState == RefState.Created)
-                    {
-                        state.Current.ObjectState = StackFrameObjectState.CreatedObject;
-                        obj = (T)refValue;
-                    }
-                    else
-                    {
-                        value = default;
-                        return false;
-                    }
-                    //if (reader.TokenType == BinaryTokenType.StartObject)
-                    //{
-                    //    state.Current.ObjectState = StackFrameObjectState.StartToken;
-                    //}
-                    //else if (reader.TokenType == BinaryTokenType.ObjectRef)
-                    //{
-                    //    // 检查Resolver中是否存在对应id的实例，如果有则直接使用，否则跳转读取
-                    //    state.Current.ObjectState = StackFrameObjectState.GotoRef;
-
-                    //    value = default;
-                    //    return false;
-                    //}
-                   
-                }
-
-
-
-                // 读取构造参数
-                if (!ReadCreatorArgumentsWithContinuation(ref state, ref reader, options))
+                if (!reader.ReadStartToken())
                 {
                     value = default;
                     return false;
                 }
 
-                if( state.Current.ObjectState< StackFrameObjectState.CreatedObject)
+                RefState refState = BinarySerializer.ReadReferenceForObject(this, ref state, ref reader, out object refValue);
+                if (refState == RefState.None)
                 {
-                    obj = CreateObject(ref state.Current);
-                    state.ReferenceResolver.AddReferenceObject(state.Current.RefId, obj);
+                    state.Current.ObjectState = StackFrameObjectState.StartToken;
+                    BeginRead(ref state, ref reader, options);
+
+
                 }
-               
+                else if (refState == RefState.Created)
+                {
+                    state.Current.ObjectState = StackFrameObjectState.CreatedObject;
+                    obj = (T)refValue;
+                }
+                else
+                {
+                    value = default;
+                    return false;
+                }
 
             }
+
+
+
+            // 读取构造参数
+            if (!ReadCreatorArgumentsWithContinuation(ref state, ref reader, options))
+            {
+                value = default;
+                return false;
+            }
+
+            if (state.Current.ObjectState < StackFrameObjectState.CreatedObject)
+            {
+                obj = CreateObject(ref state.Current);
+                state.ReferenceResolver.AddReferenceObject(state.Current.RefId, obj);
+            }
+
+
+
 
 
             EndRead(ref state);
@@ -224,10 +161,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
             if (state.Current.UseExtensionProperty)
             {
-                //if (!binaryPropertyInfo.ReadJsonExtensionDataValue(ref state, ref reader, out propValue))
-                //{
-                //    return false;
-                //}
+                // TODO 扩展属性
             }
             else
             {
@@ -293,7 +227,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             // Increment ConstructorParameterIndex so GetParameter() checks the next parameter first when called again.
             state.Current.CtorArgumentState!.ParameterIndex++;
 
-            // For case insensitive and missing property support of JsonPath, remember the value on the temporary stack.
+            // For case insensitive and missing property support of BinaryPath, remember the value on the temporary stack.
             state.Current.BinaryPropertyName = utf8PropertyName;
 
             state.Current.CtorArgumentState.BinaryParameterInfo = binaryParameterInfo;

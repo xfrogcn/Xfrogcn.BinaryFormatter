@@ -130,7 +130,6 @@ namespace Xfrogcn.BinaryFormatter
             PropertyPolymorphicConverter = null;
             ObjectState = StackFrameObjectState.None;
             OriginalDepth = 0;
-         //   OriginalTokenType = JsonTokenType.None;
             PropertyIndex = 0;
             PropertyRefCache = null;
             ReturnValue = null;

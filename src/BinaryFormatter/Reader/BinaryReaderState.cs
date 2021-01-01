@@ -33,9 +33,7 @@ namespace Xfrogcn.BinaryFormatter
             _propertySeq = default;
             _dicKeySeq = default;
 
-            // Only allocate if the user reads a JSON payload beyond the depth that the _allocationFreeContainer can handle.
-            // This way we avoid allocations in the common, default cases, and allocate lazily.
-            // _bitStack = default;
+            
         }
     }
 }

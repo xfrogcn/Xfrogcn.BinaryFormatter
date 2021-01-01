@@ -15,15 +15,15 @@ namespace Xfrogcn.BinaryFormatter
     {
         // Default - no class type.
         None = 0x0,
-        // JsonObjectConverter<> - objects with properties.
+        // BinaryObjectConverter<> - objects with properties.
         Object = 0x1,
-        // JsonConverter<> - simple values.
+        // BinaryConverter<> - simple values.
         Value = 0x2,
-        // JsonValueConverter<> - simple values that need to re-enter the serializer such as KeyValuePair<TKey, TValue>.
+        // BinaryValueConverter<> - simple values that need to re-enter the serializer such as KeyValuePair<TKey, TValue>.
         NewValue = 0x4,
-        // JsonIEnumerbleConverter<> - all enumerable collections except dictionaries.
+        // BinaryIEnumerbleConverter<> - all enumerable collections except dictionaries.
         Enumerable = 0x8,
-        // JsonDictionaryConverter<,> - dictionary types.
+        // BinaryDictionaryConverter<,> - dictionary types.
         Dictionary = 0x10,
     }
 }

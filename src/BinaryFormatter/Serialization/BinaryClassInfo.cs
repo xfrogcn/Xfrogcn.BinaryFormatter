@@ -232,8 +232,8 @@ namespace Xfrogcn.BinaryFormatter
             // Copy the dictionary cache to the array cache.
             cache.Values.CopyTo(cacheArray, 0);
 
-            // These are not accessed by other threads until the current JsonClassInfo instance
-            // is finished initializing and added to the cache on JsonSerializerOptions.
+            // These are not accessed by other threads until the current BinaryClassInfo instance
+            // is finished initializing and added to the cache on BinarySerializerOptions.
             PropertyCache = cache;
             PropertyCacheArray = cacheArray;
 
@@ -258,18 +258,18 @@ namespace Xfrogcn.BinaryFormatter
 
             string memberName = memberInfo.Name;
 
-            // The JsonPropertyNameAttribute or naming policy resulted in a collision.
+            // The BinaryPropertyNameAttribute or naming policy resulted in a collision.
             if (!cache.TryAdd(binaryPropertyInfo.NameAsString, binaryPropertyInfo))
             {
                 BinaryPropertyInfo other = cache[binaryPropertyInfo.NameAsString];
 
                 if (other.IsIgnored)
                 {
-                    // Overwrite previously cached property since it has [JsonIgnore].
+                    // Overwrite previously cached property since it has [BinaryIgnore].
                     cache[binaryPropertyInfo.NameAsString] = binaryPropertyInfo;
                 }
                 else if (
-                    // Does the current property have `JsonIgnoreAttribute`?
+                    // Does the current property have `BinaryIgnoreAttribute`?
                     !binaryPropertyInfo.IsIgnored &&
                     // Is the current property hidden by the previously cached property
                     // (with `new` keyword, or by overriding)?
@@ -303,22 +303,21 @@ namespace Xfrogcn.BinaryFormatter
         public bool DetermineExtensionDataProperty(Dictionary<string, BinaryPropertyInfo> cache)
         {
             // 一个类型中只能由一个扩展字段(由BinaryExtensionDataAttribute标注)
-            BinaryPropertyInfo jsonPropertyInfo = GetPropertyWithUniqueAttribute(Type, typeof(BinaryExtensionDataAttribute), cache);
-            if (jsonPropertyInfo != null)
+            BinaryPropertyInfo binaryPropertyInfo = GetPropertyWithUniqueAttribute(Type, typeof(BinaryExtensionDataAttribute), cache);
+            if (binaryPropertyInfo != null)
             {
-                Type declaredPropertyType = jsonPropertyInfo.DeclaredPropertyType;
-                if (typeof(IDictionary<string, object>).IsAssignableFrom(declaredPropertyType) ||
-                    typeof(IDictionary<string, BinaryElement>).IsAssignableFrom(declaredPropertyType))
+                Type declaredPropertyType = binaryPropertyInfo.DeclaredPropertyType;
+                if (typeof(IDictionary<string, object>).IsAssignableFrom(declaredPropertyType))
                 {
                     BinaryConverter converter = Options.GetConverter(declaredPropertyType);
                     Debug.Assert(converter != null);
                 }
                 else
                 {
-                    ThrowHelper.ThrowInvalidOperationException_SerializationDataExtensionPropertyInvalid(Type, jsonPropertyInfo);
+                    ThrowHelper.ThrowInvalidOperationException_SerializationDataExtensionPropertyInvalid(Type, binaryPropertyInfo);
                 }
 
-                DataExtensionProperty = jsonPropertyInfo;
+                DataExtensionProperty = binaryPropertyInfo;
                 return true;
             }
 
@@ -529,7 +528,7 @@ namespace Xfrogcn.BinaryFormatter
                     BinaryParameterInfo binaryParameterInfo = AddConstructorParameter(TypeMap, parameterInfo, binaryPropertyInfo, Options);
                     parameterCache.Add(binaryPropertyInfo.NameAsString, binaryParameterInfo);
 
-                    // Remove property from deserialization cache to reduce the number of JsonPropertyInfos considered during JSON matching.
+                    // Remove property from deserialization cache to reduce the number of BinaryPropertyInfos considered during Binary matching.
                     PropertyCache!.Remove(binaryPropertyInfo.NameAsString);
                 }
             }

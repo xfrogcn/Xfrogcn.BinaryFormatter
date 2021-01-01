@@ -50,23 +50,18 @@ namespace Xfrogcn.BinaryFormatter
             }
 
             _memberAccessorStrategy = options._memberAccessorStrategy;
-            //_dictionaryKeyPolicy = options._dictionaryKeyPolicy;
-            //_jsonPropertyNamingPolicy = options._jsonPropertyNamingPolicy;
-            //_readCommentHandling = options._readCommentHandling;
-            //_referenceHandler = options._referenceHandler;
-            //_encoder = options._encoder;
+           
             _defaultIgnoreCondition = options._defaultIgnoreCondition;
-           // _numberHandling = options._numberHandling;
+           
 
             _defaultBufferSize = options._defaultBufferSize;
-            // _maxDepth = options._maxDepth;
-            //_allowTrailingCommas = options._allowTrailingCommas;
+            
             _ignoreNullValues = options._ignoreNullValues;
             _ignoreReadOnlyProperties = options._ignoreReadOnlyProperties;
             _ignoreReadonlyFields = options._ignoreReadonlyFields;
             _includeFields = options._includeFields;
             _propertyNameCaseInsensitive = options._propertyNameCaseInsensitive;
-          // _writeIndented = options._writeIndented;
+        
 
             Converters = new ConverterList(this, (ConverterList)options.Converters);
             EffectiveMaxDepth = options.EffectiveMaxDepth;
