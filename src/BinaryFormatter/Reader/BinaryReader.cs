@@ -14,38 +14,22 @@ namespace Xfrogcn.BinaryFormatter
         private ReadOnlySpan<byte> _buffer;
 
         private readonly bool _isFinalBlock;
-        // private readonly bool _isInputSequence;
-
-        // private long _lineNumber;
-        // private long _bytePositionInLine;
-
-        // bytes consumed in the current segment (not token)
         private int _consumed;
-        //private bool _inObject;
-        //private bool _isNotPrimitive;
         private BinaryTokenType _tokenType;
         private BinaryTokenType _previousTokenType;
         private ushort _typeSeq;
         private int _version;
         private byte _dicKeySeq;
-      //  private BinarySerializerOptions _readerOptions;
-        // private BitStack _bitStack;
-
+    
         private long _totalConsumed;
-        //private bool _isLastSegment;
-        //internal bool _stringHasEscaping;
-        private readonly bool _isMultiSegment;
-        //private bool _trailingCommaBeforeComment;
-
-        //private SequencePosition _nextPosition;
-        //private SequencePosition _currentPosition;
+      
+     
         private readonly ReadOnlySequence<byte> _sequence;
 
         public BinaryTokenType TokenType => _tokenType;
 
 
-        // private bool IsLastSpan => _isFinalBlock && (!_isMultiSegment || _isLastSegment);
-
+      
         internal ReadOnlySequence<byte> OriginalSequence => _sequence;
 
         internal ReadOnlySpan<byte> OriginalSpan => _sequence.IsEmpty ? _buffer : default;
@@ -106,7 +90,6 @@ namespace Xfrogcn.BinaryFormatter
             _consumed = 0;
             TokenStartIndex = 0;
             _totalConsumed = 0;
-            _isMultiSegment = false;
 
             ValueSpan = ReadOnlySpan<byte>.Empty;
 
@@ -229,7 +212,7 @@ namespace Xfrogcn.BinaryFormatter
 
         public bool Read()
         {
-            bool retVal = _isMultiSegment ? ReadMultiSegment() : ReadSingleSegment();
+            bool retVal = ReadSingleSegment();
 
             if (!retVal)
             {
