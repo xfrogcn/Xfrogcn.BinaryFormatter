@@ -37,10 +37,10 @@ namespace Xfrogcn.BinaryFormatter
         /// </summary>
         public void AheadReadBytes()
         {
-            // 如果最高位是1，表示31位长度，否则表示15位长度
-            int len = default;
             byte b1 = _buffer[_consumed];
-            int lenBytes = 4;
+            // 如果最高位是1，表示31位长度，否则表示15位长度
+            int len;
+            int lenBytes;
             if ((b1 & 0x80) == 0x80)
             {
 

@@ -19,9 +19,11 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [Theory(DisplayName = "Test_IDictionary_Hashtable")]
         public async Task Test_IDictionary_Hashtable(int len)
         {
-            Hashtable a = new Hashtable();
-            a[0] = 0;
-            a[createComplexCtorC(len)] = createComplexCtorC(len);
+            Hashtable a = new Hashtable
+            {
+                [0] = 0,
+                [createComplexCtorC(len)] = createComplexCtorC(len)
+            };
             await Test(a, b=>
             {
                 Assert.Equal(a.Count, b.Count);

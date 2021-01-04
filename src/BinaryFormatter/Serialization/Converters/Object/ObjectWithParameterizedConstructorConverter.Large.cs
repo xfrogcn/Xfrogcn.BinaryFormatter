@@ -39,7 +39,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 }
             }
 
-            object arg = default;
+            object arg;
             if (state.Current.PropertyPolymorphicConverter != null)
             {
                 success = state.Current.PropertyPolymorphicConverter.TryReadAsObject(ref reader, state.Options, ref state, out arg);
@@ -103,7 +103,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             }
             else
             {
-                success = converter.TryRead(ref reader, info.RuntimePropertyType, info.Options!, ref state, out ReferenceID refId, out value);
+                success = converter.TryRead(ref reader, info.RuntimePropertyType, info.Options!, ref state, out _, out value);
             }
 
             arg = value == null && binaryParameterInfo.IgnoreDefaultValuesOnRead

@@ -12,22 +12,24 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
     {
         internal TestApiResponse<TestApiRecordItem> data;
         private const int ListCount = 15;
-        private byte[] _jsonBytes;
-        private byte[] _binaryBytes;
-        private Stream _jsonStream;
-        private Stream _binaryStream;
-        private Stream _sbStream;
+        private readonly byte[] _jsonBytes;
+        private readonly byte[] _binaryBytes;
+        private readonly Stream _jsonStream;
+        private readonly Stream _binaryStream;
+        private readonly Stream _sbStream;
 
         public DeserializeBenchmark()
         {
-            data = new TestApiResponse<TestApiRecordItem>();
-            data.Message = "SUCCESS";
-            data.TotalCount = 3000;
-            data.Items = new List<TestApiRecordItem>();
+            data = new TestApiResponse<TestApiRecordItem>
+            {
+                Message = "SUCCESS",
+                TotalCount = 3000,
+                Items = new List<TestApiRecordItem>()
+            };
 
             for (int i = 0; i < ListCount; i++)
             {
-                data.Items.Add(createItem());
+                data.Items.Add(CreateItem());
             }
 
             _jsonBytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(data);
@@ -46,7 +48,7 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
             _sbStream.Position = 0;
         }
 
-        private TestApiRecordItem createItem()
+        private TestApiRecordItem CreateItem()
         {
             Random r = new Random();
             TestApiRecordItem item = new TestApiRecordItem()

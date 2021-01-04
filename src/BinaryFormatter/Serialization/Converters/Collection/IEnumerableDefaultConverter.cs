@@ -117,10 +117,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
 
 
-                        TElement element = default;
+                        TElement element;
                         if (converter is BinaryConverter<TElement> typedConverter)
                         {
-                            typedConverter.TryRead(ref reader, typeof(TElement), options, ref state, out ReferenceID refId, out element);
+                            typedConverter.TryRead(ref reader, typeof(TElement), options, ref state, out _, out element);
                         }
                         else
                         {
@@ -352,10 +352,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                         if (state.Current.PropertyState < StackFramePropertyState.TryRead)
                         {
-                            TElement element = default;
+                            TElement element;
                             if (converter is BinaryConverter<TElement> typedConverter)
                             {
-                                if (!typedConverter.TryRead(ref reader, typeof(TElement), options, ref state, out ReferenceID refId, out element))
+                                if (!typedConverter.TryRead(ref reader, typeof(TElement), options, ref state, out _, out element))
                                 {
                                     value = default;
                                     return false;
@@ -508,7 +508,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
             if (value == null)
             {
-                success = true;
             }
             else if (!state.SupportContinuation)
             {

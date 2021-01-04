@@ -11,17 +11,17 @@ namespace Xfrogcn.BinaryFormatter
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public ref partial struct BinaryReader
     {
-        private ReadOnlySpan<byte> _buffer;
+        private readonly ReadOnlySpan<byte> _buffer;
 
         private readonly bool _isFinalBlock;
         private int _consumed;
         private BinaryTokenType _tokenType;
-        private BinaryTokenType _previousTokenType;
+        private readonly BinaryTokenType _previousTokenType;
         private ushort _typeSeq;
-        private int _version;
+        private readonly int _version;
         private byte _dicKeySeq;
     
-        private long _totalConsumed;
+        private readonly long _totalConsumed;
       
      
         private readonly ReadOnlySequence<byte> _sequence;
@@ -52,12 +52,6 @@ namespace Xfrogcn.BinaryFormatter
         {
             get
             {
-#if DEBUG
-                if (!_isInputSequence)
-                {
-                    Debug.Assert(_totalConsumed == 0);
-                }
-#endif
                 return _totalConsumed + _consumed;
             }
         }
@@ -67,7 +61,7 @@ namespace Xfrogcn.BinaryFormatter
 
        
 
-        private TypeMap _typeMap;
+        private readonly TypeMap _typeMap;
 
     
         public BinaryReader(ReadOnlySpan<byte> binaryData, bool isFinalBlock, BinaryReaderState state)
@@ -99,7 +93,9 @@ namespace Xfrogcn.BinaryFormatter
         }
 
 
+#pragma warning disable IDE0060 // 删除未使用的参数
         public BinaryReader(ReadOnlySpan<byte> binaryData, BinarySerializerOptions options = default)
+#pragma warning restore IDE0060 // 删除未使用的参数
             : this(binaryData, isFinalBlock: true, new BinaryReaderState())
         {
         }
@@ -156,13 +152,14 @@ namespace Xfrogcn.BinaryFormatter
                 return false;
             }
 
-            // 如果最高位是1，表示31位长度，否则表示15位长度
-            int len = default;
             byte b1 = _buffer[_consumed];
-            int lenBytes = 4;
+
+            // 如果最高位是1，表示31位长度，否则表示15位长度
+            int len;
+            int lenBytes;
             if ((b1 & 0x80) == 0x80)
             {
-                if ( !RequestData(4))
+                if (!RequestData(4))
                 {
                     return false;
                 }
@@ -176,11 +173,11 @@ namespace Xfrogcn.BinaryFormatter
             }
             else
             {
-                len = _buffer[_consumed] << 8 | _buffer[_consumed + 1]; 
+                len = _buffer[_consumed] << 8 | _buffer[_consumed + 1];
                 lenBytes = 2;
             }
 
-            if(len == 0)
+            if (len == 0)
             {
                 ValueSpan = ReadOnlySpan<byte>.Empty;
             }

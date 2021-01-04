@@ -25,32 +25,30 @@ namespace Xfrogcn.BinaryFormatter
                 options = BinarySerializerOptions.s_defaultOptions;
             }
 
-            using (var output = new PooledByteBufferWriter(options.DefaultBufferSize))
+            using var output = new PooledByteBufferWriter(options.DefaultBufferSize);
+            using (var writer = new BinaryWriter(output, options))
             {
-                using (var writer = new BinaryWriter(output, options))
+                // 写入头
+                writer.WriteHeader();
+                if (value == null)
                 {
-                    // 写入头
-                    writer.WriteHeader();
-                    if (value == null)
-                    {
-                        writer.Flush();
-                        return output.WrittenMemory.ToArray();
-                    }
-                    if (value != null)
-                    {
-                        inputType = value!.GetType();
-                    }
-
-                    WriteStack state = default;
-                    WriteCore<TValue>(writer, value, inputType, ref state, options);
-
-                    writer.WriteMetadata(ref state, inputType);
                     writer.Flush();
-
+                    return output.WrittenMemory.ToArray();
+                }
+                if (value != null)
+                {
+                    inputType = value!.GetType();
                 }
 
-                return output.WrittenMemory.ToArray();
+                WriteStack state = default;
+                WriteCore<TValue>(writer, value, inputType, ref state, options);
+
+                writer.WriteMetadata(ref state, inputType);
+                writer.Flush();
+
             }
+
+            return output.WrittenMemory.ToArray();
         }
     }
 }

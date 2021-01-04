@@ -34,10 +34,12 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [Fact(DisplayName = "Test_IDictionary_Dictionary_String_Buffer")]
         public async Task Test_IDictionary_Dictionary_String_Buffer()
         {
-            Dictionary<string, string> a = new Dictionary<string, string>();
-            a.Add(new string('A', 500), new string('A', 500));
-            a.Add(new string('B', 500), new string('B', 500));
-            a.Add(new string('C', 500), new string('C', 500));
+            Dictionary<string, string> a = new Dictionary<string, string>
+            {
+                { new string('A', 500), new string('A', 500) },
+                { new string('B', 500), new string('B', 500) },
+                { new string('C', 500), new string('C', 500) }
+            };
 
             await Test(a,
                CheckIEnumerableOfIIDictionary(a,
@@ -82,22 +84,33 @@ namespace Xfrogcn.BinaryFormatter.Tests
         public async Task Test_IDIctionary_Dictionary_Nest_Buffer(int len)
         {
             Dictionary<string, Dictionary<string, string>> a
-                = new Dictionary<string, Dictionary<string, string>>();
-            a.Add(new string('A', len), new Dictionary<string, string>()
+                = new Dictionary<string, Dictionary<string, string>>
+                {
+                    {
+                        new string('A', len),
+                        new Dictionary<string, string>()
             {
                 { new string('A',len), new string('A',len) },
                 { new string('B',len), new string('B',len) }
-            });
-            a.Add(new string('B', len), new Dictionary<string, string>()
+            }
+                    },
+                    {
+                        new string('B', len),
+                        new Dictionary<string, string>()
             {
                 { new string('A',len), new string('A',len) },
                 { new string('B',len), new string('B',len) }
-            });
-            a.Add(new string('C', len), new Dictionary<string, string>()
+            }
+                    },
+                    {
+                        new string('C', len),
+                        new Dictionary<string, string>()
             {
                 { new string('A',len), new string('A',len) },
                 { new string('B',len), new string('B',len) }
-            });
+            }
+                    }
+                };
 
             await Test(a,
                 CheckIEnumerableOfIIDictionary(a,
@@ -228,12 +241,14 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [Theory(DisplayName = "Test_IDictionary_WithSkip_Complex_Buffer")]
         public async Task Test_IDictionary_WithSkip_Complex_Buffer(int len)
         {
-            TestWithIDictionary a = new TestWithIDictionary();
-            a.A = new TestWithIDictionary()
+            TestWithIDictionary a = new TestWithIDictionary
             {
-                B = new string('A', len)
+                A = new TestWithIDictionary()
+                {
+                    B = new string('A', len)
+                },
+                Skip = new Dictionary<string, IDictionary<string, string>>()
             };
-            a.Skip = new Dictionary<string, IDictionary<string, string>>();
             a.Skip.Add(new string('A', len), new TestCustomDictioanry<string, string>()
             {
                 A = new string('A', len)

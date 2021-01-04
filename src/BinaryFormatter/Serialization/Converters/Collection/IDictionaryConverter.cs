@@ -45,9 +45,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 enumerator = (IDictionaryEnumerator)state.Current.CollectionEnumerator;
             }
 
-
-            BinaryConverter<object> keyConverter = _keyConverter ??= GetKeyConverter(KeyType, options);
-            BinaryConverter<object> valueConverter = _valueConverter ??= GetValueConverter(state.Current.BinaryClassInfo.ElementClassInfo!);
             if (!state.SupportContinuation)
             {
                 do

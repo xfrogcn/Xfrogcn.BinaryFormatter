@@ -45,8 +45,10 @@ namespace Xfrogcn.BinaryFormatter
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void ThrowBinaryException_DeserializeUnableToConvertValue(Type propertyType)
         {
-            var ex = new BinaryException(string.Format(Strings.DeserializeUnableToConvertValue, propertyType));
-            ex.AppendPathInformation = true;
+            var ex = new BinaryException(string.Format(Strings.DeserializeUnableToConvertValue, propertyType))
+            {
+                AppendPathInformation = true
+            };
             throw ex;
         }
 
@@ -164,6 +166,7 @@ namespace Xfrogcn.BinaryFormatter
         }
 
         [DoesNotReturn]
+        [SuppressMessage("Style", "IDE0060:删除未使用的参数", Justification = "<挂起>")]
         public static void ThrowNotSupportedException(in ReadStack state, in BinaryReader reader, NotSupportedException ex)
         {
             string message = ex.Message;
@@ -311,8 +314,10 @@ namespace Xfrogcn.BinaryFormatter
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void ThrowBinaryException_SerializationConverterRead(BinaryConverter converter)
         {
-            var ex = new BinaryException(string.Format(Strings.SerializationConverterRead, converter));
-            ex.AppendPathInformation = true;
+            var ex = new BinaryException(string.Format(Strings.SerializationConverterRead, converter))
+            {
+                AppendPathInformation = true
+            };
             throw ex;
         }
 
@@ -327,8 +332,10 @@ namespace Xfrogcn.BinaryFormatter
             }
             else
             {
-                ex = new BinaryException(message);
-                ex.AppendPathInformation = true;
+                ex = new BinaryException(message)
+                {
+                    AppendPathInformation = true
+                };
             }
 
             throw ex;
@@ -345,8 +352,10 @@ namespace Xfrogcn.BinaryFormatter
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void ThrowBinaryException_SerializationConverterWrite(BinaryConverter converter)
         {
-            var ex = new BinaryException(string.Format(Strings.SerializationConverterWrite, converter));
-            ex.AppendPathInformation = true;
+            var ex = new BinaryException(string.Format(Strings.SerializationConverterWrite, converter))
+            {
+                AppendPathInformation = true
+            };
             throw ex;
         }
 
@@ -375,8 +384,10 @@ namespace Xfrogcn.BinaryFormatter
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void ThrowBinaryException_InvalidBinaryFormat()
         {
-            var ex = new BinaryException(string.Format(Strings.SerializeInvalidFormat));
-            ex.AppendPathInformation = false;
+            var ex = new BinaryException(string.Format(Strings.SerializeInvalidFormat))
+            {
+                AppendPathInformation = false
+            };
             throw ex;
         }
 

@@ -71,9 +71,10 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [Theory(DisplayName = "Test_IEnumerable_Custom_Buffer")]
         public async Task Test_IEnumerable_Custom_Buffer(int len)
         {
-            TestEnumerableB a = new TestEnumerableB();
-
-            a.A = new string('A', len);
+            TestEnumerableB a = new TestEnumerableB
+            {
+                A = new string('A', len)
+            };
             a.Add(createComplexCtorC(len));
             a.Add(null);
 
@@ -101,9 +102,11 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [Fact(DisplayName = "Test_IEnumerable_ArrayList")]
         public async Task Test_IEnumerable_ArrayList()
         {
-            ArrayList a = new ArrayList();
-            a.Add(createComplexCtorC(1));
-            a.Add(null);
+            ArrayList a = new ArrayList
+            {
+                createComplexCtorC(1),
+                null
+            };
             await Test(a, CheckIEnumerableOfIEnumerable(a, (a, b) =>
             {
                 if (a == null)

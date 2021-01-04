@@ -22,10 +22,12 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [Theory(DisplayName = "Test_NameValueCollection ")]
         public async Task Test_NameValueCollection(int len)
         {
-            NameValueCollection a = new NameValueCollection();
-            a[new string('A',len)] = new string('A', len);
-            a[new string('B', len)] = new string('B', len);
-            a[new string('C', len)] = new string('C', len);
+            NameValueCollection a = new NameValueCollection
+            {
+                [new string('A', len)] = new string('A', len),
+                [new string('B', len)] = new string('B', len),
+                [new string('C', len)] = new string('C', len)
+            };
 
             await Test(a, b=>
             {

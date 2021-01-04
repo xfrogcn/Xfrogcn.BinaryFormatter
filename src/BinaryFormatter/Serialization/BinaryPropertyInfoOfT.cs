@@ -9,8 +9,7 @@ namespace Xfrogcn.BinaryFormatter
 {
     internal sealed class BinaryPropertyInfo<T> : BinaryPropertyInfo
     {
-        private bool _converterIsExternalAndPolymorphic;
-
+      
         public Func<object, T> Get { get; private set; }
         public Action<object, T> Set { get; private set; }
 
@@ -95,7 +94,6 @@ namespace Xfrogcn.BinaryFormatter
                     }
             }
 
-            _converterIsExternalAndPolymorphic = !converter.IsInternalConverter && DeclaredPropertyType != converter.TypeToConvert;
             GetPolicies(ignoreCondition, defaultValueIsNull: Converter.CanBeNull);
         }
 
@@ -182,7 +180,7 @@ namespace Xfrogcn.BinaryFormatter
             }
             else
             {
-                success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out ReferenceID refId, out value);
+                success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out _, out value);
             }
 
             if (!success)
@@ -290,8 +288,6 @@ namespace Xfrogcn.BinaryFormatter
                         ThrowHelper.ThrowBinaryException_DeserializeUnableToConvertValue(Converter.TypeToConvert);
                     }
                     state.Current.PropertyState = StackFramePropertyState.TryRead;
-                    value = default(T);
-                    success = true;
                 }
 
 

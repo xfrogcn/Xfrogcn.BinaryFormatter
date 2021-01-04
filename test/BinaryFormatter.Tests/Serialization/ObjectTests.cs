@@ -22,11 +22,11 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
             await Test<ObjTestA>(null, (obj) => Assert.Null(obj));
 
-            Action<ObjTestA> check = b =>
+            void check(ObjTestA b)
             {
                 Assert.Equal(a.A, b.A);
                 Assert.Equal(a.B, b.B);
-            };
+            }
             await Test(a, check);
 
             a.B = "AAAA";
@@ -51,12 +51,12 @@ namespace Xfrogcn.BinaryFormatter.Tests
             };
 
             BinarySerializerOptions options = new BinarySerializerOptions() { DefaultBufferSize = 1 };
-        
-            Action<ObjTestA> check = b =>
+
+            void check(ObjTestA b)
             {
                 Assert.Equal(a.A, b.A);
                 Assert.Equal(a.B, b.B);
-            };
+            }
             await Test(a, check, options);
 
         }
@@ -77,21 +77,21 @@ namespace Xfrogcn.BinaryFormatter.Tests
 
             await Test<ObjTestB>(null, (obj) => Assert.Null(obj));
 
-            Action<ObjTestB> check = b =>
+            void check(ObjTestB b)
             {
                 Assert.Equal(a.A, b.A);
                 Assert.Equal(a.B, b.B);
-                if(a.C == null)
+                if (a.C == null)
                 {
                     Assert.Equal(a.C, b.C);
                 }
-                
-                if(a.C != null)
+
+                if (a.C != null)
                 {
                     Assert.Equal(a.C.A, b.C.A);
                     Assert.Equal(a.C.B, b.C.B);
                 }
-            };
+            }
             await Test(a, check);
 
 
@@ -129,7 +129,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
             };
 
 
-            Action<ObjTestB> check = checkProc(a);
+            Action<ObjTestB> check = CheckProc(a);
 
             await Test(a, check, options);
 
@@ -179,12 +179,12 @@ namespace Xfrogcn.BinaryFormatter.Tests
             };
 
 
-           
-            Action<ObjTestA> check = b =>
+
+            void check(ObjTestA b)
             {
                 Assert.Equal(a.A, b.A);
                 Assert.Equal(a.B, b.B);
-            };
+            }
             await Test<ObjTestA>(a, check);
 
             //object c = new ObjTestB()
@@ -218,7 +218,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
                     B = "D1"
                 }
             };
-            await Test(n1, checkProc(n1));
+            await Test(n1, CheckProc(n1));
 
 
             n1 = new ObjTestB()
@@ -255,7 +255,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
                 },
                 E = null
             };
-            await Test(n1, checkProc(n1));
+            await Test(n1, CheckProc(n1));
         }
 
         [InlineData(1024 * 10)]
@@ -274,7 +274,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
                     B = new string('A', len)
                 }
             };
-            await Test(n1, checkProc(n1), options);
+            await Test(n1, CheckProc(n1), options);
 
             options = new BinarySerializerOptions() { DefaultBufferSize = 30 };
             n1 = new ObjTestB()
@@ -311,12 +311,12 @@ namespace Xfrogcn.BinaryFormatter.Tests
                 },
                 E = null
             };
-            await Test(n1, checkProc(n1), options);
+            await Test(n1, CheckProc(n1), options);
         }
 
-        private Action<ObjTestB> checkProc(ObjTestB a)
+        private Action<ObjTestB> CheckProc(ObjTestB a)
         {
-            Action<ObjTestB> check = b =>
+            void check(ObjTestB b)
             {
                 Assert.Equal(a.A, b.A);
                 Assert.Equal(a.B, b.B);
@@ -324,7 +324,7 @@ namespace Xfrogcn.BinaryFormatter.Tests
                 {
                     Assert.Equal(a.C, b.C);
                 }
-                if(a.D == null)
+                if (a.D == null)
                 {
                     Assert.Equal(a.D, b.D);
                 }
@@ -334,9 +334,9 @@ namespace Xfrogcn.BinaryFormatter.Tests
                     Assert.Equal(a.D.A, b.D.A);
                     Assert.Equal(a.D.B, b.D.B);
 
-                    if(a.D is ObjTestB)
+                    if (a.D is ObjTestB)
                     {
-                        var subCheck = checkProc(a.D as ObjTestB);
+                        var subCheck = CheckProc(a.D as ObjTestB);
                         subCheck(b.D as ObjTestB);
                     }
                 }
@@ -345,14 +345,14 @@ namespace Xfrogcn.BinaryFormatter.Tests
                 ObjTestB c2 = b.C;
                 while (c1 != null)
                 {
-                    var subCheck = checkProc(c1);
+                    var subCheck = CheckProc(c1);
                     subCheck(c2);
                     c1 = c1.C;
                     c2 = c2.C;
                 }
 
 
-            };
+            }
 
             return check;
         }

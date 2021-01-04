@@ -72,8 +72,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         public override void AddReference(uint seq)
         {
-            RefItem ri = null;
-            _referenceIdToObjectMap.TryGetValue(seq, out ri);
+            _referenceIdToObjectMap.TryGetValue(seq, out RefItem ri);
             if (ri == null)
             {
                 ri = new RefItem()
@@ -155,15 +154,15 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 {
                     return action(instance, propertyValue);
                 }
-                
-                Func<bool> callback = () =>
+
+                bool callback()
                 {
                     object actualInstance;
                     object actualPropValue;
                     if (instance is ReferenceID insId)
                     {
                         RefState s = TryGetReference(insId.RefSeq, out actualInstance);
-                        if(s!= RefState.Created)
+                        if (s != RefState.Created)
                         {
                             return false;
                         }
@@ -187,9 +186,9 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                     }
 
                     return action(actualInstance, actualPropValue);
-                };
+                }
 
-                if( insRefId.HasValue)
+                if ( insRefId.HasValue)
                 {
                     AddReferenceCallback(insRefId.Value, callback);
                 }
@@ -207,7 +206,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization
 
         protected virtual void AddReferenceCallback(uint seq, Func<bool> action)
         {
-            List<Func<bool>> callback = null;
+            List<Func<bool>> callback;
             if (_refCallback.ContainsKey(seq))
             {
                 callback = _refCallback[seq];

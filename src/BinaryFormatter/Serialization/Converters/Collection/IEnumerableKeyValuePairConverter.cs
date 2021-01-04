@@ -9,9 +9,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         : DictionaryEnumeratorConverter<TCollection, TKey, TValue>
         where TCollection : IEnumerable<KeyValuePair<TKey, TValue>>
     {
-        private bool _useCreator = false;
-        private Type _ctorParameterType = null;
-        private ConstructorInfo _ctor = null;
+        private readonly bool _useCreator = false;
+        private readonly ConstructorInfo _ctor = null;
 
         public IEnumerableKeyValuePairConverter()
         {
@@ -33,7 +32,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             if (ci != null)
             {
                 _useCreator = true;
-                _ctorParameterType = ctorParameterType;
                 _ctor = ci;
             }
             

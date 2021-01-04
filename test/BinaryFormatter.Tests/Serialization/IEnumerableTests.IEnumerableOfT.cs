@@ -47,9 +47,10 @@ namespace Xfrogcn.BinaryFormatter.Tests
         [Theory(DisplayName = "Test_IEnumerableOfT_Custom_Buffer")]
         public async Task Test_IEnumerableOfT_Custom_Buffer(int len)
         {
-            TestEnumerableOfTA a = new TestEnumerableOfTA();
-
-            a.A = new string('A', len);
+            TestEnumerableOfTA a = new TestEnumerableOfTA
+            {
+                A = new string('A', len)
+            };
             a.Add(createComplexCtorC(len));
             a.Add(null);
             

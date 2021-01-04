@@ -6,6 +6,7 @@ namespace Xfrogcn.BinaryFormatter
 {
     public static partial class BinarySerializer
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:删除未使用的参数", Justification = "<挂起>")]
         private static TValue ReadCore<TValue>(ref BinaryReader reader, Type returnType, ref ReadStack state, BinarySerializerOptions options)
         {
             BinaryConverter binaryConverter = state.Current.BinaryPropertyInfo!.ConverterBase;

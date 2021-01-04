@@ -34,10 +34,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization
         private const string ImmutableSortedDictionaryTypeName = "System.Collections.Immutable.ImmutableSortedDictionary";
 
         private const string CreateRangeMethodName = "CreateRange";
-        private const string CreateRangeMethodNameForEnumerable = "CreateRange`1";
-        private const string CreateRangeMethodNameForDictionary = "CreateRange`2";
+        //private const string CreateRangeMethodNameForEnumerable = "CreateRange`1";
+        //private const string CreateRangeMethodNameForDictionary = "CreateRange`2";
 
-        private const string ImmutableCollectionsAssembly = "System.Collections.Immutable";
+        //private const string ImmutableCollectionsAssembly = "System.Collections.Immutable";
 
         internal static Type GetCompatibleGenericBaseClass(this Type type, Type baseType)
         {
@@ -110,15 +110,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 return false;
             }
 
-            switch (type.GetGenericTypeDefinition().FullName)
+            return type.GetGenericTypeDefinition().FullName switch
             {
-                case ImmutableDictionaryGenericTypeName:
-                case ImmutableDictionaryGenericInterfaceTypeName:
-                case ImmutableSortedDictionaryGenericTypeName:
-                    return true;
-                default:
-                    return false;
-            }
+                ImmutableDictionaryGenericTypeName or ImmutableDictionaryGenericInterfaceTypeName or ImmutableSortedDictionaryGenericTypeName => true,
+                _ => false,
+            };
         }
 
         /// <summary>
@@ -133,24 +129,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization
                 return false;
             }
 
-            switch (type.GetGenericTypeDefinition().FullName)
+            return type.GetGenericTypeDefinition().FullName switch
             {
-                case ImmutableArrayGenericTypeName:
-                case ImmutableListGenericTypeName:
-                case ImmutableListGenericInterfaceTypeName:
-                case ImmutableStackGenericTypeName:
-                case ImmutableStackGenericInterfaceTypeName:
-                case ImmutableQueueGenericTypeName:
-                case ImmutableQueueGenericInterfaceTypeName:
-                case ImmutableSortedSetGenericTypeName:
-                case ImmutableHashSetGenericTypeName:
-                case ImmutableSetGenericInterfaceTypeName:
-                    return true;
-                default:
-                    return false;
-            }
-
-            
+                ImmutableArrayGenericTypeName or ImmutableListGenericTypeName or ImmutableListGenericInterfaceTypeName or ImmutableStackGenericTypeName or ImmutableStackGenericInterfaceTypeName or ImmutableQueueGenericTypeName or ImmutableQueueGenericInterfaceTypeName or ImmutableSortedSetGenericTypeName or ImmutableHashSetGenericTypeName or ImmutableSetGenericInterfaceTypeName => true,
+                _ => false,
+            };
         }
 
         public static bool IsImmutableStackType(this Type type)

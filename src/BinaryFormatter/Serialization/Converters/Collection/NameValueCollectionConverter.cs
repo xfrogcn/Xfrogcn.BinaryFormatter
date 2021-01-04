@@ -10,7 +10,12 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         private BinaryConverter<string> _keyConverter;
         private BinaryConverter<string> _valueConverter;
 
-        private void Add(string key, in string value, BinarySerializerOptions options, ref ReadStack state)
+        private void Add(string key,
+                         in string value,
+#pragma warning disable IDE0060 // 删除未使用的参数
+                         BinarySerializerOptions options,
+#pragma warning restore IDE0060 // 删除未使用的参数
+                         ref ReadStack state)
         {
             NameValueCollection collection = (NameValueCollection)state.Current.ReturnValue!;
             collection[key] = value;
@@ -26,8 +31,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         internal override bool OnTryRead(ref BinaryReader reader, Type typeToConvert, BinarySerializerOptions options, ref ReadStack state, out NameValueCollection value)
         {
           
-            _keyConverter = _keyConverter ?? (options.GetConverter(typeof(string)) as BinaryConverter<string>);
-            _valueConverter = _valueConverter ?? (options.GetConverter(typeof(string)) as BinaryConverter<string>);
+            _keyConverter ??= (options.GetConverter(typeof(string)) as BinaryConverter<string>);
+            _valueConverter ??= (options.GetConverter(typeof(string)) as BinaryConverter<string>);
 
             if (state.UseFastPath)
             {
@@ -63,7 +68,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         }
                         else
                         {
-                            _keyConverter.TryRead(ref reader, typeof(string), options, ref state, out ReferenceID refId, out string key);
+                            _keyConverter.TryRead(ref reader, typeof(string), options, ref state, out _, out string key);
                             state.Current.DictionaryKey = key;
                         }
 
@@ -75,7 +80,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         }
                         else
                         {
-                            _valueConverter.TryRead(ref reader, typeof(string), options, ref state, out ReferenceID refId, out string element);
+                            _valueConverter.TryRead(ref reader, typeof(string), options, ref state, out _, out string element);
                             Add((string)state.Current.DictionaryKey, element, options, ref state);
                         }
 
@@ -191,7 +196,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                         if (state.Current.PropertyState < StackFramePropertyState.ReadKey)
                         {
-                            if (!_keyConverter.TryRead(ref reader, typeof(string), options, ref state, out ReferenceID refId, out string key))
+                            if (!_keyConverter.TryRead(ref reader, typeof(string), options, ref state, out _, out string key))
                             {
                                 value = default;
                                 return false;
@@ -224,7 +229,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                         if (state.Current.PropertyState < StackFramePropertyState.ReadValue)
                         {
-                            if (!_valueConverter.TryRead(ref reader, typeof(string), options, ref state, out ReferenceID refId, out string element))
+                            if (!_valueConverter.TryRead(ref reader, typeof(string), options, ref state, out _, out string element))
                             {
                                 value = default;
                                 return false;
@@ -277,8 +282,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 return true;
             }
 
-            _keyConverter = _keyConverter ?? (options.GetConverter(typeof(string)) as BinaryConverter<string>);
-            _valueConverter = _valueConverter ?? (options.GetConverter(typeof(string)) as BinaryConverter<string>);
+            _keyConverter ??= (options.GetConverter(typeof(string)) as BinaryConverter<string>);
+            _valueConverter ??= (options.GetConverter(typeof(string)) as BinaryConverter<string>);
 
 
             if (!state.SupportContinuation)
@@ -366,8 +371,8 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 enumerator = state.Current.CollectionEnumerator;
             }
 
-            _keyConverter = _keyConverter ?? (options.GetConverter(typeof(string)) as BinaryConverter<string>);
-            _valueConverter = _valueConverter ?? (options.GetConverter(typeof(string)) as BinaryConverter<string>);
+            _keyConverter ??= (options.GetConverter(typeof(string)) as BinaryConverter<string>);
+            _valueConverter ??= (options.GetConverter(typeof(string)) as BinaryConverter<string>);
 
             if (!state.SupportContinuation)
             {

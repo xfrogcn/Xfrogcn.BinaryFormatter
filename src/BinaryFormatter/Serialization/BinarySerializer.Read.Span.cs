@@ -47,14 +47,14 @@ namespace Xfrogcn.BinaryFormatter
             }
 
             // 读取类型映射
-            uint mapPosition = BitConverter.ToUInt32(bytes.Slice(bytes.Length - 4));
+            uint mapPosition = BitConverter.ToUInt32(bytes[^4..]);
             if (mapPosition >= bytes.Length)
             {
                 ThrowHelper.ThrowBinaryException_InvalidBinaryFormat();
             }
 
             // 读取元数据
-            var metadataBytes = bytes.Slice(bytes.Length - (int)mapPosition - 4);
+            var metadataBytes = bytes[(bytes.Length - (int)mapPosition - 4)..];
 
             ReadMetadata(metadataBytes, ref state);
 
@@ -66,7 +66,7 @@ namespace Xfrogcn.BinaryFormatter
             BinaryConverter converter = state.Current.BinaryPropertyInfo.ConverterBase;
 
             var readerState = new BinaryReaderState(state.TypeMap, state.Version, options.GetReaderOptions());
-            var data = bytes.Slice(4);
+            var data = bytes[4..];
             var reader = new BinaryReader(data, isFinalBlock: true, readerState);
 
             return ReadCore<object>(ref reader, state.PrimaryType,ref state, options);

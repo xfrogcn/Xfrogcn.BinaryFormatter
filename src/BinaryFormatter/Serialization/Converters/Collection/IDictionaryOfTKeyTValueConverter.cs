@@ -8,7 +8,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         where TCollection : IDictionary<TKey, TValue>
         where TKey : notnull
     {
-        private bool _isDictionary = false;
+        private readonly bool _isDictionary = false;
 
         public IDictionaryOfTKeyTValueConverter()
         {

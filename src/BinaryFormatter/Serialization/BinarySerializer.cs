@@ -13,6 +13,11 @@ namespace Xfrogcn.BinaryFormatter
             ref WriteStack state,
             BinaryWriter writer)
         {
+            if (binaryConverter is null)
+            {
+                throw new ArgumentNullException(nameof(binaryConverter));
+            }
+
             ulong offset = (ulong)(writer.BytesCommitted + writer.BytesPending);
             uint seq = state.ReferenceResolver.GetReference(currentValue, offset, out bool alreadyExists);
             if(alreadyExists)
@@ -32,7 +37,7 @@ namespace Xfrogcn.BinaryFormatter
             
         }
 
-
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:删除未使用的参数", Justification = "<挂起>")]
         internal static RefState ReadReferenceForObject(
             BinaryConverter binaryConverter,
             ref ReadStack state,
@@ -129,8 +134,7 @@ namespace Xfrogcn.BinaryFormatter
                 Debug.Assert(genericArgs.Length == 2);
                 Debug.Assert(genericArgs[0].UnderlyingSystemType == typeof(string));
                 Debug.Assert(
-                    genericArgs[1].UnderlyingSystemType == BinaryClassInfo.ObjectType ||
-                    genericArgs[1].UnderlyingSystemType == typeof(BinaryElement));
+                    genericArgs[1].UnderlyingSystemType == BinaryClassInfo.ObjectType );
 #endif
                 if (binaryPropertyInfo.RuntimeClassInfo.CreateObject == null)
                 {

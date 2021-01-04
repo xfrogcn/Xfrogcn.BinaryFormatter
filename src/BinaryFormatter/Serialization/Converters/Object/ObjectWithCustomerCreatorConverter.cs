@@ -75,8 +75,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
         protected abstract object CreateObject(ref ReadStackFrame frame);
 
-
-        private bool ReadCreatorArgumentsWithContinuation(ref ReadStack state, ref BinaryReader reader, BinarySerializerOptions options)
+        [SuppressMessage("Style", "IDE0060:删除未使用的参数", Justification = "<挂起>")]
+        private bool ReadCreatorArgumentsWithContinuation(ref ReadStack state,
+                                                          ref BinaryReader reader,
+                                                          BinarySerializerOptions options)
         {
             // Process all properties.
             while (true)

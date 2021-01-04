@@ -50,7 +50,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             else
             {
                 state.Current.ReturnValue = state.Current.BinaryClassInfo.CreateObject();
-                int index = list.Count - 1;
+                
                 while (list.Count > 0)
                 {
                     ((Stack<TElement>)state.Current.ReturnValue).Push(list.Pop());

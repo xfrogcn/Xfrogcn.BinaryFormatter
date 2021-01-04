@@ -12,7 +12,9 @@ namespace Xfrogcn.BinaryFormatter
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
+#pragma warning disable IDE0060 // 删除未使用的参数
         public bool TrySkip(BinarySerializerOptions options)
+#pragma warning restore IDE0060 // 删除未使用的参数
         {
             if (_tokenType == BinaryTokenType.Null)
             {
@@ -384,10 +386,11 @@ namespace Xfrogcn.BinaryFormatter
                 return false;
             }
 
-            // 如果最高位是1，表示31位长度，否则表示15位长度
-            int len = default;
             byte b1 = _buffer[offset];
-            int lenBytes = 4;
+
+            // 如果最高位是1，表示31位长度，否则表示15位长度
+            int len;
+            int lenBytes;
             if ((b1 & 0x80) == 0x80)
             {
                 if (!TryRequestData(offset, 4))

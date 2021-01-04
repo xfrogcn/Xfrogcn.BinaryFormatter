@@ -24,8 +24,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 enumerator = (IEnumerator<KeyValuePair<TKey, TValue>>)state.Current.CollectionEnumerator;
             }
 
-            BinaryConverter<TKey> keyConverter = _keyConverter ??= GetKeyConverter(KeyType, options);
-            BinaryConverter<TValue> valueConverter = _valueConverter ??= GetValueConverter(state.Current.BinaryClassInfo.ElementClassInfo!);
             if (!state.SupportContinuation)
             {
                 do

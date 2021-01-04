@@ -52,9 +52,11 @@ namespace Xfrogcn.BinaryFormatter
         // prevent issues with unsupported types and helps ensure we don't accidently (de)serialize it.
         public static BinaryPropertyInfo CreateIgnoredPropertyPlaceholder(TypeMap typeMap, MemberInfo memberInfo, BinarySerializerOptions options)
         {
-            BinaryPropertyInfo binaryPropertyInfo = new BinaryPropertyInfo<sbyte>();
-            binaryPropertyInfo.Options = options;
-            binaryPropertyInfo.MemberInfo = memberInfo;
+            BinaryPropertyInfo binaryPropertyInfo = new BinaryPropertyInfo<sbyte>
+            {
+                Options = options,
+                MemberInfo = memberInfo
+            };
             binaryPropertyInfo.DeterminePropertyName();
             binaryPropertyInfo.IsIgnored = true;
             binaryPropertyInfo.TypeMap = typeMap;

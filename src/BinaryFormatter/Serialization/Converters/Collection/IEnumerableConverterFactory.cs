@@ -20,12 +20,12 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
         public override BinaryConverter CreateConverter(Type typeToConvert, BinarySerializerOptions options)
         {
-            Type converterType = default;
             Type[] genericArgs;
             Type elementType = null;
             Type dictionaryKeyType = null;
             Type actualTypeToConvert;
 
+            Type converterType;
             // Array
             if (typeToConvert.IsArray)
             {
@@ -34,7 +34,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 {
                     ThrowHelper.ThrowNotSupportedException_SerializationNotSupported(typeToConvert);
                 }
-                
+
                 converterType = typeof(ArrayConverter<,>);
                 elementType = typeToConvert.GetElementType();
             }
@@ -113,7 +113,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             {
                 converterType = typeof(IEnumerableOfTWithAddMethodConverter<,>);
                 elementType = actualTypeToConvert.GetGenericArguments()[0];
-                if(elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+                if (elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
                 {
                     converterType = typeof(IEnumerableKeyValuePairConverter<,,>);
                     dictionaryKeyType = elementType.GetTypeGenericArguments()[0];
@@ -134,13 +134,13 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                 converterType = typeof(IListConverter<>);
             }
-            else if(typeToConvert == typeof(BitArray))
+            else if (typeToConvert == typeof(BitArray))
             {
                 return s_converterForBitArray;
             }
             else
             {
-               converterType = typeof(IEnumerableWithAddMethodConverter<>);
+                converterType = typeof(IEnumerableWithAddMethodConverter<>);
             }
 
             Type genericType;

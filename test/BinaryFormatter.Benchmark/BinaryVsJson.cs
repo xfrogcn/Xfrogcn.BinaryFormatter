@@ -18,18 +18,20 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
         
         public BinaryVsJson()
         {
-            data = new TestApiResponse<TestApiRecordItem>();
-            data.Message = "SUCCESS";
-            data.TotalCount = 3000;
-            data.Items = new List<TestApiRecordItem>();
-
-            for(int i = 0; i < ListCount; i++)
+            data = new TestApiResponse<TestApiRecordItem>
             {
-                data.Items.Add(createItem());
+                Message = "SUCCESS",
+                TotalCount = 3000,
+                Items = new List<TestApiRecordItem>()
+            };
+
+            for (int i = 0; i < ListCount; i++)
+            {
+                data.Items.Add(CreateItem());
             }
         }
 
-        private TestApiRecordItem createItem()
+        private TestApiRecordItem CreateItem()
         {
             Random r = new Random();
             TestApiRecordItem item = new TestApiRecordItem()
@@ -88,14 +90,14 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
         [Benchmark]
         public void Json_Bytes()
         {
-            var bytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(data);
+            _ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(data);
         }
 
         [BenchmarkCategory("Bytes")]
         [Benchmark]
         public void XfrogcnBinary_Bytes()
         {
-            var bytes = Xfrogcn.BinaryFormatter.BinarySerializer.Serialize(data);
+            _ = Xfrogcn.BinaryFormatter.BinarySerializer.Serialize(data);
         }
 
 

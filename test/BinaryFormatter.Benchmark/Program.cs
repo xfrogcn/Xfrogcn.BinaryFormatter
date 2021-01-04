@@ -6,12 +6,12 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             BinaryVsJson vs = new BinaryVsJson();
             vs.SizeTest();
-            var summary = BenchmarkRunner.Run<BinaryVsJson>();
-            summary = BenchmarkRunner.Run<DeserializeBenchmark>();
+            _ = BenchmarkRunner.Run<BinaryVsJson>();
+            _ = BenchmarkRunner.Run<DeserializeBenchmark>();
         }
     }
 }

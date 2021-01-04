@@ -155,9 +155,7 @@ namespace Xfrogcn.BinaryFormatter
                 }
                 else
                 {
-                    BinaryClassInfo binaryClassInfo = null;
-                    
-                   
+                    BinaryClassInfo binaryClassInfo;
                     if (Current.BinaryClassInfo.ClassType == ClassType.Object)
                     {
                         if (Current.BinaryPropertyInfo != null)

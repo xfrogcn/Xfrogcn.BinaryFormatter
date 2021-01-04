@@ -11,10 +11,10 @@ namespace Xfrogcn.BinaryFormatter.Tests
         B
     }
 
-    interface EmptyInterface  { }
+    interface IEmptyInterface  { }
 
 
-    struct StructA : EmptyInterface
+    struct StructA : IEmptyInterface
     {
         public int? A { get; set; }
 

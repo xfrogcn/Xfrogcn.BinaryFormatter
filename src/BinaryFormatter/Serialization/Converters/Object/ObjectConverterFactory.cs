@@ -51,12 +51,11 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             }
 
             BinaryConverter converter;
-            Type converterType = null;
-
             ConstructorInfo constructor = GetDeserializationConstructor(typeToConvert);
             ParameterInfo[] parameters = constructor?.GetParameters();
 
-            if( typeToConvert.IsGenericType  && _valueTupleTypes.Contains(typeToConvert.GetGenericTypeDefinition()))
+            Type converterType;
+            if (typeToConvert.IsGenericType && _valueTupleTypes.Contains(typeToConvert.GetGenericTypeDefinition()))
             {
                 converterType = typeof(ValueTupleConverter<>).MakeGenericType(typeToConvert);
             }
@@ -64,7 +63,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
             {
                 converterType = typeof(ObjectDefaultConverter<>).MakeGenericType(typeToConvert);
             }
-            else if(typeToConvert.IsGenericType && _tupleTypes.Contains(typeToConvert.GetGenericTypeDefinition()))
+            else if (typeToConvert.IsGenericType && _tupleTypes.Contains(typeToConvert.GetGenericTypeDefinition()))
             {
                 converterType = typeof(TupleConverter<>).MakeGenericType(typeToConvert);
             }

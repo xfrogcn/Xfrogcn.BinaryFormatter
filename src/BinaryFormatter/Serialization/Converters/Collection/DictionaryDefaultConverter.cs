@@ -24,7 +24,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
         /// </summary>
         protected virtual void CreateCollection(ref BinaryReader reader, ref ReadStack state) { }
 
-        private static Type s_valueType = typeof(TValue);
+        private static readonly Type s_valueType = typeof(TValue);
 
         internal override Type ElementType => s_valueType;
 
@@ -95,7 +95,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         }
                         else
                         {
-                            _keyConverter = _keyConverter ?? GetKeyConverter(typeof(TKey), options);
+                            _keyConverter ??= GetKeyConverter(typeof(TKey), options);
                             if (_keyConverter.CanBePolymorphic)
                             {
                                 Type t = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
@@ -121,10 +121,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
 
 
-                        TKey key = default;
+                        TKey key;
                         if (converter is BinaryConverter<TKey> typedConverter)
                         {
-                            typedConverter.TryRead(ref reader, typeof(TKey), options, ref state, out ReferenceID refId, out key);
+                            typedConverter.TryRead(ref reader, typeof(TKey), options, ref state, out _, out key);
 
                         }
                         else
@@ -146,7 +146,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                         }
                         else
                         {
-                            _valueConverter = _valueConverter ?? GetValueConverter(elementClassInfo);
+                            _valueConverter ??= GetValueConverter(elementClassInfo);
                             if (_valueConverter.CanBePolymorphic)
                             {
                                 Type t = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
@@ -172,10 +172,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
 
 
-                        TValue element = default;
+                        TValue element;
                         if (converter is BinaryConverter<TValue> valueTypedConverter)
                         {
-                            valueTypedConverter.TryRead(ref reader, typeof(TValue), options, ref state, out ReferenceID refId, out element);
+                            valueTypedConverter.TryRead(ref reader, typeof(TValue), options, ref state, out _, out element);
                         }
                         else
                         {
@@ -337,8 +337,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 // Process all elements.
                 if (state.Current.ObjectState < StackFrameObjectState.ReadElements)
                 {
-                    BinaryConverter<TValue> elementConverter = _valueConverter ??= GetValueConverter(elementClassInfo);
-
                     while (true)
                     {
                         if (state.Current.PropertyState < StackFramePropertyState.ReadKeySeq)
@@ -377,7 +375,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                             else
                             {
                                 state.Current.PropertyState = StackFramePropertyState.ReadKeyTypeSeq;
-                                _keyConverter = _keyConverter ?? GetKeyConverter(typeof(TKey), options);
+                                _keyConverter ??= GetKeyConverter(typeof(TKey), options);
                                 if (_keyConverter.CanBePolymorphic)
                                 {
                                     Type t = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
@@ -409,10 +407,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                         if (state.Current.PropertyState < StackFramePropertyState.ReadKey)
                         {
-                            TKey key = default;
+                            TKey key;
                             if (converter is BinaryConverter<TKey> typedConverter)
                             {
-                                if (!typedConverter.TryRead(ref reader, typeof(TKey), options, ref state, out ReferenceID refId, out key))
+                                if (!typedConverter.TryRead(ref reader, typeof(TKey), options, ref state, out _, out key))
                                 {
                                     value = default;
                                     return false;
@@ -450,7 +448,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                             else
                             {
                                 state.Current.PropertyState = StackFramePropertyState.ReadValueTypeSeq;
-                                _valueConverter = _valueConverter ?? GetValueConverter(elementClassInfo);
+                                _valueConverter ??= GetValueConverter(elementClassInfo);
                                 if (_valueConverter.CanBePolymorphic)
                                 {
                                     Type t = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
@@ -481,10 +479,10 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
                         if (state.Current.PropertyState < StackFramePropertyState.ReadValue)
                         {
-                            TValue element = default;
+                            TValue element;
                             if (converter is BinaryConverter<TValue> typedConverter)
                             {
-                                if (!typedConverter.TryRead(ref reader, typeof(TKey), options, ref state, out ReferenceID refId, out element))
+                                if (!typedConverter.TryRead(ref reader, typeof(TKey), options, ref state, out _, out element))
                                 {
                                     value = default;
                                     return false;
@@ -802,7 +800,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
         internal virtual bool WriteKey(BinaryWriter writer, TKey key, BinarySerializerOptions options, ref WriteStack state)
         {
-            _keyConverter = _keyConverter ?? GetKeyConverter(typeof(TKey), options);
+            _keyConverter ??= GetKeyConverter(typeof(TKey), options);
             if (!state.SupportContinuation)
             {
                 writer.WritePropertyStringSeq();
@@ -833,7 +831,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
         internal virtual bool WriteValue(BinaryWriter writer, TValue value, BinarySerializerOptions options, ref WriteStack state)
         {
-            _valueConverter = _valueConverter ?? GetValueConverter(state.Current.BinaryClassInfo.ElementClassInfo);
+            _valueConverter ??= GetValueConverter(state.Current.BinaryClassInfo.ElementClassInfo);
             if (!state.SupportContinuation)
             {
                 _valueConverter.TryWriteAsObject(writer, value, options, ref state);

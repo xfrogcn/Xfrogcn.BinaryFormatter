@@ -14,7 +14,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
 
         private delegate void AddItemProc(in TElement value, ref ReadStack state);
 
-        private AddItemProc _addProc;
+        private readonly AddItemProc _addProc;
 
         public ImmutableEnumerableOfTConverter()
         {
