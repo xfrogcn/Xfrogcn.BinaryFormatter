@@ -20,7 +20,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{FA2A945F-3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xfrogcn.BinaryFormatter.Tests", "test\BinaryFormatter.Tests\Xfrogcn.BinaryFormatter.Tests.csproj", "{BC3E3937-DCEC-4C30-9FA9-3C0437B397D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xfrogcn.BinaryFormatter.Benchmark", "test\BinaryFormatter.Benchmark\Xfrogcn.BinaryFormatter.Benchmark.csproj", "{B0BCE3D2-3717-42A9-9651-62198CA2CB5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xfrogcn.BinaryFormatter.Benchmark", "test\BinaryFormatter.Benchmark\Xfrogcn.BinaryFormatter.Benchmark.csproj", "{B0BCE3D2-3717-42A9-9651-62198CA2CB5F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{F8649170-C34D-42CB-8D79-9A45D1A34AAE}"
+	ProjectSection(SolutionItems) = preProject
+		doc\ds.png = doc\ds.png
+		doc\s.png = doc\s.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

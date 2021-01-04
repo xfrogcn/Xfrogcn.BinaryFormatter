@@ -157,26 +157,6 @@ namespace Xfrogcn.BinaryFormatter
                 {
                     value = (T)tmpValue;
                 }
-
-                //if (reader.CurrentTypeInfo.Seq != state.Current.BinaryTypeInfo.Seq)
-                //{
-
-                //}
-                //var type = state.Current.BinaryPropertyInfo.ConverterBase.TypeToConvert;
-                //if (type != Converter.TypeToConvert)
-                //{
-                //    BinaryConverter binaryConverter = state.Current.InitializeReEntry(type, Options, NameAsString);
-                //    success = binaryConverter.TryReadAsObject(ref reader, Options, ref state, out object tmpValue);
-                //    if (success)
-                //    {
-                //        value = (T)tmpValue;
-                //    }
-                //}
-                //else
-                //{
-                //    success = Converter.TryRead(ref reader, Converter.TypeToConvert, state.Options, ref state, out value);
-
-                //}
             }
             else
             {
