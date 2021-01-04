@@ -100,7 +100,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                             {
                                 converter = state.Current.PropertyPolymorphicConverter;
                             }
-                            else if (t != null && t != elementConverter.TypeToConvert)
+                            else if (t != null && t != elementConverter.TypeToConvert && elementConverter.TypeToConvert.IsAssignableFrom(t) )
                             {
                                 converter = options.GetConverter(t);
                                 state.Current.PropertyPolymorphicConverter = converter;
@@ -330,7 +330,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                                 {
                                     converter = state.Current.PropertyPolymorphicConverter;
                                 }
-                                else if (t != null && t != elementConverter.TypeToConvert)
+                                else if (t != null && t != elementConverter.TypeToConvert && elementConverter.TypeToConvert.IsAssignableFrom(t) )
                                 {
                                     converter = options.GetConverter(t);
                                     state.Current.PropertyPolymorphicConverter = converter;

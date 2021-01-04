@@ -135,16 +135,26 @@ namespace Xfrogcn.BinaryFormatter
                     return false;
                 }
                 state.Current.PropertyState = StackFramePropertyState.TryReadTypeSeq;
-                //if (reader.CurrentTypeInfo != null && Converter.ClassType != ClassType.Value)
-                //{
-                //    state.Current.BinaryTypeInfo = reader.CurrentTypeInfo;
-                //}
-                if (state.Current.PropertyPolymorphicConverter == null && reader.CurrentTypeInfo!=null  && Converter.CanBePolymorphic )
+          
+                if (state.Current.PropertyPolymorphicConverter == null && reader.CurrentTypeInfo!=null   )
                 {
                     var type = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
-                    if (type !=null && type != Converter.TypeToConvert)
+                    if (type !=null && type != Converter.TypeToConvert )
                     {
-                        state.Current.PropertyPolymorphicConverter = state.Current.InitializeReEntry(type, Options);
+                        if (Converter.TypeToConvert.IsAssignableFrom(type))
+                        {
+                            state.Current.PropertyPolymorphicConverter = state.Current.InitializeReEntry(type, Options);
+                        }
+                        else if( type.IsValueType || type == typeof(string))
+                        {
+                            if (!reader.TrySkip(state.Options))
+                            {
+                                return false;
+                            }
+
+                            return true;
+                        }
+
                     }
                 }
             }
@@ -274,7 +284,7 @@ namespace Xfrogcn.BinaryFormatter
                 if (state.Current.PropertyPolymorphicConverter == null && reader.CurrentTypeInfo != null && Converter.CanBePolymorphic)
                 {
                     var type = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
-                    if (type != null && type != Converter.TypeToConvert)
+                    if (type != null && type != Converter.TypeToConvert && Converter.TypeToConvert.IsAssignableFrom(type))
                     {
                         state.Current.PropertyPolymorphicConverter = state.Current.InitializeReEntry(type, Options);
                     }

@@ -8,12 +8,12 @@ namespace Xfrogcn.BinaryFormatter
 
         public static TValue Deserialize<TValue>(ReadOnlySpan<byte> bytes, BinarySerializerOptions options = null)
         {
-            return (TValue)Deserialize(bytes, options);
+            return (TValue)Deserialize(bytes, typeof(TValue), options);
         }
 
         public static object Deserialize(ReadOnlySpan<byte> bytes, BinarySerializerOptions options = null)
         {
-            return Deserialize<object>(bytes, options);
+            return Deserialize(bytes, BinaryClassInfo.ObjectType, options);
         }
 
         public static object Deserialize(ReadOnlySpan<byte> bytes, Type returnType = null, BinarySerializerOptions options = null)
@@ -24,6 +24,8 @@ namespace Xfrogcn.BinaryFormatter
             }
 
             ReadStack state = default;
+
+            returnType ??= BinaryClassInfo.ObjectType;
 
             // 读取头
             if (bytes.Length < 4)

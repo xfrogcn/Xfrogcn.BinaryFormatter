@@ -61,7 +61,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 {
                     reader.AheadReadPropertyName();
 
-                    BinaryPropertyInfo binaryPropertyInfo;
+                    BinaryPropertyInfo binaryPropertyInfo = null;
 
                     state.Current.PropertyState = StackFramePropertyState.Name;
 
@@ -73,21 +73,29 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     Debug.Assert(reader.TokenType == BinaryTokenType.PropertyName);
                     ushort propertySeq = reader.CurrentPropertySeq;
                     BinaryMemberInfo mi = state.GetMemberInfo(propertySeq);
-                    Debug.Assert(mi != null);
+                    // Debug.Assert(mi != null);
 
-                    binaryPropertyInfo = BinarySerializer.LookupProperty(
-                        obj,
-                        mi.NameAsUtf8Bytes,
-                        ref state,
-                        out bool useExtensionProperty);
+                    
+                        binaryPropertyInfo = BinarySerializer.LookupProperty(
+                            obj,
+                            mi.NameAsUtf8Bytes,
+                            ref state,
+                            out bool useExtensionProperty);
+                        state.Current.UseExtensionProperty = useExtensionProperty;
 
-                    state.Current.UseExtensionProperty = useExtensionProperty;
+                        // binaryPropertyInfo = state.LookupProperty(mi.NameAsString);
+                        state.Current.BinaryPropertyInfo = binaryPropertyInfo;
+                        state.Current.PropertyPolymorphicConverter = null;
 
-                    // binaryPropertyInfo = state.LookupProperty(mi.NameAsString);
-                    state.Current.BinaryPropertyInfo = binaryPropertyInfo;
-                    state.Current.PropertyPolymorphicConverter = null;
+
+
                     if (binaryPropertyInfo == null)
                     {
+                        if (!reader.TrySkip(options))
+                        {
+                            value = default;
+                            return false;
+                        }
                         state.Current.EndProperty();
                         continue;
                     }

@@ -32,7 +32,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 if (state.Current.PropertyPolymorphicConverter == null && reader.CurrentTypeInfo != null && converter.CanBePolymorphic)
                 {
                     var type = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
-                    if (type != null && type != converter.TypeToConvert)
+                    if (type != null && type != converter.TypeToConvert && converter.TypeToConvert.IsAssignableFrom(type))
                     {
                         state.Current.PropertyPolymorphicConverter = state.Current.InitializeReEntry(type, state.Options);
                     }
@@ -85,7 +85,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                 if (state.Current.PropertyPolymorphicConverter == null && reader.CurrentTypeInfo != null && converter.CanBePolymorphic)
                 {
                     var type = state.TypeMap.GetType(reader.CurrentTypeInfo.Seq);
-                    if (type != null && type != converter.TypeToConvert)
+                    if (type != null && type != converter.TypeToConvert && converter.TypeToConvert.IsAssignableFrom(type))
                     {
                         state.Current.PropertyPolymorphicConverter = state.Current.InitializeReEntry(type, state.Options);
                     }
