@@ -38,7 +38,7 @@ Intel Core i7-7500U CPU 2.70GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cor
 
 ### 反序列化
 
-![img](doc/s.png)
+![img](doc/ds.png)
 
 ``` ini
 
