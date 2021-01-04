@@ -48,7 +48,6 @@ namespace Xfrogcn.BinaryFormatter
                 throw new ArgumentNullException(nameof(stream));
             }
 
-
             return ReadAsync<object>(stream, typeof(object), options, cancellationToken);
         }
 
@@ -100,10 +99,7 @@ namespace Xfrogcn.BinaryFormatter
             {
                 return (TValue)(object)null;
             }
-
-            // 读取类型映射
-            long position = stream.Position;
-
+  
             stream.Seek(-4, SeekOrigin.End);
             await stream.ReadAsync(headerBytes, 0, 4).ConfigureAwait(false);
             uint mapPosition = BitConverter.ToUInt32(headerBytes);
@@ -121,7 +117,10 @@ namespace Xfrogcn.BinaryFormatter
             ReadMetadata(new ReadOnlySpan<byte>(buffer), ref state);
 
             // 类型解析
-            state.ResolveTypes(options);
+            state.ResolveTypes(options, returnType);
+
+            
+
             // 初始化
             state.Initialize(state.PrimaryType, options, true);
 

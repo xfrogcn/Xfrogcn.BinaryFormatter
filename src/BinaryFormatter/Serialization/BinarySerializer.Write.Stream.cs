@@ -59,51 +59,46 @@ namespace Xfrogcn.BinaryFormatter
 
             const float FlushThreshold = .9f;
 
-            using (var bufferWriter = new PooledByteBufferWriter(options.DefaultBufferSize))
+            using var bufferWriter = new PooledByteBufferWriter(options.DefaultBufferSize);
+            using var writer = new BinaryWriter(bufferWriter, options);
+            // 写入头
+            writer.WriteHeader();
+            if (value == null)
             {
-                using(var writer = new BinaryWriter(bufferWriter, options))
-                {
-                    // 写入头
-                    writer.WriteHeader();
-                    if(value == null)
-                    {
-                        writer.Flush();
-                        await bufferWriter.WriteToStreamAsync(stream, cancellationToken);
-                        bufferWriter.Clear();
-                        return;
-                    }
-                    if ( value != null)
-                    {
-                        inputType = value!.GetType();
-                    }
-
-                    WriteStack state = default;
-
-                    BinaryConverter converterBase = state.Initialize(inputType, options, true);
-
-                    bool isFinalBlock;
-                    do
-                    {
-                        state.FlushThreshold = (int)(bufferWriter.Capacity * FlushThreshold);
-
-                        isFinalBlock = WriteCore(converterBase, writer, value, options, ref state);
-
-                        await bufferWriter.WriteToStreamAsync(stream, cancellationToken);
-
-                        bufferWriter.Clear();
-
-                    } while (!isFinalBlock);
-
-                    //var typeList = state.GetTypeList();
-                    //writer.WriteTypeInfos(typeList, state.TypeMap.GetTypeSeq(value.GetType()));
-                    writer.WriteMetadata(ref state, value.GetType());
-                    writer.Flush();
-
-                    await bufferWriter.WriteToStreamAsync(stream, cancellationToken);
-                    bufferWriter.Clear();
-
-                }
+                writer.Flush();
+                await bufferWriter.WriteToStreamAsync(stream, cancellationToken);
+                bufferWriter.Clear();
+                return;
             }
+            if (value != null)
+            {
+                inputType = value!.GetType();
+            }
+
+            WriteStack state = default;
+
+            BinaryConverter converterBase = state.Initialize(inputType, options, true);
+
+            bool isFinalBlock;
+            do
+            {
+                state.FlushThreshold = (int)(bufferWriter.Capacity * FlushThreshold);
+
+                isFinalBlock = WriteCore(converterBase, writer, value, options, ref state);
+
+                await bufferWriter.WriteToStreamAsync(stream, cancellationToken);
+
+                bufferWriter.Clear();
+
+            } while (!isFinalBlock);
+
+            //var typeList = state.GetTypeList();
+            //writer.WriteTypeInfos(typeList, state.TypeMap.GetTypeSeq(value.GetType()));
+            writer.WriteMetadata(ref state, value.GetType());
+            writer.Flush();
+
+            await bufferWriter.WriteToStreamAsync(stream, cancellationToken);
+            bufferWriter.Clear();
         }
     }
 }

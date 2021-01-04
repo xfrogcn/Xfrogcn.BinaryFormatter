@@ -58,7 +58,7 @@ namespace Xfrogcn.BinaryFormatter
 
         public ReferenceResolver ReferenceResolver;
 
-        internal void ResolveTypes(BinarySerializerOptions options)
+        internal void ResolveTypes(BinarySerializerOptions options, Type returnType)
         {
             Options = options;
             if( options.TypeHandler!=null)
@@ -73,7 +73,24 @@ namespace Xfrogcn.BinaryFormatter
             TypeMap.ResolveTypes(TypeResolver);
 
             PrimaryType = TypeMap.GetType(PrimaryTypeSeq);
-            Debug.Assert(PrimaryType != null);
+
+
+            if (PrimaryType != null)
+            {
+                if (PrimaryType.IsClass && !returnType.IsAssignableFrom(PrimaryType) )
+                {
+                    PrimaryType = returnType;
+                }
+            }
+            else
+            {
+                PrimaryType = returnType;
+            }
+
+            if (PrimaryType.IsInterface || PrimaryType.IsAbstract)
+            {
+                ThrowHelper.ThrowNotSupportedException_SerializationNotSupported(PrimaryType);
+            }
         }
 
         public void Initialize(Type type, BinarySerializerOptions options, bool supportContinuation)

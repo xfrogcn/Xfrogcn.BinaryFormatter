@@ -103,7 +103,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                                 {
                                     converter = state.Current.PropertyPolymorphicConverter;
                                 }
-                                else if (t != _keyConverter.TypeToConvert)
+                                else if (t != null && t != _keyConverter.TypeToConvert)
                                 {
                                     converter = options.GetConverter(t);
                                     state.Current.PropertyPolymorphicConverter = converter;
@@ -154,7 +154,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                                 {
                                     converter = state.Current.PropertyPolymorphicConverter;
                                 }
-                                else if (t != _valueConverter.TypeToConvert)
+                                else if (t != null && t != _valueConverter.TypeToConvert)
                                 {
                                     converter = options.GetConverter(t);
                                     state.Current.PropertyPolymorphicConverter = converter;
@@ -383,7 +383,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                                     {
                                         converter = state.Current.PropertyPolymorphicConverter;
                                     }
-                                    else if (t != _keyConverter.TypeToConvert)
+                                    else if (t != null && t != _keyConverter.TypeToConvert)
                                     {
                                         converter = options.GetConverter(t);
                                         state.Current.PropertyPolymorphicConverter = converter;
@@ -456,7 +456,7 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                                     {
                                         converter = state.Current.PropertyPolymorphicConverter;
                                     }
-                                    else if (t != _valueConverter.TypeToConvert)
+                                    else if (t != null && t != _valueConverter.TypeToConvert)
                                     {
                                         converter = options.GetConverter(t);
                                         state.Current.PropertyPolymorphicConverter = converter;

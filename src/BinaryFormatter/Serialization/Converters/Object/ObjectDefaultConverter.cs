@@ -117,7 +117,6 @@ namespace Xfrogcn.BinaryFormatter.Serialization.Converters
                     }
 
                     state.Current.EndProperty();
-
                 }
             }
             else

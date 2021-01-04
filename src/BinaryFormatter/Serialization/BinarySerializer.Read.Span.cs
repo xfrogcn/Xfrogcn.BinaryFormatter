@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Buffers;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Xfrogcn.BinaryFormatter.Serialization;
 
 namespace Xfrogcn.BinaryFormatter
@@ -16,10 +11,13 @@ namespace Xfrogcn.BinaryFormatter
             return (TValue)Deserialize(bytes, options);
         }
 
-
         public static object Deserialize(ReadOnlySpan<byte> bytes, BinarySerializerOptions options = null)
         {
+            return Deserialize<object>(bytes, options);
+        }
 
+        public static object Deserialize(ReadOnlySpan<byte> bytes, Type returnType = null, BinarySerializerOptions options = null)
+        {
             if (options == null)
             {
                 options = BinarySerializerOptions.s_defaultOptions;
@@ -59,7 +57,7 @@ namespace Xfrogcn.BinaryFormatter
             ReadMetadata(metadataBytes, ref state);
 
             // 类型解析
-            state.ResolveTypes(options);
+            state.ResolveTypes(options, returnType);
             // 初始化
             state.Initialize(state.PrimaryType, options, false);
 

@@ -37,7 +37,6 @@ namespace Xfrogcn.BinaryFormatter
             
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:删除未使用的参数", Justification = "<挂起>")]
         internal static RefState ReadReferenceForObject(
             BinaryConverter binaryConverter,
             ref ReadStack state,
