@@ -17,6 +17,7 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
         private readonly Stream _jsonStream;
         private readonly Stream _binaryStream;
         private readonly Stream _sbStream;
+        private readonly BF _formatter;
 
         public DeserializeBenchmark()
         {
@@ -46,6 +47,8 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
             BF formatter = new BF();
             formatter.Serialize(_sbStream, data);
             _sbStream.Position = 0;
+
+            _formatter = new BF();
         }
 
         private TestApiRecordItem CreateItem()
@@ -99,8 +102,7 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
         public void SystemBinaryFormatter()
         {
             _sbStream.Position = 0;
-            BF formatter = new BF();
-            formatter.Deserialize(_sbStream);
+            _formatter.Deserialize(_sbStream);
         }
 
 

@@ -15,6 +15,7 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
     {
         internal TestApiResponse<TestApiRecordItem> data;
         private const int ListCount = 15;
+        private readonly BF _formatter;
         
         public BinaryVsJson()
         {
@@ -29,6 +30,8 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
             {
                 data.Items.Add(CreateItem());
             }
+
+            _formatter = new BF();
         }
 
         private TestApiRecordItem CreateItem()
@@ -81,8 +84,7 @@ namespace Xfrogcn.BinaryFormatter.Benchmark
         public void SystemBinaryFormatter()
         {
             MemoryStream ms = new MemoryStream();
-            BF formatter = new BF();
-            formatter.Serialize(ms, data);
+            _formatter.Serialize(ms, data);
         }
 
         //-----------
