@@ -399,5 +399,12 @@ namespace Xfrogcn.BinaryFormatter
             message = string.Format(Strings.DeserializeNoConstructor, nameof(BinaryConstructorAttribute), type);
             ThrowNotSupportedException(state, reader, new NotSupportedException(message));
         }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowBinaryException_DeserializeCannotFindType(string assemblyName)
+        {
+            ThrowBinaryException(string.Format(Strings.DeserializeCannotFindType, assemblyName));
+        }
     }
 }

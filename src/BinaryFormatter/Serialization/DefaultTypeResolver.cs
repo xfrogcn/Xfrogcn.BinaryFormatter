@@ -1,16 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
 using System.Collections.Concurrent;
-using static System.TimeZoneInfo;
-using System.Reflection;
-using System.Linq;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
+using System.Numerics;
+using System.Reflection;
+using static System.TimeZoneInfo;
 
 namespace Xfrogcn.BinaryFormatter
 {
     public class DefaultTypeResolver : TypeResolver
     {
+        private readonly Dictionary<AssemblyName, Assembly> _assemblyCache
+            = new Dictionary<AssemblyName, Assembly>();
+
         readonly Dictionary<TypeEnum, Type> _internalTypeMaps =
             new Dictionary<TypeEnum, Type>()
             {
@@ -171,26 +174,57 @@ namespace Xfrogcn.BinaryFormatter
 
         protected virtual Assembly AssemblyResolver(AssemblyName assemblyName)
         {
+            if (_assemblyCache.ContainsKey(assemblyName))
+            {
+                return _assemblyCache[assemblyName];
+            }
+
+            Assembly actualAssembly = null;
             var assembly = Assembly.GetEntryAssembly(); 
             if(assembly.GetName() == assemblyName)
             {
-                return assembly;
+                actualAssembly = assembly;
             }
             
-
-            assembly = Assembly.GetCallingAssembly();
-            if (assembly.GetName() == assemblyName)
+            if( actualAssembly == null)
             {
-                return assembly;
+                assembly = Assembly.GetCallingAssembly();
+                if (assembly.GetName() == assemblyName)
+                {
+                    actualAssembly = assembly;
+                }
+
+            }
+            if (actualAssembly == null)
+            {
+                assembly = Assembly.GetExecutingAssembly();
+                if (assembly.GetName() == assemblyName)
+                {
+                    actualAssembly = assembly;
+                }
             }
 
-            assembly = Assembly.GetExecutingAssembly();
-            if (assembly.GetName() == assemblyName)
+            try
             {
-                return assembly;
+                actualAssembly = Assembly.Load(assemblyName);
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                Assembly[] ais = AppDomain.CurrentDomain.GetAssemblies();
+                actualAssembly = ais.FirstOrDefault(a => a.GetName() == assemblyName);
+                if(actualAssembly == null)
+                {
+                    actualAssembly = ais.FirstOrDefault(a => a.GetName().Name == assemblyName.Name);
+                }
+                if (actualAssembly == null)
+                {
+                    ThrowHelper.ThrowBinaryException_DeserializeCannotFindType(assemblyName.FullName);
+                }
             }
 
-            return Assembly.Load(assemblyName);
+            _assemblyCache[assemblyName] = actualAssembly;
+
+            return actualAssembly;
         }
 
         protected virtual Type TypeResolver(Assembly assembly, string typeName, bool ignoreCase)

@@ -16,7 +16,7 @@ namespace Xfrogcn.BinaryFormatter
             return Deserialize(bytes, BinaryClassInfo.ObjectType, options);
         }
 
-        public static object Deserialize(ReadOnlySpan<byte> bytes, Type returnType = null, BinarySerializerOptions options = null)
+        public static object Deserialize(ReadOnlySpan<byte> bytes, Type returnType, BinarySerializerOptions options = null)
         {
             if (options == null)
             {
