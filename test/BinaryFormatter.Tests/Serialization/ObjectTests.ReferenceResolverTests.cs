@@ -107,19 +107,19 @@ namespace Xfrogcn.BinaryFormatter.Tests
             }, new BinarySerializerOptions() { DefaultBufferSize = 1 });
         }
 
-        [Fact(DisplayName = "Object-With-Customer-Creator-Simple-Ref")]
-        public async Task Test_With_Customer_Creator_Simple_Ref()
-        {
-            var item = TimeZoneInfo.Local;
+        //[Fact(DisplayName = "Object-With-Customer-Creator-Simple-Ref")]
+        //public async Task Test_With_Customer_Creator_Simple_Ref()
+        //{
+        //    var item = TimeZoneInfo.Local;
 
-            TestRef<TimeZoneInfo> a = new TestRef<TimeZoneInfo>();
-            a.A = item;
-            a.B = item;
+        //    TestRef<TimeZoneInfo> a = new TestRef<TimeZoneInfo>();
+        //    a.A = item;
+        //    a.B = item;
 
-            await Test(a, b =>
-            {
-                Assert.True(Object.ReferenceEquals(b.A, b.B));
-            }, new BinarySerializerOptions() { DefaultBufferSize = 1 });
-        }
+        //    await Test(a, b =>
+        //    {
+        //        Assert.True(Object.ReferenceEquals(b.A, b.B));
+        //    }, new BinarySerializerOptions() { DefaultBufferSize = 1 });
+        //}
     }
 }
