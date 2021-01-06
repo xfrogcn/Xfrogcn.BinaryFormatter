@@ -61,6 +61,7 @@
 - System.Collections.Immutable.*
 - IDictionary&lt;TKey, TValue&gt;
 - IDictionary
+- ConcurrentDictionary&lt;TKey, TValue&gt;
 - IEnumerable&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;
 
 ## 类
