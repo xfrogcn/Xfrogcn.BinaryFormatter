@@ -1,6 +1,6 @@
 # High Performance Binary Serialization Libraries
 
-[quick start](doc/GettingStart.Md) | [support types](doc/SupportTypes.Md)
+[中文](README.zh.md) | [Quick Start](doc/GettingStart.Md) | [Support Types](doc/SupportTypes.Md)
 
 Xfrogcn BinaryFormatter is a high performance binary serialization libraries in .NET, it through the  Span and Emit to achieve high performance, BinarySerializer uses an API interface that is consistent with System.Text.JSON, so easy to use.
 
@@ -9,11 +9,11 @@ Xfrogcn BinaryFormatter is a high performance binary serialization libraries in 
 - [x] High performance
 - [x] Smaller size
 - [x] Simple and easy to use
-- [x] keep instance refer
-- [x] support the type of dynamic loading assemblies
+- [x] Keep instance refer
+- [x] Support the type of dynamic loading assemblies
 - [x] Complete built-in type support
 - [ ] Extended attributes
-- [ ] binary document model
+- [ ] Binary document model
 
 ## Performance
 
