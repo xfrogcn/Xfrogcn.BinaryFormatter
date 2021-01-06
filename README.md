@@ -1,5 +1,7 @@
 # 高性能二进制序列化库
 
+[快速开始](doc/GettingStart.md) | [支持的类型](doc/SupportTypes.md)
+
 Xfrogcn.BinaryFormatter是一个.NET下的高性能二进制序列化库，它通过底层的Span以及Emit最大限度地提高性能，BinaryFormatter整体上采用了与System.Text.Json序列化一致的编程API接口，故简单易用，无需过多的学习成本。
 
 ## 特性
