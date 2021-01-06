@@ -1,6 +1,6 @@
-# Support types
+# 支持的类型
 
-## build-in types
+## 内置类型
 
 - Boolean
 - Byte
@@ -38,7 +38,9 @@
 - Tuple<...>
 - ValueTuple<...>
 
-## Collection types
+## 集合
+
+支持以下类型或实现了该接口的类型：
 
 - Array
 - IList
@@ -53,7 +55,7 @@
 - ConcurrentQueue&lt;T&gt;
 - ConcurrentBag&lt;T&gt;
 
-## Dictionay types
+## 字典
 
 - NameValueCollection
 - System.Collections.Immutable.*
@@ -62,6 +64,6 @@
 - ConcurrentDictionary&lt;TKey, TValue&gt;
 - IEnumerable&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;
 
-## class
+## 类
 
-A class that has a common argumentless constructor or specifies the constructor (the parameter name needs to be matched) through the BinaryConstructor Attribute attribute。
+具有公共无参数构造函数或通过BinaryConstructorAttribute特性指定构造函数（参数名称需与）的类。
