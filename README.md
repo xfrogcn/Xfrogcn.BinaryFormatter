@@ -58,3 +58,8 @@ Intel Core i7-7500U CPU 2.70GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cor
 | SystemBinaryFormatter | 334.68 μs | 2.319 μs | 1.936 μs |
 |            Json_Bytes |  80.13 μs | 1.572 μs | 1.989 μs |
 |   `XfrogcnBinary_Bytes` |  92.14 μs | 1.814 μs | 3.623 μs |
+
+## 解决动态加载程序集中类型序列化的问题
+
+如果序列化类型在动态加载的程序集中，而序列化方法封装在非动态加载程序集李，.NET官方提供的BinaryFormatter序列化库将无法进行反序列化，将引发无法找到程序集的错误。
+本序列化库已解决此问题
