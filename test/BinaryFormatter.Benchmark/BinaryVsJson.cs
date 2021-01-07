@@ -3,7 +3,6 @@ using BenchmarkDotNet.Configs;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using BF = System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;
 

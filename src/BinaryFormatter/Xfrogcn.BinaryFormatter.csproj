@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <LangVersion>9.0</LangVersion>
+    <Product>BinarySerializer</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/xfrogcn/Xfrogcn.BinaryFormatter/blob/master/README.md</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

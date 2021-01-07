@@ -1,6 +1,6 @@
 # High Performance Binary Serialization Libraries
 
-[中文](README.zh.md) | [Quick Start](doc/GettingStart.Md) | [Support Types](doc/SupportTypes.Md)
+[中文](README.zh.md) | [Quick Start](doc/GettingStart.md) | [Support Types](doc/SupportTypes.md)
 
 Xfrogcn BinaryFormatter is a high performance binary serialization libraries in .NET, it through the  Span and Emit to achieve high performance, BinarySerializer uses an API interface that is consistent with System.Text.JSON, so easy to use.
 
@@ -72,7 +72,7 @@ Intel Core i7-7500U CPU 2.70GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cor
 |            Json_Bytes |  80.13 μs | 1.572 μs | 1.989 μs |
 |   `XfrogcnBinary_Bytes` |  92.14 μs | 1.814 μs | 3.623 μs |
 
-## solve the problem of dynamic loading assemblies
+## Solve the problem of dynamic loading assemblies
 
 If the serialization type in dynamically loaded assembly, encapsulating and serialization methods in the dynamic loading assemblies, .NET official BinaryFormatter serialization libraries cannot deserialize, will trigger a assembly errors cannot be found.  
 

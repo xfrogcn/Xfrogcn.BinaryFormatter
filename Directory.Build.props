@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <PackageVersion>1.0.0-beta-01</PackageVersion>
+    <PackageVersion>1.0.0</PackageVersion>
     <Authors>王海波</Authors>
     <Copyright>王海波</Copyright>
     <RepositoryUrl>https://github.com/xfrogcn/Xfrogcn.BinaryFormatter</RepositoryUrl>
@@ -10,7 +10,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Product>Xfrogcn BinaryFormatter</Product>
+    <Product>BinarySerializer</Product>
+    <Title>BinarySerializer</Title>
+    <Description>High performance binary serialization libraries</Description>
 
     <!-- The SPDX name for the source license. See https://spdx.org/licenses/. -->
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -19,6 +21,7 @@
     <MaintainerEmail>xfrogcn@163.com</MaintainerEmail>
 
     <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\package-icon.png">
