@@ -10,6 +10,7 @@ Xfrogcn BinaryFormatter is a high performance binary serialization libraries in 
 - [x] Smaller size
 - [x] Simple and easy to use
 - [x] Keep instance refer
+- [x] Supports deserialization to a different type
 - [x] Support the type of dynamic loading assemblies
 - [x] Complete built-in type support
 - [ ] Extended attributes
